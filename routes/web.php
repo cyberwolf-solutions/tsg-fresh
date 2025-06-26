@@ -40,20 +40,19 @@ use App\Http\Controllers\AdditionalPaymentController;
 use App\Http\Controllers\TableArrangementsController;
 use App\Http\Controllers\EmployeeDesignationsController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
 
-// Route::get('/', function () {
-// return view('welcome');
-// });
+Route::get('/landing', function () {
+    return view('landing-page.home');
+});
+// Route::get('/abountus', [App\Http\Controllers\LandingPageController::class, 'aboutus'])->name('landing.about');
+
+Route::get('/about', function () {
+    return view('Landing-page.about');
+});
+
+Route::get('/contact', function () {
+    return view('Landing-page.contact');
+});
 
 Route::middleware(['guest'])->group(function () {
     Route::get('/', function () {
@@ -63,7 +62,6 @@ Route::middleware(['guest'])->group(function () {
 Auth::routes();
 
 Route::middleware(['auth'])->group(function () {
-
     //reports
     Route::get('/user', [ReportsController::class, 'user'])->name('users.ReportsIndex')->middleware('can:User report');
     Route::get('/customer', [ReportsController::class, 'customer'])->name('customers.ReportsIndex')->middleware('can:Customer report');
@@ -77,7 +75,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/orders/reports', [ReportsController::class, 'orders'])->name('orders.Reports')->middleware('can:Booking report');
     Route::get('/booking1', [ReportsController::class, 'booking'])->name('booking.ReportsIndex1')->middleware('can:Booking report');
     Route::get('/tareports', [ReportsController::class, 'ta'])->name('TaReport')->middleware('can:Booking report');
-    
+
 
 
 
@@ -202,10 +200,10 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('setmenumeal', SetMenuMealController::class)->middleware('can:manage categories');
     //filter setmenu
     Route::get('/restaurant-setmenu', [RestaurantController::class, 'filterSetMenus'])
-     ->name('restaurant.filter_setmenus');
+        ->name('restaurant.filter_setmenus');
 
 
 
-     Route::post('/bookings/update-dates', [BookingController::class, 'updateDates'])->name('bookings.updateDates');
-
+    Route::post('/bookings/update-dates', [BookingController::class, 'updateDates'])->name('bookings.updateDates');
 });
+
