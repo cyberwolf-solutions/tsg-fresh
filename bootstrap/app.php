@@ -12,7 +12,7 @@
 */
 
 $app = new Illuminate\Foundation\Application(
-    $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)
+    $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)  // ✅ Corrected $_ENV and __DIR__
 );
 
 /*
@@ -40,6 +40,25 @@ $app->singleton(
     Illuminate\Contracts\Debug\ExceptionHandler::class,
     App\Exceptions\Handler::class
 );
+
+/*
+|--------------------------------------------------------------------------
+| Register Custom Console Commands
+|--------------------------------------------------------------------------
+|
+| Here we register any custom Artisan commands manually. This is useful in
+| Laravel 11 if you're not using the legacy app/Console/Kernel.php file.
+|
+*/
+
+if ($app->runningInConsole()) {
+    $app->make(Illuminate\Contracts\Console\Kernel::class)
+        ->commands([
+            \App\Console\Commands\CreateTenant::class,
+        ]);
+}
+
+
 
 /*
 |--------------------------------------------------------------------------
