@@ -1,7 +1,5 @@
 <?php
 
-use App\Http\Controllers\BordingTypeCOntroller;
-use App\Http\Controllers\TACheckoutController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BarController;
@@ -12,7 +10,9 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\MealsController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\BranchController;
 use App\Http\Controllers\TablesController;
+use Stancl\Tenancy\Database\Models\Tenant;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\KitchenController;
 use App\Http\Controllers\ProductController;
@@ -30,6 +30,8 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ModifiersController;
 use App\Http\Controllers\RoomTypesController;
 use App\Http\Controllers\RestaurantController;
+use App\Http\Controllers\TACheckoutController;
+use App\Http\Controllers\BordingTypeCOntroller;
 use App\Http\Controllers\IngredientsController;
 use App\Http\Controllers\SetMenuMealController;
 use App\Http\Controllers\HouseKeepingCOntroller;
@@ -42,7 +44,8 @@ use App\Http\Controllers\EmployeeDesignationsController;
 
 
 Route::get('/landing', function () {
-    return view('landing-page.home');
+    $branches = Tenant::all();
+    return view('landing-page.home', compact('branches'));
 });
 // Route::get('/abountus', [App\Http\Controllers\LandingPageController::class, 'aboutus'])->name('landing.about');
 
@@ -59,7 +62,14 @@ Route::middleware(['guest'])->group(function () {
         return view('auth.login');
     })->name('login');
 });
+
+Route::resource('branches', BranchController::class);
+
 Auth::routes();
+// Route::middleware(['web', 'tenant'])->group(function () {
+// Route::get('/', function () {
+//     return view('branch-home');
+// });
 
 Route::middleware(['auth'])->group(function () {
     //reports
@@ -205,5 +215,5 @@ Route::middleware(['auth'])->group(function () {
 
 
     Route::post('/bookings/update-dates', [BookingController::class, 'updateDates'])->name('bookings.updateDates');
+    // });
 });
-

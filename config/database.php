@@ -62,6 +62,47 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
+        'tenant' => [
+            'driver' => 'mysql',
+            'host' => env('DB_TENANT_HOST', '127.0.0.1'),
+            'port' => env('DB_TENANT_PORT', '3306'),
+            'database' => "ok",
+            'username' => env('DB_TENANT_USERNAME', 'root'),
+            'password' => env('DB_TENANT_PASSWORD', ''),
+
+        ],
+        'tenant_template' => [
+            'driver' => 'mysql',
+            'host' => env('DB_TENANT_HOST', '127.0.0.1'),
+            'port' => env('DB_TENANT_PORT', '3306'),
+            'database' => null, // This is important - leave as null
+            'username' => env('DB_TENANT_USERNAME', 'root'),
+            'password' => env('DB_TENANT_PASSWORD', 'Nipun@2595'),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+        'central' => [
+            'driver' => 'mysql',
+            'host' => env('DB_CENTRAL_HOST', '127.0.0.1'),
+            'port' => env('DB_CENTRAL_PORT', '3306'),
+            'database' => env('DB_CENTRAL_DATABASE', 'central_db'),
+            'username' => env('DB_CENTRAL_USERNAME', 'root'),
+            'password' => env('DB_CENTRAL_PASSWORD', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+        ],
 
         'pgsql' => [
             'driver' => 'pgsql',
@@ -125,7 +166,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
+            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_database_'),
         ],
 
         'default' => [
