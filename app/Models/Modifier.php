@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Modifier extends Model
 {
     use HasFactory, SoftDeletes;
+    protected $connection = 'tenant';
 
     protected $table = 'modifiers';
     protected $fillable = [
@@ -24,23 +25,26 @@ class Modifier extends Model
 
     public function ingredients()
     {
-        return $this->belongsToMany(Ingredient::class,'modifiers_ingredients','modifier_id','ingredient_id');
+        return $this->belongsToMany(Ingredient::class, 'modifiers_ingredients', 'modifier_id', 'ingredient_id');
     }
 
     public function categories()
     {
-        return $this->belongsToMany(Category::class,'modifiers_categories','modifier_id','category_id');
+        return $this->belongsToMany(Category::class, 'modifiers_categories', 'modifier_id', 'category_id');
     }
 
-    public function createdBy() {
+    public function createdBy()
+    {
         return $this->hasOne(User::class, 'id', 'created_by');
     }
 
-    public function updatedBy() {
+    public function updatedBy()
+    {
         return $this->hasOne(User::class, 'id', 'updated_by');
     }
 
-    public function deletedBy() {
+    public function deletedBy()
+    {
         return $this->hasOne(User::class, 'id', 'deleted_by');
     }
 }

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class SetMenuMealType extends Model
 {
-
+    protected $connection = 'tenant';
     protected $table = 'setmenu_meal_type';
     use HasFactory;
     protected $fillable = [

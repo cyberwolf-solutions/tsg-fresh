@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class SetmenuProducts extends Model
 {
-
+    protected $connection = 'tenant';
     protected $table = 'setmenu_products';
     use HasFactory;
 
@@ -18,5 +18,4 @@ class SetmenuProducts extends Model
         'created_by',
         'updated_by',
     ];
-
 }

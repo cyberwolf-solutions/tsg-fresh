@@ -6,9 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Table extends Model {
+class Table extends Model
+{
     use HasFactory, SoftDeletes;
-
+    protected $connection = 'tenant';
     protected $table = 'tables';
     protected $fillable = [
         'name',
@@ -19,15 +20,18 @@ class Table extends Model {
         'deleted_by'
     ];
 
-    public function createdBy() {
+    public function createdBy()
+    {
         return $this->hasOne(User::class, 'id', 'created_by');
     }
 
-    public function updatedBy() {
+    public function updatedBy()
+    {
         return $this->hasOne(User::class, 'id', 'updated_by');
     }
 
-    public function deletedBy() {
+    public function deletedBy()
+    {
         return $this->hasOne(User::class, 'id', 'deleted_by');
     }
 }

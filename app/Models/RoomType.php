@@ -6,9 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class RoomType extends Model {
+class RoomType extends Model
+{
     use HasFactory, SoftDeletes;
-
+    protected $connection = 'tenant';
     protected $table = 'room_types';
     protected $fillable = [
         'name',
@@ -18,17 +19,18 @@ class RoomType extends Model {
         // 'RoomFacility_id'
     ];
 
-    public function createdBy() {
+    public function createdBy()
+    {
         return $this->hasOne(User::class, 'id', 'created_by');
     }
 
-    public function updatedBy() {
+    public function updatedBy()
+    {
         return $this->hasOne(User::class, 'id', 'updated_by');
     }
 
-    public function deletedBy() {
+    public function deletedBy()
+    {
         return $this->hasOne(User::class, 'id', 'deleted_by');
     }
-
-    
 }

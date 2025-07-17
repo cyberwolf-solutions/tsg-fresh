@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class SetMenuType extends Model
 {
     use HasFactory;
+    protected $connection = 'tenant';
     protected $table = 'setmenu_type';
     protected $fillable = [
         'name',
@@ -15,6 +16,4 @@ class SetMenuType extends Model
         'updated_by',
         'deleted_by'
     ];
-
-    
 }

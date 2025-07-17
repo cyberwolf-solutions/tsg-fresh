@@ -5,8 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class MailConfig extends Model {
+class MailConfig extends Model
+{
     use HasFactory;
+    protected $connection = 'tenant';
     protected $fillable = [
         'driver',
         'host',

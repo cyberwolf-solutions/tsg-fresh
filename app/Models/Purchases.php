@@ -7,9 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Purchases extends Model {
+class Purchases extends Model
+{
     use HasFactory, SoftDeletes;
-
+    protected $connection = 'tenant';
     protected $fillable = [
         'date',
         'supplier_id',
@@ -24,23 +25,28 @@ class Purchases extends Model {
         'updated_by',
         'deleted_by'
     ];
-    public function supplier() {
+    public function supplier()
+    {
         return $this->hasOne(Supplier::class, 'id', 'supplier_id');
     }
-    public function items() {
+    public function items()
+    {
         return $this->hasMany(PurchaseItem::class, 'purchase_id', 'id');
     }
 
-    public function payments() {
+    public function payments()
+    {
         return $this->hasMany(PurchasePayment::class, 'purchase_id', 'id');
     }
 
-    public function paymentSum() {
+    public function paymentSum()
+    {
 
         return $this->payments()->sum('amount');
     }
 
-    public function calculateDueAmount() {
+    public function calculateDueAmount()
+    {
 
         return $this->total - $this->payments()->sum('amount');
     }

@@ -8,11 +8,13 @@ use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 
-class PermissionSeeder extends Seeder {
+class PermissionSeeder extends Seeder
+{
     /**
      * Run the database seeds.
      */
-    public function run(): void {
+    public function run(): void
+    {
         $data = [
             ['name' => 'manage users', 'guard_name' => 'web'],
             ['name' => 'create users', 'guard_name' => 'web'],

@@ -5,9 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class OrderItemModifier extends Model {
+class OrderItemModifier extends Model
+{
     use HasFactory;
-
+    protected $connection = 'tenant';
     protected $table = 'order_items_modifiers';
 
     protected $fillable = [
@@ -21,7 +22,8 @@ class OrderItemModifier extends Model {
     ];
 
 
-    public function modifier() {
+    public function modifier()
+    {
         return $this->hasOne(Modifier::class, 'id', 'modifier_id');
     }
 }
