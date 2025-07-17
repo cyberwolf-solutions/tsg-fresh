@@ -5,9 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class OrderNote extends Model {
+class OrderNote extends Model
+{
     use HasFactory;
-
+    protected $connection = 'tenant';
     protected $fillable = [
         'order_id',
         'kot',

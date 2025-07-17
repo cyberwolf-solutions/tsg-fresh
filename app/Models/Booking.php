@@ -6,9 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Booking extends Model {
+class Booking extends Model
+{
     use HasFactory, SoftDeletes;
-
+    protected $connection = 'tenant';
     protected $table = 'bookings';
     protected $fillable = [
         'customer_id',
@@ -28,28 +29,34 @@ class Booking extends Model {
 
     ];
 
-    public function rooms() {
-        return $this->belongsToMany(Room::class,'bookings_rooms','booking_id','room_id');
+    public function rooms()
+    {
+        return $this->belongsToMany(Room::class, 'bookings_rooms', 'booking_id', 'room_id');
     }
-    public function customer() {
+    public function customer()
+    {
         return $this->belongsTo(Customer::class, 'customer_id', 'id');
     }
 
-    
 
-    public function customers() {
+
+    public function customers()
+    {
         return $this->hasOne(Customer::class, 'id', 'customer_id');
     }
 
-    public function createdBy() {
+    public function createdBy()
+    {
         return $this->hasOne(User::class, 'id', 'created_by');
     }
 
-    public function updatedBy() {
+    public function updatedBy()
+    {
         return $this->hasOne(User::class, 'id', 'updated_by');
     }
 
-    public function deletedBy() {
+    public function deletedBy()
+    {
         return $this->hasOne(User::class, 'id', 'deleted_by');
     }
 }

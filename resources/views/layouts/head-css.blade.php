@@ -37,8 +37,6 @@
 
 
 <style>
-
-
     [data-bs-theme="dark"] {
         ::-webkit-scrollbar {
             width: 5px;

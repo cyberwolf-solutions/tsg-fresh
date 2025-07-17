@@ -52,10 +52,6 @@ $app->singleton(
 */
 
 if ($app->runningInConsole()) {
-    $app->make(Illuminate\Contracts\Console\Kernel::class)
-        ->commands([
-            \App\Console\Commands\CreateTenant::class,
-        ]);
 }
 
 

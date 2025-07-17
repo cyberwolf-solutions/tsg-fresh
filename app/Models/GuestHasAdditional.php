@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class GuestHasAdditional extends Model
 {
     use HasFactory;
+    protected $connection = 'tenant';
 
     protected $table = 'guest_has_additional_payments';
 
@@ -16,21 +17,23 @@ class GuestHasAdditional extends Model
         'additional_payment_id',
         'price',
         'created_by',
-        
+
     ];
 
 
-    public function createdBy() {
+    public function createdBy()
+    {
         return $this->hasOne(User::class, 'id', 'created_by');
     }
 
 
-    public function updatedBy() {
+    public function updatedBy()
+    {
         return $this->hasOne(User::class, 'id', 'updated_by');
     }
 
-    public function deletedBy() {
+    public function deletedBy()
+    {
         return $this->hasOne(User::class, 'id', 'deleted_by');
     }
-
 }

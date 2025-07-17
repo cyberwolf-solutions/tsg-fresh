@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class BordingType extends Model
 {
     use HasFactory;
-
+    protected $connection = 'tenant';
     protected $table = 'bording_type';
 
     protected $fillable = [

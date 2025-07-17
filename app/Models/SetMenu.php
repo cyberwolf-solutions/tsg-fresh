@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class SetMenu extends Model
 {
+    protected $connection = 'tenant';
     protected $table = 'setmenu';
     use HasFactory;
 
@@ -30,31 +31,37 @@ class SetMenu extends Model
 
 
 
-    public function category() {
+    public function category()
+    {
         return $this->hasOne(Category::class, 'id', 'category_id');
     }
 
     public function products()
     {
-        return $this->belongsToMany(Product::class,'meals_products','meal_id','product_id');
+        return $this->belongsToMany(Product::class, 'meals_products', 'meal_id', 'product_id');
     }
 
-    public function createdBy() {
+    public function createdBy()
+    {
         return $this->hasOne(User::class, 'id', 'created_by');
     }
 
-    public function updatedBy() {
+    public function updatedBy()
+    {
         return $this->hasOne(User::class, 'id', 'updated_by');
     }
 
-    public function deletedBy() {
+    public function deletedBy()
+    {
         return $this->hasOne(User::class, 'id', 'deleted_by');
     }
-    public function setmenuType() {
+    public function setmenuType()
+    {
         return $this->hasOne(SetMenuType::class, 'id', 'setmenu_type');
     }
 
-    public function setmenumealType() {
+    public function setmenumealType()
+    {
         return $this->hasOne(SetMenuMealType::class, 'id', 'setmenu_meal_type');
     }
     public function orderItem()

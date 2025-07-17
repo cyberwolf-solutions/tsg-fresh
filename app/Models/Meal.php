@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Meal extends Model
 {
     use HasFactory, SoftDeletes;
-
+    protected $connection = 'tenant';
     protected $table = 'meals';
     protected $fillable = [
         'name',
@@ -22,24 +22,28 @@ class Meal extends Model
         'deleted_by'
     ];
 
-    public function category() {
+    public function category()
+    {
         return $this->hasOne(Category::class, 'id', 'category_id');
     }
 
     public function products()
     {
-        return $this->belongsToMany(Product::class,'meals_products','meal_id','product_id');
+        return $this->belongsToMany(Product::class, 'meals_products', 'meal_id', 'product_id');
     }
 
-    public function createdBy() {
+    public function createdBy()
+    {
         return $this->hasOne(User::class, 'id', 'created_by');
     }
 
-    public function updatedBy() {
+    public function updatedBy()
+    {
         return $this->hasOne(User::class, 'id', 'updated_by');
     }
 
-    public function deletedBy() {
+    public function deletedBy()
+    {
         return $this->hasOne(User::class, 'id', 'deleted_by');
     }
 }

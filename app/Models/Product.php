@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Product extends Model
 {
     use HasFactory, SoftDeletes;
-
+    protected $connection = 'tenant';
     protected $table = 'products';
     protected $fillable = [
         'name',

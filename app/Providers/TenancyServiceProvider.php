@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\Tenant;
+use Stancl\Tenancy\Jobs;
+use Stancl\Tenancy\Events;
+use Stancl\Tenancy\Listeners;
+use Stancl\Tenancy\Middleware;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Stancl\JobPipeline\JobPipeline;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Stancl\JobPipeline\JobPipeline;
-use Stancl\Tenancy\Events;
-use Stancl\Tenancy\Jobs;
-use Stancl\Tenancy\Listeners;
-use Stancl\Tenancy\Middleware;
 
 class TenancyServiceProvider extends ServiceProvider
 {
@@ -103,6 +106,15 @@ class TenancyServiceProvider extends ServiceProvider
         $this->mapRoutes();
 
         $this->makeTenancyMiddlewareHighestPriority();
+        function (Tenant $tenant) {
+            $dbName = $tenant->getDatabaseName(); // logs will show this
+            Log::info("TenancyServiceProvider: Setting tenant DB to $dbName");
+
+            config(['database.connections.tenant.database' => $dbName]);
+
+            DB::purge('tenant'); // important!
+            DB::reconnect('tenant'); // reconnect with new settings
+        };
     }
 
     protected function bootEvents()

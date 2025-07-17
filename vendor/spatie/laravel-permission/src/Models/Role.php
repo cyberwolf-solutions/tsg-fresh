@@ -22,6 +22,7 @@ class Role extends Model implements RoleContract
 {
     use HasPermissions;
     use RefreshesPermissionCache;
+    protected $connection = 'tenant';
 
     protected $guarded = [];
 
@@ -156,8 +157,9 @@ class Role extends Model implements RoleContract
         if (app(PermissionRegistrar::class)->teams) {
             $teamsKey = app(PermissionRegistrar::class)->teamsKey;
 
-            $query->where(fn ($q) => $q->whereNull($teamsKey)
-                ->orWhere($teamsKey, $params[$teamsKey] ?? getPermissionsTeamId())
+            $query->where(
+                fn($q) => $q->whereNull($teamsKey)
+                    ->orWhere($teamsKey, $params[$teamsKey] ?? getPermissionsTeamId())
             );
             unset($params[$teamsKey]);
         }

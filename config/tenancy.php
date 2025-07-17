@@ -2,11 +2,15 @@
 
 declare(strict_types=1);
 
+use Stancl\Tenancy\Jobs\CreateDatabase;
+use Stancl\Tenancy\Jobs\MigrateDatabase;
 use Stancl\Tenancy\Database\Models\Domain;
 use Stancl\Tenancy\Database\Models\Tenant;
 
 return [
-    'tenant_model' => Tenant::class,
+    'tenant_model' => \App\Models\Tenant::class,
+
+
     'id_generator' => Stancl\Tenancy\UUIDGenerator::class,
 
     'domain_model' => Domain::class,
@@ -18,11 +22,16 @@ return [
      */
     'central_domains' => [
         '127.0.0.1',
-        // 'localhost',
-        'tsg.test',
+        // 'anuradapura.localhost',
+        // 'jaffna.localhost'
+        'localhost',
+
+        // 'tsg.test',
     ],
 
+    'tenant_database_connection_name' => 'tenant',
 
+    'asset_url' => 'http://localhost:8000/assets',
 
     'tenant_route_namespace' => 'App\Http\Controllers\Tenant',
 
@@ -33,10 +42,11 @@ return [
      * To configure their behavior, see the config keys below.
      */
     'bootstrappers' => [
-        Stancl\Tenancy\Bootstrappers\DatabaseTenancyBootstrapper::class,
+        \App\Bootstrappers\DatabaseTenancyBootstrapper::class,
         Stancl\Tenancy\Bootstrappers\CacheTenancyBootstrapper::class,
         Stancl\Tenancy\Bootstrappers\FilesystemTenancyBootstrapper::class,
         Stancl\Tenancy\Bootstrappers\QueueTenancyBootstrapper::class,
+
         // Stancl\Tenancy\Bootstrappers\RedisTenancyBootstrapper::class, // Note: phpredis is needed
     ],
 
@@ -45,19 +55,22 @@ return [
      */
     'database' => [
         'central_connection' => env('DB_CONNECTION', 'central'),
-
+        'template'           => '{database}',
         /**
          * Connection used as a "template" for the dynamically created tenant database connection.
          * Note: don't name your template connection tenant. That name is reserved by package.
          */
-        'template_tenant_connection' => null,
-
+        'template_tenant_connection' => 'tenant',
+        'tenant_database_connection_name' => null,
         /**
          * Tenant database names are created like this:
          * prefix + tenant_id + suffix.
          */
-        'prefix' => 'tenant',
         'suffix' => '',
+        'prefix' => 'tenant_',
+
+
+
 
         /**
          * TenantDatabaseManagers are classes that handle the creation & deletion of tenant databases.
@@ -140,7 +153,8 @@ return [
          * disable asset() helper tenancy and explicitly use tenant_asset() calls in places
          * where you want to use tenant-specific assets (product images, avatars, etc).
          */
-        'asset_helper_tenancy' => true,
+        'asset_helper_tenancy' => false,
+
     ],
 
     /**
@@ -168,6 +182,8 @@ return [
      * understand which ones you want to enable.
      */
     'features' => [
+
+        Stancl\Tenancy\Features\TenantConfig::class,
         // Stancl\Tenancy\Features\UserImpersonation::class,
         // Stancl\Tenancy\Features\TelescopeTags::class,
         // Stancl\Tenancy\Features\UniversalRoutes::class,
@@ -198,7 +214,7 @@ return [
      * Parameters used by the tenants:seed command.
      */
     'seeder_parameters' => [
-        '--class' => 'DatabaseSeeder', // root seeder class
-        // '--force' => true, // This needs to be true to seed tenant databases in production
+        '--class' => 'Database\\Seeders\\TenantDatabaseSeeder',
+        '--force' => true, // Enable for production
     ],
 ];

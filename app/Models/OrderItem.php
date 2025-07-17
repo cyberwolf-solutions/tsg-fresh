@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class OrderItem extends Model
 {
     use HasFactory;
-
+    protected $connection = 'tenant';
     protected $fillable = [
         'order_id',
         'itemable_id',

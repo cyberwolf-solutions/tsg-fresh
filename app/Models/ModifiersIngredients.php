@@ -6,9 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ModifiersIngredients extends Model {
+class ModifiersIngredients extends Model
+{
     use HasFactory;
-
+    protected $connection = 'tenant';
     protected $table = 'modifiers_ingredients';
 
     protected $fillable = [

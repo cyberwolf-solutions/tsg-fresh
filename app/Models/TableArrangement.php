@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class TableArrangement extends Model
 {
     use HasFactory, SoftDeletes;
-
+    protected $connection = 'tenant';
     protected $table = 'table_arrangements';
     protected $fillable = [
         'name',
@@ -20,15 +20,18 @@ class TableArrangement extends Model
         'deleted_by'
     ];
 
-    public function createdBy() {
+    public function createdBy()
+    {
         return $this->hasOne(User::class, 'id', 'created_by');
     }
 
-    public function updatedBy() {
+    public function updatedBy()
+    {
         return $this->hasOne(User::class, 'id', 'updated_by');
     }
 
-    public function deletedBy() {
+    public function deletedBy()
+    {
         return $this->hasOne(User::class, 'id', 'deleted_by');
     }
 }

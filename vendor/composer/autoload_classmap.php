@@ -6,6 +6,7 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'App\\Console\\Commands\\CreateTenant' => $baseDir . '/app/Console/Commands/CreateTenant.php',
     'App\\Console\\Kernel' => $baseDir . '/app/Console/Kernel.php',
     'App\\Events\\notifyBot' => $baseDir . '/app/Events/notifyBot.php',
     'App\\Events\\notifyKot' => $baseDir . '/app/Events/notifyKot.php',
@@ -20,6 +21,7 @@ return array(
     'App\\Http\\Controllers\\BarController' => $baseDir . '/app/Http/Controllers/BarController.php',
     'App\\Http\\Controllers\\BookingController' => $baseDir . '/app/Http/Controllers/BookingController.php',
     'App\\Http\\Controllers\\BordingTypeCOntroller' => $baseDir . '/app/Http/Controllers/BordingTypeCOntroller.php',
+    'App\\Http\\Controllers\\BranchController' => $baseDir . '/app/Http/Controllers/BranchController.php',
     'App\\Http\\Controllers\\CategoryController' => $baseDir . '/app/Http/Controllers/CategoryController.php',
     'App\\Http\\Controllers\\CheckinCheckoutController' => $baseDir . '/app/Http/Controllers/CheckinCheckoutController.php',
     'App\\Http\\Controllers\\CheckoutController' => $baseDir . '/app/Http/Controllers/CheckoutController.php',
@@ -74,6 +76,7 @@ return array(
     'App\\Models\\BookingsRooms' => $baseDir . '/app/Models/BookingsRooms.php',
     'App\\Models\\BordingType' => $baseDir . '/app/Models/BordingType.php',
     'App\\Models\\Bot' => $baseDir . '/app/Models/Bot.php',
+    'App\\Models\\Branch' => $baseDir . '/app/Models/Branch.php',
     'App\\Models\\Category' => $baseDir . '/app/Models/Category.php',
     'App\\Models\\Currency' => $baseDir . '/app/Models/Currency.php',
     'App\\Models\\Customer' => $baseDir . '/app/Models/Customer.php',
@@ -117,6 +120,7 @@ return array(
     'App\\Models\\Supplier' => $baseDir . '/app/Models/Supplier.php',
     'App\\Models\\Table' => $baseDir . '/app/Models/Table.php',
     'App\\Models\\TableArrangement' => $baseDir . '/app/Models/TableArrangement.php',
+    'App\\Models\\Tenant' => $baseDir . '/app/Models/Tenant.php',
     'App\\Models\\Unit' => $baseDir . '/app/Models/Unit.php',
     'App\\Models\\User' => $baseDir . '/app/Models/User.php',
     'App\\Models\\checkincheckout' => $baseDir . '/app/Models/checkincheckout.php',
@@ -125,6 +129,7 @@ return array(
     'App\\Providers\\BroadcastServiceProvider' => $baseDir . '/app/Providers/BroadcastServiceProvider.php',
     'App\\Providers\\EventServiceProvider' => $baseDir . '/app/Providers/EventServiceProvider.php',
     'App\\Providers\\RouteServiceProvider' => $baseDir . '/app/Providers/RouteServiceProvider.php',
+    'App\\Providers\\TenancyServiceProvider' => $baseDir . '/app/Providers/TenancyServiceProvider.php',
     'App\\Services\\EmailService' => $baseDir . '/app/Services/EmailService.php',
     'App\\Traits\\MailConfigTrait' => $baseDir . '/app/Traits/MailConfigTrait.php',
     'Attribute' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',

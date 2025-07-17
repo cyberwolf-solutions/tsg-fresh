@@ -63,7 +63,9 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
+            'connection' => 'tenant',
         ],
+
 
         // 'users' => [
         //     'driver' => 'database',

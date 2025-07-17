@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Currency extends Model
 {
     use HasFactory;
+    protected $connection = 'tenant';
     protected $table = 'currency';
 
     public function customers()

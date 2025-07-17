@@ -350,13 +350,13 @@ class ComposerStaticInit1918f54f3334b509055defecabf931a2
         ),
         'Spatie\\LaravelIgnition\\' => 
         array (
-            0 => __DIR__ . '/..' . '/spatie/laravel-ignition/src',
-            1 => __DIR__ . '/..' . '/spatie/error-solutions/legacy/laravel-ignition',
+            0 => __DIR__ . '/..' . '/spatie/error-solutions/legacy/laravel-ignition',
+            1 => __DIR__ . '/..' . '/spatie/laravel-ignition/src',
         ),
         'Spatie\\Ignition\\' => 
         array (
-            0 => __DIR__ . '/..' . '/spatie/ignition/src',
-            1 => __DIR__ . '/..' . '/spatie/error-solutions/legacy/ignition',
+            0 => __DIR__ . '/..' . '/spatie/error-solutions/legacy/ignition',
+            1 => __DIR__ . '/..' . '/spatie/ignition/src',
         ),
         'Spatie\\FlareClient\\' => 
         array (
@@ -603,6 +603,7 @@ class ComposerStaticInit1918f54f3334b509055defecabf931a2
     );
 
     public static $classMap = array (
+        'App\\Console\\Commands\\CreateTenant' => __DIR__ . '/../..' . '/app/Console/Commands/CreateTenant.php',
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
         'App\\Events\\notifyBot' => __DIR__ . '/../..' . '/app/Events/notifyBot.php',
         'App\\Events\\notifyKot' => __DIR__ . '/../..' . '/app/Events/notifyKot.php',
@@ -617,6 +618,7 @@ class ComposerStaticInit1918f54f3334b509055defecabf931a2
         'App\\Http\\Controllers\\BarController' => __DIR__ . '/../..' . '/app/Http/Controllers/BarController.php',
         'App\\Http\\Controllers\\BookingController' => __DIR__ . '/../..' . '/app/Http/Controllers/BookingController.php',
         'App\\Http\\Controllers\\BordingTypeCOntroller' => __DIR__ . '/../..' . '/app/Http/Controllers/BordingTypeCOntroller.php',
+        'App\\Http\\Controllers\\BranchController' => __DIR__ . '/../..' . '/app/Http/Controllers/BranchController.php',
         'App\\Http\\Controllers\\CategoryController' => __DIR__ . '/../..' . '/app/Http/Controllers/CategoryController.php',
         'App\\Http\\Controllers\\CheckinCheckoutController' => __DIR__ . '/../..' . '/app/Http/Controllers/CheckinCheckoutController.php',
         'App\\Http\\Controllers\\CheckoutController' => __DIR__ . '/../..' . '/app/Http/Controllers/CheckoutController.php',
@@ -671,6 +673,7 @@ class ComposerStaticInit1918f54f3334b509055defecabf931a2
         'App\\Models\\BookingsRooms' => __DIR__ . '/../..' . '/app/Models/BookingsRooms.php',
         'App\\Models\\BordingType' => __DIR__ . '/../..' . '/app/Models/BordingType.php',
         'App\\Models\\Bot' => __DIR__ . '/../..' . '/app/Models/Bot.php',
+        'App\\Models\\Branch' => __DIR__ . '/../..' . '/app/Models/Branch.php',
         'App\\Models\\Category' => __DIR__ . '/../..' . '/app/Models/Category.php',
         'App\\Models\\Currency' => __DIR__ . '/../..' . '/app/Models/Currency.php',
         'App\\Models\\Customer' => __DIR__ . '/../..' . '/app/Models/Customer.php',
@@ -714,6 +717,7 @@ class ComposerStaticInit1918f54f3334b509055defecabf931a2
         'App\\Models\\Supplier' => __DIR__ . '/../..' . '/app/Models/Supplier.php',
         'App\\Models\\Table' => __DIR__ . '/../..' . '/app/Models/Table.php',
         'App\\Models\\TableArrangement' => __DIR__ . '/../..' . '/app/Models/TableArrangement.php',
+        'App\\Models\\Tenant' => __DIR__ . '/../..' . '/app/Models/Tenant.php',
         'App\\Models\\Unit' => __DIR__ . '/../..' . '/app/Models/Unit.php',
         'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',
         'App\\Models\\checkincheckout' => __DIR__ . '/../..' . '/app/Models/checkincheckout.php',
@@ -722,6 +726,7 @@ class ComposerStaticInit1918f54f3334b509055defecabf931a2
         'App\\Providers\\BroadcastServiceProvider' => __DIR__ . '/../..' . '/app/Providers/BroadcastServiceProvider.php',
         'App\\Providers\\EventServiceProvider' => __DIR__ . '/../..' . '/app/Providers/EventServiceProvider.php',
         'App\\Providers\\RouteServiceProvider' => __DIR__ . '/../..' . '/app/Providers/RouteServiceProvider.php',
+        'App\\Providers\\TenancyServiceProvider' => __DIR__ . '/../..' . '/app/Providers/TenancyServiceProvider.php',
         'App\\Services\\EmailService' => __DIR__ . '/../..' . '/app/Services/EmailService.php',
         'App\\Traits\\MailConfigTrait' => __DIR__ . '/../..' . '/app/Traits/MailConfigTrait.php',
         'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',

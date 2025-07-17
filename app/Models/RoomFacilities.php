@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class RoomFacilities extends Model
 {
     use HasFactory;
-
+    protected $connection = 'tenant';
     protected $table = 'room_facilities';
 
     protected $fillable = [
@@ -16,21 +16,24 @@ class RoomFacilities extends Model
         'name',
         'room_facilities',
         'created_by',
-        
+
     ];
 
     public function roomtype()
     {
         return $this->hasMany(Room::class, 'RoomFacility_id');
     }
-    public function createdBy() {
+    public function createdBy()
+    {
         return $this->hasOne(User::class, 'id', 'created_by');
     }
-    public function updatedBy() {
+    public function updatedBy()
+    {
         return $this->hasOne(User::class, 'id', 'updated_by');
     }
 
-    public function deletedBy() {
+    public function deletedBy()
+    {
         return $this->hasOne(User::class, 'id', 'deleted_by');
     }
 }

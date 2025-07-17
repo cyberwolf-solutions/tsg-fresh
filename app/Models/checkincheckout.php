@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class checkincheckout extends Model
 {
     use HasFactory;
+    protected $connection = 'tenant';
     protected $table = 'checkincheckout';
 
     protected $fillable = [
@@ -55,6 +56,4 @@ class checkincheckout extends Model
     {
         return $this->belongsTo(Room::class, 'room_no', 'room_no');
     }
-
-    
 }

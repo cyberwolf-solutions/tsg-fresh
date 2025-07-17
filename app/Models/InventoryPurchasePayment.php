@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class InventoryPurchasePayment extends Model
 {
     use HasFactory;
+    protected $connection = 'tenant';
     protected $table = 'inventory_purchase_payment';
     protected $fillable = [
         'purchase_id',

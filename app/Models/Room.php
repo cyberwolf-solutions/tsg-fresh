@@ -6,9 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Room extends Model {
+class Room extends Model
+{
     use HasFactory, SoftDeletes;
-
+    protected $connection = 'tenant';
     protected $table = 'rooms';
     protected $fillable = [
         'name',
@@ -42,29 +43,33 @@ class Room extends Model {
     // }
 
     public function pricings()
-{
-    return $this->hasMany(RoomPricing::class, 'room_id');
-}
-
-// Shortcut for getting the room type from pricing (assuming only one pricing per room for this use case)
-public function roomType()
-{
-    return $this->hasOneThrough(RoomType::class, RoomPricing::class, 'room_id', 'id', 'id', 'room_type_id');
-}
-
-    public function bookings() {
-        return $this->belongsToMany(Booking::class,'bookings_rooms','room_id','booking_id');
+    {
+        return $this->hasMany(RoomPricing::class, 'room_id');
     }
 
-    public function createdBy() {
+    // Shortcut for getting the room type from pricing (assuming only one pricing per room for this use case)
+    public function roomType()
+    {
+        return $this->hasOneThrough(RoomType::class, RoomPricing::class, 'room_id', 'id', 'id', 'room_type_id');
+    }
+
+    public function bookings()
+    {
+        return $this->belongsToMany(Booking::class, 'bookings_rooms', 'room_id', 'booking_id');
+    }
+
+    public function createdBy()
+    {
         return $this->hasOne(User::class, 'id', 'created_by');
     }
 
-    public function updatedBy() {
+    public function updatedBy()
+    {
         return $this->hasOne(User::class, 'id', 'updated_by');
     }
 
-    public function deletedBy() {
+    public function deletedBy()
+    {
         return $this->hasOne(User::class, 'id', 'deleted_by');
     }
 
@@ -72,6 +77,4 @@ public function roomType()
     {
         return $this->belongsTo(RoomFacilities::class, 'RoomFacility_id');
     }
-
-    
 }

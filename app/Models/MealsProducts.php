@@ -6,9 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class MealsProducts extends Model {
+class MealsProducts extends Model
+{
     use HasFactory;
 
+    protected $connection = 'tenant';
     protected $table = 'meals_products';
     protected $fillable = [
         'meal_id',
