@@ -74,34 +74,42 @@ class BranchController extends Controller
 
     public function store(Request $request)
     {
-        // ----------- global log so you see every attempt -----------
         Log::info("BranchController@store called. Tenant ID: {$request->id}, Domain: {$request->domain}");
 
         try {
-            // 1. Validate incoming data
+            // 1. Validate request
             $request->validate([
                 'id'     => 'required|unique:tenants,id',
                 'domain' => 'required|unique:domains,domain',
             ]);
 
-            // 2. Create tenant & domain
+            // 2. Create tenant and domain
             $tenant = Tenant::create(['id' => $request->id]);
             $tenant->domains()->create(['domain' => $request->domain]);
             Log::info("Tenant {$tenant->id} created with domain {$request->domain}");
 
-            // 3. Create tenant DB
-            CreateDatabase::dispatchSync($tenant);
-            Log::info("Database created for tenant {$tenant->id}");
+            // 3. Build DB name
+            $dbName = $tenant->getDatabaseName();
 
-            // 4. Point the tenant connection at the new DB
-            config(['database.connections.tenant.database' => $tenant->getDatabaseName()]);
+            // 4. Check if DB already exists
+            // if ($this->doesDatabaseExist($dbName)) {
+            //     Log::warning("Database $dbName already exists. Skipping creation.");
+            // } else {
+            //     // 5. Create tenant DB
+            //     CreateDatabase::dispatchSync($tenant);
+            //     Log::info("Database $dbName created for tenant {$tenant->id}");
+            // }
 
-            // 5. Initialise tenancy & confirm DB
+            // 6. Update DB config dynamically
+            config(['database.connections.tenant.database' => $dbName]);
+            DB::purge('tenant');
+            DB::reconnect('tenant');
+
+            // 7. Initialize tenancy
             tenancy()->initialize($tenant);
-            $tenantDb = DB::connection('tenant')->getDatabaseName();
-            Log::info("Tenancy initialised for {$tenant->id}. DB in use: {$tenantDb}");
+            Log::info("Tenancy initialized for {$tenant->id}. Active DB: " . DB::connection('tenant')->getDatabaseName());
 
-            // 6. Run tenant‑specific migrations
+            // 8. Run tenant migrations
             Artisan::call('migrate', [
                 '--database' => 'tenant',
                 '--path'     => '/database/migrations/tenant',
@@ -109,45 +117,51 @@ class BranchController extends Controller
             ]);
             Log::info("Migrations finished for tenant {$tenant->id}");
 
-            // 7. Optionally inspect DB context
+            // 9. Log DB context and run seeders
             $tenant->run(function () {
-                Log::info('Inside tenant context for ' . tenant('id')
-                    . ' | current DB: ' . DB::connection()->getDatabaseName());
+                Log::info('Inside tenant context for ' . tenant('id') . ' | current DB: ' . DB::connection('tenant')->getDatabaseName());
             });
 
-            $tenant->run(function () use ($tenant) {
-                Log::info('Running seeders for tenant: ' . tenant('id') . ' on database: ' . DB::connection()->getDatabaseName());
-                // Call the seeder directly
-                \Illuminate\Support\Facades\Artisan::call('db:seed', [
+
+            $tenant->run(function () {
+                DB::setDefaultConnection('tenant');
+
+                $dbName = DB::getDatabaseName();
+                Log::info("Inside tenant context for " . tenant('id') . " | current DB: $dbName");
+
+                Artisan::call('db:seed', [
                     '--database' => 'tenant',
-                    '--class' => 'Database\\Seeders\\TenantDatabaseSeeder',
-                    '--force' => true,
+                    '--class'    => 'Database\\Seeders\\TenantDatabaseSeeder',
+                    '--force'    => true,
                 ]);
             });
 
 
-            // 8. Close tenancy context
+
+            // 10. End tenancy
             tenancy()->end();
 
             return redirect()
                 ->back()
-                ->with('success', 'Branch created and database initialised!');
+                ->with('success', 'Branch created and database initialized!');
         } catch (\Throwable $e) {
-            // ---------- catch *any* exception ----------
-            Log::error(
-                "Tenant setup failed for requested id {$request->id}: {$e->getMessage()}",
-                ['trace' => $e->getTraceAsString()]
-            );
+            Log::error("Tenant setup failed for {$request->id}: {$e->getMessage()}", [
+                'trace' => $e->getTraceAsString()
+            ]);
 
-            // If tenancy was started, make sure it’s ended
             if (tenancy()->initialized) {
                 tenancy()->end();
             }
 
-            // Send user-friendly feedback
             return redirect()
                 ->back()
                 ->with('error', 'Sorry, the branch could not be created. Check logs for details.');
         }
+    }
+
+    protected function doesDatabaseExist(string $dbName): bool
+    {
+        $result = DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", [$dbName]);
+        return count($result) > 0;
     }
 }
