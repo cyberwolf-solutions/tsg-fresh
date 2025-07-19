@@ -10,6 +10,7 @@ class Unit extends Model
 {
     use HasFactory, SoftDeletes;
     protected $connection = 'tenant';
+
     protected $fillable = [
         'name',
         'description',
