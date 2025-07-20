@@ -2,7 +2,6 @@
 
 @section('content')
     {{-- couresel --}}
-    {{-- <h1>Welcome to POS for branch: {{ tenant()->data['branch_name'] ?? tenant()->id }}</h1> --}}
 
     <div id="carouselExampleCaptions" data-bs-ride="carousel" style="margin-top: 100px">
         <div class="carousel-indicators">
@@ -16,7 +15,7 @@
         <div class="carousel-inner">
             {{-- 0 --}}
             <div class="carousel-item active">
-                <img src="{{ asset('build/images/product/f1.jpg') }}" class="d-block w-100" alt="..."
+                <img src="{{ asset('build/images/landing/product/f1.jpg') }}" class="d-block w-100" alt="..."
                     style="height:500px">
 
                 <div class="carousel-caption d-none d-md-block text-center">
@@ -37,7 +36,7 @@
 
             {{-- 1 --}}
             <div class="carousel-item">
-                <img src="{{ asset('build/images/product/f2.jpg') }}" class="d-block w-100" alt="..."
+                <img src="{{ asset('build/images/landing/product/f2.jpg') }}" class="d-block w-100" alt="..."
                     style="height:500px">
 
                 <div class="carousel-caption d-none d-md-block text-center">
@@ -57,7 +56,7 @@
             </div>
             {{-- 2 --}}
             <div class="carousel-item">
-                <img src="{{ asset('build/images/product/f3.jpg') }}" class="d-block w-100" alt="..."
+                <img src="{{ asset('build/images/landing/product/f3.jpg') }}" class="d-block w-100" alt="..."
                     style="height:500px">
 
 
@@ -197,7 +196,7 @@
                 @foreach (['f1', 'f2', 'f3', 'f4', 'f5'] as $product)
                     <div class="col-6 col-md-2 text-center">
                         <div class="rounded-circle overflow-hidden mx-auto" style="width: 200px; height: 200px;">
-                            <img src="{{ URL::asset('build/images/product/' . $product . '.jpg') }}"
+                            <img src="{{ URL::asset('build/images/landing/product/' . $product . '.jpg') }}"
                                 alt="{{ ucfirst($product) }}" class="img-fluid w-100 h-100 object-fit-cover">
                         </div>
                         {{-- <div class="mt-2 fw-bold">{{ ucfirst($product) }}</div> --}}
@@ -244,7 +243,7 @@
                 @foreach (['f1', 'f2', 'f3', 'f4'] as $product)
                     <div class="col-6 col-md-2 text-center">
                         <div class="rounded-circle overflow-hidden mx-auto" style="width: 200px; height: 200px;">
-                            <img src="{{ URL::asset('build/images/product/' . $product . '.jpg') }}"
+                            <img src="{{ URL::asset('build/images/landing/product/' . $product . '.jpg') }}"
                                 alt="{{ ucfirst($product) }}" class="img-fluid w-100 h-100 object-fit-cover">
                         </div>
                         <div class="mt-2 fw-bold" style="font-seze:13px;color:gray">{{ ucfirst($product) }}</div>
