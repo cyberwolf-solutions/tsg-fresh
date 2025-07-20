@@ -44,6 +44,7 @@ use App\Http\Controllers\RoomFacilityController;
 use App\Http\Controllers\OtherPurchaseController;
 use App\Http\Controllers\CheckinCheckoutController;
 use App\Http\Controllers\AdditionalPaymentController;
+use App\Http\Controllers\BillerController;
 use App\Http\Controllers\TableArrangementsController;
 use App\Http\Controllers\EmployeeDesignationsController;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
@@ -194,8 +195,8 @@ Route::middleware([
         Route::resource('units', UnitController::class)->middleware('can:manage units');
         Route::resource('ingredients', IngredientsController::class)->middleware('can:manage ingredients');
         Route::resource('products', ProductController::class)->middleware('can:manage products');
-        Route::resource('meals', MealsController::class)->middleware('can:manage meals');
-        Route::resource('modifiers', ModifiersController::class)->middleware('can:manage modifiers');
+        // Route::resource('meals', MealsController::class)->middleware('can:manage meals');
+        // Route::resource('modifiers', ModifiersController::class)->middleware('can:manage modifiers');
         Route::resource('restaurant', RestaurantController::class)->middleware('can:manage Pos');
         // Route::resource('restaurant', RestaurantController::class);
         Route::get('/restaurant-note', [RestaurantController::class, 'note'])->name('restaurant.note');
@@ -208,32 +209,32 @@ Route::middleware([
         Route::get('/restaurant-vat', [RestaurantController::class, 'vat'])->name('restaurant.vat');
         Route::get('/restaurant-modifiers', [RestaurantController::class, 'modifiers'])->name('restaurant.modifiers');
         Route::post('/restaurant/checkout', [RestaurantController::class, 'checkout'])->name('restaurant.checkout');
-        Route::resource('kitchen', KitchenController::class)->middleware('can:manage kitchen');
-        Route::resource('bar', BarController::class)->middleware('can:manage bar');
-        Route::resource('tables', TablesController::class)->middleware('can:manage tables');
-        Route::resource('table-arrangements', TableArrangementsController::class)->middleware('can:manage table-arrangements');
+        // Route::resource('kitchen', KitchenController::class)->middleware('can:manage kitchen');
+        // Route::resource('bar', BarController::class)->middleware('can:manage bar');
+        // Route::resource('tables', TablesController::class)->middleware('can:manage tables');
+        // Route::resource('table-arrangements', TableArrangementsController::class)->middleware('can:manage table-arrangements');
         Route::resource('orders', OrderController::class)->middleware('can:manage orders');
         Route::get('order/print/{id}', [OrderController::class, 'print'])->middleware('can:manage orders')->name('order.print');
-        Route::get('kot/print/{id}', [KitchenController::class, 'print'])->name('kot.print');
-        Route::get('bot/print/{id}', [BarController::class, 'print'])->name('bot.print');
-        Route::resource('rooms', RoomController::class)->middleware('can:manage rooms');
-        Route::resource('room-types', RoomTypesController::class)->middleware('can:manage rooms');
-        Route::resource('bookings', BookingController::class)->middleware('can:manage bookings');
+        // Route::get('kot/print/{id}', [KitchenController::class, 'print'])->name('kot.print');
+        // Route::get('bot/print/{id}', [BarController::class, 'print'])->name('bot.print');
+        // Route::resource('rooms', RoomController::class)->middleware('can:manage rooms');
+        // Route::resource('room-types', RoomTypesController::class)->middleware('can:manage rooms');
+        // Route::resource('bookings', BookingController::class)->middleware('can:manage bookings');
         Route::get('get-ingredients', [IngredientsController::class, 'getIngredients'])->name('get-ingredients');
         Route::get('get-product-ingredients', [IngredientsController::class, 'getProductIngredients'])->name('get-product-ingredients');
         Route::get('get-products', [ProductController::class, 'getProducts'])->name('get-products');
         Route::get('get-meal-products', [ProductController::class, 'getMealProducts'])->name('get-meal-products');
         Route::get('get-modifier-categories', [CategoryController::class, 'getModifierCategories'])->name('get-modifier-categories');
         Route::get('get-modifier-ingredients', [IngredientsController::class, 'getModifierIngredients'])->name('get-modifier-ingredients');
-        Route::get('get-booking-customers', [BookingController::class, 'getBookingCustomers'])->name('get-booking-customers');
-        Route::get('get-booking-rooms', [BookingController::class, 'getBookingRooms'])->name('get-booking-rooms');
+        // Route::get('get-booking-customers', [BookingController::class, 'getBookingCustomers'])->name('get-booking-customers');
+        // Route::get('get-booking-rooms', [BookingController::class, 'getBookingRooms'])->name('get-booking-rooms');
 
-        Route::get('check-availability', [BookingController::class, 'checkAvailability'])->name('check-availability')->middleware('can:manage bookings');
-        Route::get('get-available-rooms', [BookingController::class, 'getAvailableRooms'])->name('get-available-rooms');
-        Route::get('get-booking-customers', [BookingController::class, 'getBookingCustomers'])->name('get-booking-customers');
+        // Route::get('check-availability', [BookingController::class, 'checkAvailability'])->name('check-availability')->middleware('can:manage bookings');
+        // Route::get('get-available-rooms', [BookingController::class, 'getAvailableRooms'])->name('get-available-rooms');
+        // Route::get('get-booking-customers', [BookingController::class, 'getBookingCustomers'])->name('get-booking-customers');
         Route::post('complete-meal', [RestaurantController::class, 'completeMeal'])->name('complete-meal');
         Route::post('order/complete', [RestaurantController::class, 'completeOrder'])->name('order.complete');
-        Route::get('status', [BookingController::class, 'status'])->name('status')->middleware('can:manage bookings');
+        // Route::get('status', [BookingController::class, 'status'])->name('status')->middleware('can:manage bookings');
         Route::resource('opurchases', OtherPurchaseController::class)->middleware('can:manage purchases');
         Route::get('/opurchase-payment/{id}', [OtherPurchaseController::class, 'viewAddPayment'])->name('opurchases.payment');
         Route::post('/opurchase-payment', [OtherPurchaseController::class, 'addPayment'])->name('opurchases.payment.add');
@@ -242,8 +243,8 @@ Route::middleware([
         Route::get('/inventory/stock', [InventoryController::class, 'stock'])->name('inventory.stock');
         Route::resource('inventory', InventoryController::class)->middleware('can:manage Inventory');
 
-        Route::get('/housekeeping/view', [HouseKeepingCOntroller::class, 'view'])->name('housekeeping.view');
-        Route::resource('housekeeping', HouseKeepingCOntroller::class)->middleware('can:manage housekeeping');
+        // Route::get('/housekeeping/view', [HouseKeepingCOntroller::class, 'view'])->name('housekeeping.view');
+        // Route::resource('housekeeping', HouseKeepingCOntroller::class)->middleware('can:manage housekeeping');
         // Route::get('/housekeeping/hostory', [HouseKeepingCOntroller::class, 'view'])->name('housekeeping.view');
 
         //user profile
@@ -254,50 +255,51 @@ Route::middleware([
         Route::post('/password-change', [UserController::class, 'passwordUpdate'])->name('password.change');
 
         //room size
-        Route::resource('room-size', RoomSizeController::class)->middleware('can:manage rooms');
-        Route::resource('room-facility', RoomFacilityController::class)->middleware('can:manage rooms');
-        Route::resource('checkin', CheckinCheckoutController::class)->middleware('can:manage bookings');
+        // Route::resource('room-size', RoomSizeController::class)->middleware('can:manage rooms');
+        // Route::resource('room-facility', RoomFacilityController::class)->middleware('can:manage rooms');
+        // Route::resource('checkin', CheckinCheckoutController::class)->middleware('can:manage bookings');
 
-        // routes/web.php
-        Route::get('/get-booking-rooms/{customerId}', [CheckinCheckoutController::class, 'getBookingRooms'])->name('get.booking.rooms');
+        // // routes/web.php
+        // Route::get('/get-booking-rooms/{customerId}', [CheckinCheckoutController::class, 'getBookingRooms'])->name('get.booking.rooms');
         // Route::get('/get-checkout-rooms/{customerId}', [CheckinCheckoutController::class, 'getcheckoutRooms'])->name('get.checkout.rooms');
-        Route::get('/get-checkout-rooms/{customerId}', [CheckinCheckoutController::class, 'getcheckoutRooms'])->name('get.checkout.rooms');
-        Route::get('/get-room-facility/{facilityId}', [CheckinCheckoutController::class, 'getRoomFacility'])->name('get-room-facility');
+        // Route::get('/get-checkout-rooms/{customerId}', [CheckinCheckoutController::class, 'getcheckoutRooms'])->name('get.checkout.rooms');
+        // Route::get('/get-room-facility/{facilityId}', [CheckinCheckoutController::class, 'getRoomFacility'])->name('get-room-facility');
 
-        Route::resource('checkout', CheckoutController::class)->middleware('can:manage bookings');
-        Route::resource('tacheckout', TACheckoutController::class)->middleware('can:manage bookings');
-        Route::get('/get-booking-payment-details/{bookingId}', [CheckoutController::class, 'getBookingPaymentDetails']);
+        // Route::resource('checkout', CheckoutController::class)->middleware('can:manage bookings');
+        // Route::resource('tacheckout', TACheckoutController::class)->middleware('can:manage bookings');
+        // Route::get('/get-booking-payment-details/{bookingId}', [CheckoutController::class, 'getBookingPaymentDetails']);
 
-        Route::get('/get-customer-orders/{customerId}', [CheckoutController::class, 'getCustomerOrders']);
-        Route::get('/get-checkincheckout-id',  [CheckoutController::class, 'getCheckinCheckoutId'])->name('get.checkincheckout.id');
+        // Route::get('/get-customer-orders/{customerId}', [CheckoutController::class, 'getCustomerOrders']);
+        // Route::get('/get-checkincheckout-id',  [CheckoutController::class, 'getCheckinCheckoutId'])->name('get.checkincheckout.id');
 
-        Route::get('/checkout/invoice/{checkincheckout_id}', [CheckoutController::class, 'invoice'])->name('checkout.invoice');
-        Route::get('/checkout/additional/invoice/{customer_id}/{checkout_date}', [CheckoutController::class, 'additionalInvoice'])->name('checkout.additional.invoice');
-        Route::get('/checkout/additionalservice/invoice/{customer_id}/{checkout_date}', [CheckoutController::class, 'additionalServiceInvoice'])->name('checkout.additionalService.invoice');
+        // Route::get('/checkout/invoice/{checkincheckout_id}', [CheckoutController::class, 'invoice'])->name('checkout.invoice');
+        // Route::get('/checkout/additional/invoice/{customer_id}/{checkout_date}', [CheckoutController::class, 'additionalInvoice'])->name('checkout.additional.invoice');
+        // Route::get('/checkout/additionalservice/invoice/{customer_id}/{checkout_date}', [CheckoutController::class, 'additionalServiceInvoice'])->name('checkout.additionalService.invoice');
 
-        Route::get('/rooms/filter', [RoomController::class, 'filter'])->name('rooms.filter');
-        Route::post('/rooms/filterByStatus', [BookingController::class, 'filterByStatus'])->name('rooms.filterByStatus');
+        // Route::get('/rooms/filter', [RoomController::class, 'filter'])->name('rooms.filter');
+        // Route::post('/rooms/filterByStatus', [BookingController::class, 'filterByStatus'])->name('rooms.filterByStatus');
 
-        Route::post('/update-booking-cancel-reason/{id}', [BookingController::class, 'updateCancelReason'])->name('update.booking.cancel.reason');
+        // Route::post('/update-booking-cancel-reason/{id}', [BookingController::class, 'updateCancelReason'])->name('update.booking.cancel.reason');
 
         //additional payments
         Route::resource('additional-payments', AdditionalPaymentController::class)->middleware('can:manage bookings');
 
         //bording type
-        Route::resource('bording-type', BordingTypeCOntroller::class)->middleware('can:manage bording');
+        // Route::resource('bording-type', BordingTypeCOntroller::class)->middleware('can:manage bording');
 
 
         Route::post('/send-ebill', [EmailController::class, 'sendEbill'])->name('send-ebill');
 
         //setmenu
-        Route::resource('setmenu', SetMenuController::class)->middleware('can:manage meals');
-        Route::resource('setmenumeal', SetMenuMealController::class)->middleware('can:manage categories');
+        // Route::resource('setmenu', SetMenuController::class)->middleware('can:manage meals');
+        // Route::resource('setmenumeal', SetMenuMealController::class)->middleware('can:manage categories');
         //filter setmenu
         Route::get('/restaurant-setmenu', [RestaurantController::class, 'filterSetMenus'])
             ->name('restaurant.filter_setmenus');
 
 
 
-        Route::post('/bookings/update-dates', [BookingController::class, 'updateDates'])->name('bookings.updateDates');
+        // Route::post('/bookings/update-dates', [BookingController::class, 'updateDates'])->name('bookings.updateDates');
+        // Route::G('/biller', [BillerController::class, 'index'])->name('biller.index');
     });
 });

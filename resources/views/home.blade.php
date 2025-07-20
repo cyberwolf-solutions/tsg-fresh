@@ -3,324 +3,174 @@
     Dashboard
 @endsection
 @section('content')
-    <div class="container mt-2">
-        <div class="row">
-            <div class="col-12 col-md-3 mb-3">
-                <div class="card text-center p-3 gradient-bg " style=" border: none; border-radius: 20px; solid #007bff;  ">
-                    <div class="card-body">
-                        <h5 class="card-title ">{{ $todayBookings->count() }}</h5>
-                        <p class="card-text text-white">Daily Bookings</p>
-                        {{-- <p class="text-danger">20% increase <span class="text-danger">&#9650;</span></p> --}}
+   <div class="container mt-4">
+    <div class="row g-3">
+        <!-- Revenue -->
+        <div class="col-12 col-md-3">
+            <div class="card text-center p-3" style="border: none; border-radius: 20px; background-color: white;">
+                <div class="card-body">
+                    <div class="text-primary mb-2">
+                        <i class="ri-money-dollar-circle-line" style="font-size: 2rem;"></i>
                     </div>
+                    <p class="mb-1 text-primary small">Revenue</p>
+                    {{-- <h5 class="mb-0 text-dark fw-semibold">LKR {{ number_format($revenue, 2) }}</h5> --}}
+                    <h5 class="mb-0 text-dark fw-semibold">LKR 1000</h5>
                 </div>
             </div>
-            <div class="col-12 col-md-3 mb-3">
-                <div class="card text-center p-3 bg-c-green" style="border: none; border-radius: 20px; ">
-                    <div class="card-body">
-                        <h5 class="card-title ">{{ $todayOrders->count() }}</h5>
-                        
-                        <p class="card-text  text-white">Daily Orders</p>
+        </div>
 
+        <!-- Sale Return -->
+        <div class="col-12 col-md-3">
+            <div class="card text-center p-3" style="border: none; border-radius: 20px; background-color: white;">
+                <div class="card-body">
+                    <div class="text-danger mb-2">
+                        <i class="ri-arrow-go-back-line" style="font-size: 2rem;"></i>
                     </div>
+                    <p class="mb-1 text-danger small">Sale Return</p>
+                    {{-- <h5 class="mb-0 text-dark fw-semibold">LKR {{ number_format($saleReturn, 2) }}</h5> --}}
+                    <h5 class="mb-0 text-dark fw-semibold">LKR 1000</h5>
+
                 </div>
             </div>
-            <div class="col-12 col-md-3 mb-3">
-                <div class="card text-center p-3 bg-c-yellow" style="border: none; border-radius: 20px; ">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ $totalOrders }}</h5>
-                        <p class="card-text text-white">Total Orders</p>
+        </div>
 
+        <!-- Purchase Return -->
+        <div class="col-12 col-md-3">
+            <div class="card text-center p-3" style="border: none; border-radius: 20px; background-color: white;">
+                <div class="card-body">
+                    <div class="text-warning mb-2">
+                        <i class="ri-exchange-dollar-line" style="font-size: 2rem;"></i>
                     </div>
+                    <p class="mb-1 text-warning small">Purchase Return</p>
+                    {{-- <h5 class="mb-0 text-dark fw-semibold">LKR {{ number_format($purchaseReturn, 2) }}</h5> --}}
+                    <h5 class="mb-0 text-dark fw-semibold">LKR 1000</h5>
+
                 </div>
             </div>
-            <div class="col-12 col-md-3 mb-3">
-                <div class="card text-center p-3 bg-c-pink" style="border: none; border-radius: 20px; ">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ $totalBookings }}</h5>
-                        <p class="card-text text-white">Total Bookings</p>
+        </div>
 
+        <!-- Profit -->
+        <div class="col-12 col-md-3">
+            <div class="card text-center p-3" style="border: none; border-radius: 20px; background-color: white;">
+                <div class="card-body">
+                    <div class="text-success mb-2">
+                        <i class="ri-line-chart-line" style="font-size: 2rem;"></i>
                     </div>
+                    <p class="mb-1 text-success small">Profit</p>
+                    {{-- <h5 class="mb-0 text-dark fw-semibold">LKR {{ number_format($profit, 2) }}</h5> --}}
+                    <h5 class="mb-0 text-dark fw-semibold">LKR 1000</h5>
+
                 </div>
             </div>
         </div>
     </div>
+</div>
 
 
-    {{-- <div class=" container mt-2">
-        <div class="row justify-content-center align-items-center">
-            <div class="col-6 col-md-3 mb-3  d-flex ">
-                <div class="card text-center p-3 titanium" style="border: none; border-radius: 100px; ">
-                    <div class="card-body">
-                        <h5 class="card-title stock-change">0</h5>
-                        <p class="card-text text-white">Total Customers</p>
-        
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3 mb-3  d-flex">
-                <div class="card text-center p-3" style="border: none; border-radius: 5px; ">
-                    <div class="card-body">
-                        <h5 class="card-title stock-change1">0</h5>
-                        <p class="card-text text-white">Total Employees</p>
-        
-                    </div>
-                </div>
-            </div>
+
+
+
+{{-- grapg --}}
+
+<div class="container mt-4">
+    <div class="row">
+        <!-- Cash Flow Chart (75%) -->
+        <div class="col-md-9 bg-white p-4 rounded-3 shadow-sm ">
+            <h5 class="mb-3">Cash Flow</h5>
+            <canvas id="cashFlowChart" height="200"></canvas>
         </div>
-    </div> --}}
 
-
-
-
-
-
-    <div class="container mt-2">
-        <div class="row">
-            <div class="col-12 col-md-4 ">
-                <div class="card stock-card   border-gradient" style="border: none; border-radius: 10px; ">
-                    <div class="card-body">
-                        <p class="stock-change text-center fs-24">0</p>
-                        <hr style="border-top: 2px solid #007bff; font-weight: bold;">
-                        <h5 class="text-center">Total Guests</h5>
-                        <div class="stock-chart"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-12 col-md-4">
-                <div class="card stock-card   border-gradient" style="border: none; border-radius: 10px; ">
-                    <div class="card-body">
-                        <p class="stock-change1 text-center fs-24">0</p>
-                        <hr style="border-top: 2px solid #007bff; font-weight: bold;">
-                        <h5 class="text-center">Total Employees</h5>
-                        <div class="stock-chart"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-12 col-md-4">
-                <div class="card stock-card   border-gradient" style="border: none; border-radius: 10px; ">
-                    <div class="card-body">
-                        <p class="stock-change2 text-center fs-24">0</p>
-                        <hr style="border-top: 2px solid #007bff; font-weight: bold;">
-                        <h5 class="text-center">Total Suppliers</h5>
-                        <div class="stock-chart"></div>
-                    </div>
-                </div>
-            </div>
+        <!-- Monthly Cash Pie Chart (25%) -->
+        <div class="col-md-3 bg-white p-4 rounded-3 shadow-sm ps-3">
+            <h5 class="mb-3">Monthly Cash</h5>
+            <canvas id="monthlyCashPie" height="200"></canvas>
         </div>
     </div>
+</div>
 
 
 
-    {{-- <div class="container mt-2">
-        <div class="row justify-content-center align-items-center ">
-            <div class="col-6 col-md-6">
-                <div class="card stock-card">
-                    <div class="card-body">
-                        <h5 class="card-title text-center">Stock</h5>
-                        <hr style="border-top: 2px solid #007bff; font-weight: bold;">
-                        <p class="stock-change text-danger text-center fw-bold fs-24">0</p>
-                       
-                        <div class="stock-chart"></div>
-                    </div>
-                </div>
-            </div>
-
-
-           
-
-        </div>
-        
-
-
-
-    </div> --}}
-
-
-
-
-
-
-
-    <div class="row mt-3">
-        <div class="card border col-11  mx-auto">
-            <div class="card-body  ">
-                <div class="col-12 ">
-                    <h5 class="card-title">Ingredient Stock</h5>
-
-                    <hr style="border-top: 2px solid #007bff; font-weight: bold;">
-                    <div class="table-responsive">
-                        <table class="table align-middle table-borderless table-hover datatable">
-                            <thead>
-                                <th>Id</th>
-                                <th>Name</th>
-                                <th>Price</th>
-                                <th>Quantity</th>
-                                <th>Status</th>
-                            </thead>
-                            <tbody>
-                                @php
-                                $counter = 1;
-                                @endphp
-                                @foreach ($Products as $item)
-                                    <tr>
-                                        <td>{{ $item->id }}</td>
-
-                                        <td>{{ $item->name }}</td>
-
-                                        <td>{{ $item->unit_price }}</td>
-                                        <td> {{ $item->quantity }}{{ $item->unit->name }}</td>
-                                        <td>
-                                            @if ($item->quantity <= 10)
-                                                Run Out Soon
-                                            @else
-                                                Available
-                                            @endif
-                                        </td>
-                                        
-                                        </td>
-                                       
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <div class="row mt-3">
-        <div class="card border col-11  mx-auto">
-            <div class="card-body  ">
-                <div class="col-12 ">
-                    <h5 class="card-title">Inventory Stock</h5>
-
-                    <hr style="border-top: 2px solid #007bff; font-weight: bold;">
-                    <div class="table-responsive">
-                        <table class="table align-middle table-borderless table-hover datatable">
-                            <thead>
-                                <th>Id</th>
-                                <th>Name</th>
-                                <th>Price</th>
-                                <th>Quantity</th>
-                                <th>Status</th>
-                            </thead>
-                            <tbody>
-                                @php
-                                $counter = 1;
-                                @endphp
-                                @foreach ($Products1 as $item)
-                                    <tr>
-                                        <td>{{ $item->id }}</td>
-
-                                        <td>{{ $item->name }}</td>
-
-                                        <td>{{ $item->unit_price }}</td>
-                                        <td> {{ $item->quantity }}{{ $item->unit->name }}</td>
-                                        <td>
-                                            @if ($item->quantity <= 10)
-                                                Run Out Soon
-                                            @else
-                                                Available
-                                            @endif
-                                        </td>
-                                        
-                                        </td>
-                                       
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-
-
-
-    {{-- <div class="row mt-3">
-        <div class="card border col-11  mx-auto">
-            <div class="card-body">
-                <div class="col-12">
-                    <h5 class="card-title">Today Orders</h5>
-                    <hr style="border-top: 2px solid #007bff; font-weight: bold;">
-                    <div class="table-responsive">
-                        <table class="table align-middle table-borderless table-hover datatable">
-                            <thead>
-                                <th>No.</th>
-                                <th>Guest</th>
-                                <th>Placed By</th>
-                                <th>Total</th>
-                                <th>Status</th>
-                            </thead>
-                            <tbody>
-                                @foreach ($todayOrders as $item)
-                                    <tr>
-                                        <td>#{{ $settings->invoice($item->id) }}</td>
-                                        @if ($item->customer_id == 0)
-                                            <td>Walking Customer</td>
-                                        @else
-                                            <td>{{ $item->customer->name }}</td>
-                                        @endif
-                                        <td>{{ $item->user->name }}</td>
-                                        <td>{{ $settings->currency }}
-                                            {{ number_format($item->payment ? $item->payment->total : 0, 2) }}
-                                        </td>
-                                        <td>{{ $item->status }}</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> --}}
-    <div class="row mt-3">
-        <div class="card border col-11 mx-auto">
-            <div class="card-body">
-                <div class="col-12">
-                    <h5 class="card-title">Today Bookings</h5>
-                    <hr style="border-top: 2px solid #007bff; font-weight: bold;">
-                    <div class="table-responsive">
-                        <table class="table align-middle table-borderless table-hover datatable">
-                            <thead>
-                                <th>No.</th>
-                                <th>Guest</th>
-                                <th>Placed By</th>
-                                <th>Status</th>
-                            </thead>
-                            <tbody>
-                                @foreach ($todayBookings as $key => $item)
-                                    <tr>
-                                        <td>{{ $key + 1 }}</td>
-                                        @if ($item->customer_id == 0)
-                                            <td>Walking Customer</td>
-                                        @else
-                                            <td>{{ $item->customer->name }}</td>
-                                        @endif
-                                        <td>{{ $item->createdBy->name }}</td>
-                                        <td>{{ $item->status }}</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
     
 @endsection
 
 @section('script')
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const ctxCashFlow = document.getElementById('cashFlowChart').getContext('2d');
+        const cashFlowChart = new Chart(ctxCashFlow, {
+            type: 'line',  // or 'bar' if you prefer bars
+            data: {
+                labels: {!! json_encode($cashFlowLabels) !!}, // e.g. ['Jan', 'Feb', 'Mar', ...]
+                datasets: [
+                    {
+                        label: 'Payment Received',
+                        data: {!! json_encode($paymentsReceived) !!}, // array of numbers
+                        borderColor: 'purple',
+                        backgroundColor: 'rgba(128,0,128, 0.3)',
+                        fill: true,
+                        tension: 0.4,
+                    },
+                    {
+                        label: 'Payment Sent',
+                        data: {!! json_encode($paymentsSent) !!}, // array of numbers
+                        borderColor: 'orange',
+                        backgroundColor: 'rgba(255,165,0, 0.3)',
+                        fill: true,
+                        tension: 0.4,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            // format y-axis ticks with currency symbol
+                            callback: function(value) {
+                                return 'LKR ' + value.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                },
+            }
+        });
+
+        const ctxPie = document.getElementById('monthlyCashPie').getContext('2d');
+        const monthlyCashPie = new Chart(ctxPie, {
+            type: 'pie',
+            data: {
+                labels: {!! json_encode($monthlyCashLabels) !!}, // e.g. ['Cash', 'Credit', 'Others']
+                datasets: [{
+                    data: {!! json_encode($monthlyCashData) !!}, // numbers array
+                    backgroundColor: [
+                        'purple',
+                        'orange',
+                        '#6c757d', // grey or any other colors
+                    ],
+                    hoverOffset: 20
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                },
+            }
+        });
+    });
+</script>
+
     <script>
         $(document).ready(function() {
             // Check if the browser supports notifications

@@ -34,6 +34,7 @@
 {{-- <link href="{{ URL::asset('build/magnify-image/css/jquery.jqZoom.css') }}" rel="stylesheet">
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"> --}}
 
+<link href="https://cdn.jsdelivr.net/npm/remixicon@3.7.0/fonts/remixicon.css" rel="stylesheet">
 
 
 <style>
@@ -132,6 +133,27 @@
             padding: 1.5rem;
         }
     }
+
+    /* -------------------- */
+    /* Topbar style for light theme */
+/* [data-bs-theme="light"] .navbar-header {
+    background-color: #6f42c1 !important; 
+    color: #fff;
+}
+
+
+[data-bs-theme="dark"] .navbar-header {
+    background-color: #5a35a4 !important; 
+    color: #fff;
+}
+
+
+[data-bs-theme="light"] .navbar-header .header-item,
+[data-bs-theme="dark"] .navbar-header .header-item {
+    color: #fff;
+} */
+    /* -------------------- */
+
 </style>
 <style>
     .gradient-bg {
