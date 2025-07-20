@@ -53,7 +53,7 @@
                                 value="{{ $is_edit ? $data->name : '' }}" placeholder="Enter Name" required />
                         </div>
                         <div class="col-md-6 mb-3 required">
-                            <label for="" class="form-label">Type</label>
+                            <label for="" class="form-label">Parent category</label>
                             <select name="type" class="form-control js-example-basic-single" id="" required>
                                 <option value="">Select...</option>
                                 @php
@@ -74,11 +74,7 @@
                             <input type="file" accept="image/png, image/jpeg, image/gif"
                                    class="form-control" name="image">
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="" class="form-label">Description</label>
-                            <textarea class="form-control" name="description" id=""
-                                      rows="1" placeholder="Enter Description">{{ $is_edit ? $data->description : '' }}</textarea>
-                        </div>
+                       
                     </div>
 
                     <div class="row mb-3">

@@ -366,7 +366,7 @@ border-right: none !important;">
                                         <a href="{{ route('roles.index') }}" class="nav-link">Roles</a>
                                     </li>
                                 @endcan
-                              
+                           
 
                               
                                 @can('manage units')

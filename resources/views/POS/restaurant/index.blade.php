@@ -42,7 +42,7 @@
                                     class="mdi mdi-book label-icon align-middle fs-16 me-2"></i>
                                 Notes</button>
                         </div>
-                        @can('manage kitchen')
+                        {{-- @can('manage kitchen')
                             <div class="col">
                                 <a href="{{ route('kitchen.index') }}" target="_blank" type="button"
                                     class="btn btn-soft-info btn-label waves-effect waves-light form-control"><i
@@ -55,7 +55,7 @@
                                     class="btn btn-soft-secondary btn-label waves-effect waves-light form-control"><i
                                         class="mdi mdi-glass-cocktail label-icon align-middle fs-16 me-2"></i> Bar</a>
                             </div>
-                        @endcan
+                        @endcan --}}
                         <div class="col">
                             <button type="button"
                                 class="btn btn-soft-success btn-label waves-effect waves-light form-control"
@@ -72,11 +72,121 @@
             <div class="card mb-0 ps-0">
                 {{-- <div class="card-body"> --}}
                 <div class="row">
-                    <div class=" col-md-8">
+                    <div class="col-md-5 " style="min-height: 100%;">
+                        <div class="row">
+                            <div class="col-12 d-flex flex-wrap"
+                                style="height: auto;padding-top:10px;padding-bottom:10px;margin-bottom:10px;margin-left:10px">
+                                <div class="row p-1">
+                                    <div class="col-12">
+                                        <div class="row justify-content-between">
+                                            <div class="col-4">
+                                                <button id="customer-btn"
+                                                    class="btn btn-light btn-sm form-control"data-ajax-popup="true"
+                                                    data-title="Customers" data-size="lg" data-binding=""
+                                                    data-url="{{ route('restaurant.customer') }}"><i
+                                                        class="mdi mdi-account"></i>
+                                                    <span id="name"> Select Customer</span>
+                                                </button>
+                                            </div>
+                                            <div class="col-4">
+                                                <button id="room-btn" class="btn btn-light btn-sm form-control"
+                                                    data-ajax-popup="true" data-title="Rooms" data-size="lg"
+                                                    data-url="{{ route('restaurant.rooms') }}" data-binding=""><i
+                                                        class="mdi mdi-room-service"></i>
+                                                    <span id="name"> Select User</span>
+                                                </button>
+                                            </div>
+                                            <div class="col-4">
+                                                <button id="table-btn" class="btn btn-light btn-sm form-control"
+                                                    data-ajax-popup="true" data-title="Tables" data-size="lg"
+                                                    data-url="{{ route('restaurant.tables') }}" data-binding=""><i
+                                                        class="mdi mdi-table"></i>
+                                                    <span id="name">
+                                                        Select
+                                                        Warehouse</span></button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 mt-1">
+                                        <div class="row overflow-auto gap-2" style="height: 50vh">
+                                            <div class="col-12 border position-relative">
+                                                <div id="cartBody"></div>
+                                                <div class="select-none bg-blue-gray-100 rounded flex flex-wrap content-center justify-center opacity-25 mt-5"
+                                                    id="emptyCart">
+                                                    <div class="w-full text-center">
+                                                        <i class="ri-shopping-cart-2-line display-1"></i>
+                                                        <p class="text-xl">
+                                                            Cart is empty!
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="row">
+                                                <div class="col-4 p-2 border rounded-3 bg-blue-gray-100 small">
+                                                    <span>Subtotal</span><br>
+                                                    <span id="currencySymbol1"></span>
+                                                    <span id="sub" value="0">LKR 0.00</span>
+                                                </div>
+                                                <div class="col-4 p-2 border rounded-3 bg-blue-gray-100 small">
+                                                    <span>Discount </span><br>
+                                                    <span><span id="currencySymbol2"></span>
+                                                        <span id="discount_html">LKR 0.00</span> <a
+                                                            href="javascript:void(0)" class="float-end"
+                                                            id="discount-edit" data-ajax-popup="true"
+                                                            data-title="Discount Edit" data-size="lg"
+                                                            data-url="{{ route('restaurant.discount') }}">
+                                                            (Edit)
+                                                        </a></span>
+                                                </div>
+                                                <div class="col-4 p-2 border rounded-3 bg-blue-gray-100 small">
+                                                    <span>VAT </span><br>
+                                                    <span><span id="currencySymbol3"></span>
+                                                        <span id="vat_html">LKR 0.00</span> <a href="javascript:void(0)"
+                                                            class="float-end" id="vat-edit" data-ajax-popup="true"
+                                                            data-title="VAT Edit" data-size="lg"
+                                                            data-url="{{ route('restaurant.vat') }}">
+                                                            (Edit)
+                                                        </a></span>
+                                                </div>
+                                                <div class="col-12 p-2 border bg-body rounded-3">
+                                                    <div class="row align-items-center">
+                                                        <div class="col">
+                                                            <span class="fs-4">Total</span>
+                                                        </div>
+                                                        <div class="col text-end">
+                                                            <span id="currencySymbol4"></span><span class="fs-5"
+                                                                id="total" value="0">LKR
+                                                                0.00</span>
+
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 rounded-3">
+                                                    <div class="row align-items-center p-2 ">
+                                                        <button class="btn btn-primary text-dark fw-bold"
+                                                            style="background-color: #378CE7;"
+                                                            onclick="checkout()">Checkout</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    {{-- show --}}
+                    <div class=" col-md-7">
 
                         <div class="row">
 
-                            <div class="col-md-12 d-flex flex-wrap "
+                            {{-- <div class="col-md-12 d-flex flex-wrap "
                                 style="height: auto;padding-top:10px;padding-bottom:10px;margin-bottom:10px;">
                                 @foreach ($categories as $item)
                                     @php
@@ -94,9 +204,47 @@
 
                                     </div>
                                 @endforeach
+                            </div> --}}
+
+                            <div class="col-md-4 d-flex flex-wrap "
+                                style="height: auto;padding-top:10px;padding-bottom:10px;margin-bottom:10px;">
+
+                                <div class="col-md-12 cursor-pointer category-item border border rounded position-relative text-center mx-1"
+                                    data-id="" onclick="highlightCategoryItem(this)" id="clickable-span"
+                                    style="height: auto; width:90%; margin-top: 10px; color: rgb(251, 249, 249); background-color:#7aa7bb; display: block; text-align: center; padding: 10px; cursor: pointer;">
+
+
+                                    <span class="category-name"> Category</span>
+
+                                </div>
+
                             </div>
+                              <div class="col-md-4 d-flex flex-wrap "
+                                style="height: auto;padding-top:10px;padding-bottom:10px;margin-bottom:10px;">
+
+                                <div class="col-md-12 cursor-pointer category-item border border rounded position-relative text-center mx-1"
+                                    data-id="" onclick="highlightCategoryItem(this)" id="clickable-span"
+                                    style="height: auto; width:90%; margin-top: 10px; color: rgb(249, 249, 249); background-color:#e45656; display: block; text-align: center; padding: 10px; cursor: pointer;">
 
 
+                                    <span class="category-name"> Category</span>
+
+                                </div>
+
+                            </div>
+                              <div class="col-md-4 d-flex flex-wrap "
+                                style="height: auto;padding-top:10px;padding-bottom:10px;margin-bottom:10px;">
+
+                                <div class="col-md-12 cursor-pointer category-item border border rounded position-relative text-center mx-1"
+                                    data-id="" onclick="highlightCategoryItem(this)" id="clickable-span"
+                                    style="height: auto; width:90%; margin-top: 10px; color: rgb(255, 255, 255); background-color:#ad72c0; display: block; text-align: center; padding: 10px; cursor: pointer;">
+
+
+                                    <span class="category-name"> Category</span>
+
+                                </div>
+
+                            </div>
                             <div id="mealTypeSelector" class="col-md-3" style="display: none;">
                                 <label for="setmenuMealType" class="form-label">Setmenu Meal Type</label>
                                 <select class="form-select" id="setmenuMealType" name="setmenuMealType">
@@ -233,113 +381,13 @@
 
 
 
-                    <div class="col-md-4 bg-light rounded-3 px-2 mt-5 mt-md-0 position-relative   d-flex"
-                        style="min-height: 100%">
-                        <div class="row p-1">
-                            <div class="col-12">
-                                <div class="row justify-content-between">
-                                    <div class="col-4">
-                                        <button id="customer-btn"
-                                            class="btn btn-light btn-sm form-control"data-ajax-popup="true"
-                                            data-title="Customers" data-size="lg" data-binding=""
-                                            data-url="{{ route('restaurant.customer') }}"><i class="mdi mdi-account"></i>
-                                            <span id="name"> Select Customer</span>
-                                        </button>
-                                    </div>
-                                    <div class="col-4">
-                                        <button id="room-btn" class="btn btn-light btn-sm form-control"
-                                            data-ajax-popup="true" data-title="Rooms" data-size="lg"
-                                            data-url="{{ route('restaurant.rooms') }}" data-binding=""><i
-                                                class="mdi mdi-room-service"></i>
-                                            <span id="name"> Select Room</span>
-                                        </button>
-                                    </div>
-                                    <div class="col-4">
-                                        <button id="table-btn" class="btn btn-light btn-sm form-control"
-                                            data-ajax-popup="true" data-title="Tables" data-size="lg"
-                                            data-url="{{ route('restaurant.tables') }}" data-binding=""><i
-                                                class="mdi mdi-table"></i>
-                                            <span id="name">
-                                                Select
-                                                Table</span></button>
-                                    </div>
-                                </div>
-                            </div>
 
-                            <div class="col-12 mt-1">
-                                <div class="row overflow-auto gap-2" style="height: 50vh">
-                                    <div class="col-12 border position-relative">
-                                        <div id="cartBody"></div>
-                                        <div class="select-none bg-blue-gray-100 rounded flex flex-wrap content-center justify-center opacity-25 mt-5"
-                                            id="emptyCart">
-                                            <div class="w-full text-center">
-                                                <i class="ri-shopping-cart-2-line display-1"></i>
-                                                <p class="text-xl">
-                                                    Cart is empty!
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="row">
-                                        <div class="col-4 p-2 border rounded-3 bg-blue-gray-100 small">
-                                            <span>Subtotal</span><br>
-                                            <span id="currencySymbol1"></span>
-                                            <span id="sub" value="0">LKR 0.00</span>
-                                        </div>
-                                        <div class="col-4 p-2 border rounded-3 bg-blue-gray-100 small">
-                                            <span>Discount </span><br>
-                                            <span><span id="currencySymbol2"></span>
-                                                <span id="discount_html">LKR 0.00</span> <a href="javascript:void(0)"
-                                                    class="float-end" id="discount-edit" data-ajax-popup="true"
-                                                    data-title="Discount Edit" data-size="lg"
-                                                    data-url="{{ route('restaurant.discount') }}">
-                                                    (Edit)
-                                                </a></span>
-                                        </div>
-                                        <div class="col-4 p-2 border rounded-3 bg-blue-gray-100 small">
-                                            <span>VAT </span><br>
-                                            <span><span id="currencySymbol3"></span>
-                                                <span id="vat_html">LKR 0.00</span> <a href="javascript:void(0)"
-                                                    class="float-end" id="vat-edit" data-ajax-popup="true"
-                                                    data-title="VAT Edit" data-size="lg"
-                                                    data-url="{{ route('restaurant.vat') }}">
-                                                    (Edit)
-                                                </a></span>
-                                        </div>
-                                        <div class="col-12 p-2 border bg-body rounded-3">
-                                            <div class="row align-items-center">
-                                                <div class="col">
-                                                    <span class="fs-4">Total</span>
-                                                </div>
-                                                <div class="col text-end">
-                                                    <span id="currencySymbol4"></span><span class="fs-5" id="total"
-                                                        value="0">LKR
-                                                        0.00</span>
-
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 rounded-3">
-                                            <div class="row align-items-center p-2 ">
-                                                <button class="btn btn-primary text-dark fw-bold"
-                                                    style="background-color: #378CE7;"
-                                                    onclick="checkout()">Checkout</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                 </div>
                 {{-- </div> --}}
             </div>
         </div>
-        }
+
 
 
         <!-- End modal -->
