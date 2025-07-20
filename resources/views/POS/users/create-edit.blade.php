@@ -57,6 +57,19 @@
                                 value="{{ $is_edit ? $data->email : '' }}" placeholder="Enter your email" />
                         </div>
                     </div>
+                     <div class="row">
+                        <div class="col-md-6 mb-3 required">
+                            <label for="" class="form-label">Phone number</label>
+                            <input type="number" name="contact" id="" class="form-control"
+                                value="{{ $is_edit ? $data->name : '' }}" placeholder="Enter your name" />
+                        </div>
+                        <div class="col-md-6 mb-3 required">
+                            <label for="" class="form-label">Company name</label>
+                            <input type="text" name="cname" id="" class="form-control"
+                                value="{{ $is_edit ? $data->email : '' }}" placeholder="Enter your email" />
+                        </div>
+                    </div>
+
                     <div class="row">
                         <div class="col-md-6 mb-3 required">
                             <label for="" class="form-label">Role</label>

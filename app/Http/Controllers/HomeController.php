@@ -55,6 +55,23 @@ class HomeController extends Controller {
         $Products1 = Inventory::orderBy('quantity')->get();
 
 
-     return view('pos.home', compact('totalOrders', 'totalBookings', 'todayOrders', 'todayBookings' ,'customers' , 'employees' ,'suppliers' , 'Products' ,'Products1'));
+        // Labels for cash flow by month or date
+$cashFlowLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+
+// Corresponding data arrays for payments received and sent
+$paymentsReceived = [50000, 70000, 65000, 80000, 72000, 90000];
+$paymentsSent = [30000, 45000, 40000, 55000, 50000, 60000];
+
+// Pie chart data
+$monthlyCashLabels = ['Cash', 'Credit', 'Others'];
+$monthlyCashData = [55, 35, 10];
+
+
+     return view('home', compact('totalOrders', 
+       'cashFlowLabels', 
+        'paymentsReceived', 
+        'paymentsSent', 
+        'monthlyCashLabels', 
+        'monthlyCashData','totalBookings', 'todayOrders', 'todayBookings' ,'customers' , 'employees' ,'suppliers' , 'Products' ,'Products1'));
     }
 }

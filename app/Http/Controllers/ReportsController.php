@@ -26,7 +26,7 @@ class ReportsController extends Controller
         $data = User::with('roles')->get();
 
 
-        return view ('reports.Userindex' , compact('title', 'breadcrumbs' , 'data'));
+        return view ('POS.reports.Userindex' , compact('title', 'breadcrumbs' , 'data'));
     }
 
     public function customer(){
@@ -53,18 +53,18 @@ class ReportsController extends Controller
 
         return view ('reports.employeeindex' , compact('title', 'breadcrumbs' , 'data'));
     }
-    public function supplier(){
-        $title = 'Supplier Report';
+    // public function supplier(){
+    //     $title = 'Supplier Report';
 
-        $breadcrumbs = [
-            // ['label' => 'First Level', 'url' => '', 'active' => false],
-            ['label' => $title, 'url' => '', 'active' => true],
-        ];
-        $data = Supplier::all();
+    //     $breadcrumbs = [
+    //         // ['label' => 'First Level', 'url' => '', 'active' => false],
+    //         ['label' => $title, 'url' => '', 'active' => true],
+    //     ];
+    //     $data = Supplier::all();
 
 
-        return view ('reports.supplierindex' , compact('title', 'breadcrumbs' , 'data'));
-    }
+    //     return view ('reports.supplierindex' , compact('title', 'breadcrumbs' , 'data'));
+    // }
     public function purchase(){
         $title = 'Purchase Report';
 

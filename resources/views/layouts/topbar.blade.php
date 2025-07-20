@@ -1,9 +1,10 @@
-<header id="page-topbar">
+<header id="page-topbar" style="background-color: #ffffff;border:none">
+
     <div class="layout-width">
         <div class="navbar-header">
             <div class="d-flex">
                 <!-- LOGO -->
-                <div class="navbar-brand-box horizontal-logo">
+                <div class="navbar-brand-box horizontal-logo" style="background-color: #ffffff;">
                     <a href="{{ route('home') }}" class="logo logo-dark">
                         <span class="logo-sm">
                             <img src="{{ URL::asset('build/images/logo-sm.png') }}" alt="" height="22">
@@ -26,7 +27,7 @@
                 </div>
 
                 <button type="button" class="btn btn-sm px-3 fs-16 header-item vertical-menu-btn topnav-hamburger"
-                    id="topnav-hamburger-icon">
+                    id="topnav-hamburger-icon" style="background-color: #ffffff;">
                     <span class="hamburger-icon">
                         <span></span>
                         <span></span>
@@ -39,29 +40,93 @@
 
             <div class="d-flex align-items-center">
 
-                <div class="ms-1 header-item d-none d-sm-flex">
+                {{-- <div class="ms-1 header-item d-none d-sm-flex" style="background-color: #ffffff;">
                     <button type="button"
                         class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle light-dark-mode">
                         <i class='bx bx-moon fs-22'></i>
                     </button>
+                </div> --}}
+
+                <!-- POS Button -->
+                <div class="ms-3 d-none d-sm-flex">
+                    <a href="" class="btn btn-purple btn-sm px-3 fw-bold">POS</a>
                 </div>
 
-                <div class="dropdown ms-sm-3 header-item topbar-user">
+                <!-- Cart Icon -->
+                <div class="ms-2 header-item d-none d-sm-flex">
+                    <a href="" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle"
+                        style=" color: #6f42c1; border: none;">
+                        <i class="ri-shopping-cart-2-line fs-22"></i>
+                    </a>
+                </div>
+
+                <!-- Notification Icon -->
+                <div class="dropdown ms-2 d-none d-sm-flex">
+                    <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle"
+                        style=" color: #6f42c1;  border: none;" id="notificationDropdown"
+                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="ri-notification-3-line fs-22"></i>
+                        <span
+                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0"
+                        aria-labelledby="notificationDropdown">
+                        <div class="p-3 border-bottom">
+                            <h6 class="mb-0">Notifications</h6>
+                        </div>
+                        <div style="max-height: 200px; overflow-y: auto;">
+                            <a href="#" class="dropdown-item d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">New order placed</h6>
+                                    <p class="text-muted mb-0 small">You have 1 new order</p>
+                                </div>
+                            </a>
+                            <!-- Add more notifications here -->
+                        </div>
+                        <div class="p-2 border-top text-center">
+                            <a href="" class="btn btn-sm btn-light w-100">View All</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Language Dropdown -->
+                <div class="dropdown ms-2 d-none d-sm-flex">
+                    <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle"
+                        style=" color: #6f42c1; border: none;" data-bs-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false">
+                        <i class="ri-global-line fs-22"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <a href="?lang=en" class="dropdown-item">🇬🇧 English</a>
+                        <a href="?lang=si" class="dropdown-item">🇱🇰 Sinhala</a>
+                        <a href="?lang=ta" class="dropdown-item">🇮🇳 Tamil</a>
+                    </div>
+                </div>
+
+                
+
+                
+
+
+                <div class="dropdown ms-sm-3 header-item topbar-user" style="background-color: #ffffff;">
                     <button type="button" class="btn" id="page-header-user-dropdown" data-bs-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="false">
                         <span class="d-flex align-items-center">
-                            <img class="rounded-circle header-profile-user"
+                            <img class="rounded-circle header-profile-user" 
                                 src="@if (Auth::user()->avatar != '') {{ URL::asset('public/storage/' . Auth::user()->avatar) }}@else{{ URL::asset('build/images/users/user-dummy-img.jpg') }} @endif"
                                 alt="Header Avatar">
                             <span class="text-start ms-xl-2">
-                                <span
-                                    class="d-none d-xl-inline-block ms-1 fw-semibold user-name-text">{{ Auth::user()->name }}</span>
+                                <span class="d-none d-xl-inline-block ms-1 fw-semibold user-name-text"
+                                    style="color:black">{{ Auth::user()->name }}</span>
                                 <span
                                     class="d-none d-xl-block ms-1 fs-13 user-name-sub-text">{{ Auth::user()->roles()->first()->name }}</span>
                             </span>
                         </span>
                     </button>
-                    <div class="dropdown-menu dropdown-menu-end">
+
+
+
+                    <div class="dropdown-menu dropdown-menu-end" style="background-color: white">
                         <!-- item-->
                         <h6 class="dropdown-header">Welcome {{ Auth::user()->name }}!</h6>
                         <a class="dropdown-item" href="{{ route('profile') }}"><i
@@ -74,7 +139,8 @@
                             onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i
                                 class="bx bx-power-off font-size-16 align-middle me-1"></i> <span
                                 key="t-logout">@lang('translation.logout')</span></a>
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                            style="display: none;">
                             @csrf
                         </form>
                     </div>

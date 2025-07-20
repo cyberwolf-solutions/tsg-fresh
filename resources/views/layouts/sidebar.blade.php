@@ -1,5 +1,8 @@
 <!-- ========== App Menu ========== -->
-<div class="app-menu navbar-menu">
+
+<div class="app-menu navbar-menu"
+    style="position: fixed; top: 0; left: 0; height: 100vh; width: 250px; background: #F7F7F9; z-index: 1000;box-shadow: none !important;
+border-right: none !important;">
     <!-- LOGO -->
     <div class="navbar-brand-box">
         <!-- Dark Logo-->
@@ -26,7 +29,7 @@
         </button>
     </div>
 
-    <div id="scrollbar">
+    <div id="scrollbar" style="padding-top: 60px;">
         <div class="container-fluid">
 
             <div id="two-column-menu">
@@ -34,75 +37,58 @@
             <ul class="navbar-nav" id="navbar-nav">
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ route('home') }}">
-                        <i class="ri-dashboard-2-line"></i> <span>Dashboard</span>
+                        <i class="ri-dashboard-2-line" style="color: purple"></i> <span
+                            style="color: rgb(92, 92, 92)">Dashboard</span>
                     </a>
                 </li> <!-- end Dashboard Menu -->
-                <li class="menu-title"><span>Modules</span></li>
-                @canany(['manage users', 'manage roles'])
+
+                {{-- product --}}
+                @canany([
+                    
+                    'manage products',
+                    'manage
+                    categories',
+                  
+                    ])
                     <li class="nav-item">
-                        <a class="nav-link menu-link" href="#user" data-bs-toggle="collapse" role="button"
-                            aria-expanded="false" aria-controls="user">
-                            <i class="ri-account-circle-line"></i> <span>User</span>
+                        <a class="nav-link menu-link" href="#foods" data-bs-toggle="collapse" role="button"
+                            aria-expanded="false" aria-controls="foods">
+                            <i class="mdi mdi-food-outline" style="color: purple"></i> <span>Product</span>
                         </a>
-                        <div class="collapse menu-dropdown" id="user">
+                        <div class="collapse menu-dropdown" id="foods">
                             <ul class="nav nav-sm flex-column">
-                                @can('manage users')
+                                {{-- @can('manage ingredients')
                                     <li class="nav-item">
-                                        <a href="{{ route('users.index') }}" class="nav-link">Users</a>
+                                        <a href="{{ route('ingredients.index') }}" class="nav-link">Ingredients</a>
+                                    </li>
+                                @endcan --}}
+                                @can('manage products')
+                                    <li class="nav-item">
+                                        <a href="{{ route('products.index') }}" class="nav-link">Products</a>
                                     </li>
                                 @endcan
-                                @can('manage roles')
+                                 @can('manage categories')
                                     <li class="nav-item">
-                                        <a href="{{ route('roles.index') }}" class="nav-link">Roles</a>
+                                        <a href="{{ route('categories.index') }}" class="nav-link">Categories</a>
                                     </li>
                                 @endcan
+                             
+
                             </ul>
                         </div>
                     </li>
                 @endcanany
 
-                @canany(['manage employees', 'manage customers'])
-                    <li class="nav-item">
-                        <a class="nav-link menu-link" href="#people" data-bs-toggle="collapse" role="button"
-                            aria-expanded="false" aria-controls="people">
-                            <i class="ri-user-3-line"></i> <span>People</span>
-                        </a>
-                        <div class="collapse menu-dropdown" id="people">
-                            <ul class="nav nav-sm flex-column">
-                                @can('manage employees')
-                                    <li class="nav-item">
-                                        <a href="{{ route('employee-designations.index') }}" class="nav-link">Employee
-                                            Designations</a>
-                                    </li>
-                                @endcan
-                                @can('manage employees')
-                                    <li class="nav-item">
-                                        <a href="{{ route('employees.index') }}" class="nav-link">Employees</a>
-                                    </li>
-                                @endcan
-                                @can('manage customers')
-                                    <li class="nav-item">
-                                        <a href="{{ route('customers.index') }}" class="nav-link">Guests</a>
-                                    </li>
-                                @endcan
-                            </ul>
-                        </div>
-                    </li>
-                @endcanany
-
-                @canany(['manage suppliers', 'manage purchases'])
+                {{-- purchase  --}}
+                @canany(['manage purchases'])
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#purchase" data-bs-toggle="collapse" role="button"
                             aria-expanded="false" aria-controls="purchase">
-                            <i class="ri-book-3-line"></i> <span>Purchase</span>
+                            <i class="ri-book-3-line" style="color: purple"></i> <span>Purchase</span>
                         </a>
                         <div class="collapse menu-dropdown" id="purchase">
                             <ul class="nav nav-sm flex-column">
-                                @can('manage suppliers')
-                                    <li class="nav-item">
-                                        <a href="{{ route('suppliers.index') }}" class="nav-link">Suppliers</a>
-                                    </li>
-                                @endcan
+
                                 @can('manage purchases')
                                     <li class="nav-item">
                                         <a href="{{ route('purchases.index') }}" class="nav-link">Ingredients Purchases</a>
@@ -118,77 +104,12 @@
                     </li>
                 @endcanany
 
-                @canany(['manage categories', 'manage units'])
-                    <li class="nav-item">
-                        <a class="nav-link menu-link" href="#constants" data-bs-toggle="collapse" role="button"
-                            aria-expanded="false" aria-controls="constants">
-                            <i class="ri-bubble-chart-line"></i> <span>Constants</span>
-                        </a>
-                        <div class="collapse menu-dropdown" id="constants">
-                            <ul class="nav nav-sm flex-column">
-                                @can('manage categories')
-                                    <li class="nav-item">
-                                        <a href="{{ route('categories.index') }}" class="nav-link">Categories</a>
-                                    </li>
-                                @endcan
-                                @can('manage units')
-                                    <li class="nav-item">
-                                        <a href="{{ route('units.index') }}" class="nav-link">Units</a>
-                                    </li>
-                                @endcan
-                                @can('manage categories')
-                                    <li class="nav-item">
-                                        <a href="{{ route('setmenumeal.index') }}" class="nav-link">Setmenu Meal Type</a>
-                                    </li>
-                                @endcan
-                            </ul>
-                        </div>
-                    </li>
-                @endcanany
-
-                @canany(['manage ingredients', 'manage products', 'manage meals', 'manage modifiers'])
-                    <li class="nav-item">
-                        <a class="nav-link menu-link" href="#foods" data-bs-toggle="collapse" role="button"
-                            aria-expanded="false" aria-controls="foods">
-                            <i class="mdi mdi-food-outline"></i> <span>Foods</span>
-                        </a>
-                        <div class="collapse menu-dropdown" id="foods">
-                            <ul class="nav nav-sm flex-column">
-                                @can('manage ingredients')
-                                    <li class="nav-item">
-                                        <a href="{{ route('ingredients.index') }}" class="nav-link">Ingredients</a>
-                                    </li>
-                                @endcan
-                                @can('manage products')
-                                    <li class="nav-item">
-                                        <a href="{{ route('products.index') }}" class="nav-link">Products</a>
-                                    </li>
-                                @endcan
-                                @can('manage meals')
-                                    <li class="nav-item">
-                                        <a href="{{ route('meals.index') }}" class="nav-link">Meals</a>
-                                    </li>
-                                @endcan
-                                @can('manage meals')
-                                    <li class="nav-item">
-                                        <a href="{{ route('setmenu.index') }}" class="nav-link">Setmenu</a>
-                                    </li>
-                                @endcan
-                                @can('manage modifiers')
-                                    <li class="nav-item">
-                                        <a href="{{ route('modifiers.index') }}" class="nav-link">Modifiers</a>
-                                    </li>
-                                @endcan
-                            </ul>
-                        </div>
-                    </li>
-                @endcanany
-
+                {{-- sale --}}
                 @canany(['manage Inventory'])
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#inventory" data-bs-toggle="collapse" role="button"
                             aria-expanded="false" aria-controls="inventory">
-                            <i class="mdi mdi-food-outline"></i> <span>Inventory</span>
+                            <i class="mdi mdi-food-outline" style="color: purple"></i> <span>Sale</span>
                         </a>
                         <div class="collapse menu-dropdown" id="inventory">
                             <ul class="nav nav-sm flex-column">
@@ -208,54 +129,106 @@
                     </li>
                 @endcanany
 
-                @canany(['manage Pos'])
+                {{-- Expenses --}}
+                @canany(['manage orders', 'manage kitchen', 'manage bar', 'manage tables', 'manage table-arrangements'])
                     <li class="nav-item">
-                        @can('manage Pos')
-                            <a class="nav-link menu-link" href="{{ route('restaurant.index') }}">
-                                <i class="ri-menu-add-line"></i> <span>POS</span>
-                            </a>
-                        @endcan
+                        <a class="nav-link menu-link" href="#exp" data-bs-toggle="collapse" role="button"
+                            aria-expanded="false" aria-controls="exp">
+                           <i class="ri-wallet-3-line" style="color: purple;"></i> <span>Expenses</span>
+                        </a>
+                        <div class="collapse menu-dropdown" id="exp">
+                            <ul class="nav nav-sm flex-column">
+                                
+                              
+                            </ul>
+                        </div>
                     </li>
                 @endcanany
 
-
-                {{-- <li class="nav-item">
-                        
-                            <a class="nav-link menu-link" href="{{ route('restaurant.index') }}">
-                                <i class="ri-menu-add-line"></i> <span>POS</span>
-                            </a>
-                 
-                    </li> --}}
-
-
-
-
+                {{-- Quatation --}}
                 @canany(['manage orders', 'manage kitchen', 'manage bar', 'manage tables', 'manage table-arrangements'])
                     <li class="nav-item">
-                        <a class="nav-link menu-link" href="#restaurant" data-bs-toggle="collapse" role="button"
-                            aria-expanded="false" aria-controls="restaurant">
-                            <i class="mdi mdi-food-fork-drink"></i> <span>Restaurant</span>
+                        <a class="nav-link menu-link" href="#qua" data-bs-toggle="collapse" role="button"
+                            aria-expanded="false" aria-controls="qua">
+                            <i class="ri-file-text-line" style="color: purple;"></i> <span>Quatation</span>
                         </a>
-                        <div class="collapse menu-dropdown" id="restaurant">
+                        <div class="collapse menu-dropdown" id="qua">
                             <ul class="nav nav-sm flex-column">
-                                @can('manage orders')
+                                
+                            </ul>
+                        </div>
+                    </li>
+                @endcanany
+
+                {{-- Transfer --}}
+                @canany(['manage orders', 'manage kitchen', 'manage bar', 'manage tables', 'manage table-arrangements'])
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="#transfer" data-bs-toggle="collapse" role="button"
+                            aria-expanded="false" aria-controls="transfer">
+                           <i class="ri-exchange-line" style="color: purple;"></i> <span>Transfer</span>
+                        </a>
+                        <div class="collapse menu-dropdown" id="transfer">
+                            <ul class="nav nav-sm flex-column">
+                              
+                            </ul>
+                        </div>
+                    </li>
+                @endcanany
+
+                {{-- Return --}}
+                @canany(['manage orders', 'manage kitchen', 'manage bar', 'manage tables', 'manage table-arrangements'])
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="#return" data-bs-toggle="collapse" role="button"
+                            aria-expanded="false" aria-controls="return">
+                          <i class="ri-arrow-go-back-line" style="color: purple;"></i> <span>Return</span>
+                        </a>
+                        <div class="collapse menu-dropdown" id="return">
+                            <ul class="nav nav-sm flex-column">
+                            
+                            </ul>
+                        </div>
+                    </li>
+                @endcanany
+
+                {{-- Accounting --}}
+                @canany(['manage orders', 'manage kitchen', 'manage bar', 'manage tables', 'manage table-arrangements'])
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="#accounting" data-bs-toggle="collapse" role="button"
+                            aria-expanded="false" aria-controls="accounting">
+                         <i class="ri-bar-chart-line" style="color: purple;"></i> <span>Accounting</span>
+                        </a>
+                        <div class="collapse menu-dropdown" id="accounting">
+                            <ul class="nav nav-sm flex-column">
+                           
+                            </ul>
+                        </div>
+                    </li>
+                @endcanany
+
+                {{-- HRM --}}
+                @canany(['manage orders','manage employees'])
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="#hrm" data-bs-toggle="collapse" role="button"
+                            aria-expanded="false" aria-controls="hrm">
+                       <i class="ri-user-settings-line" style="color: purple;"></i> <span>HRM</span>
+                        </a>
+                        <div class="collapse menu-dropdown" id="hrm">
+                            <ul class="nav nav-sm flex-column">
+                                {{-- @can('manage orders')
                                     <li class="nav-item">
                                         <a href="{{ route('orders.index') }}" class="nav-link">Orders</a>
                                     </li>
-                                @endcan
-                                @can('manage kitchen')
+                                @endcan --}}
+                              
+                                   @can('manage employees')
                                     <li class="nav-item">
-                                        <a href="{{ route('kitchen.index') }}" class="nav-link">Kitchen</a>
+                                        <a href="{{ route('employee-designations.index') }}" class="nav-link">Employee
+                                            Designations</a>
                                     </li>
                                 @endcan
-                                @can('manage bar')
+                                @can('manage employees')
                                     <li class="nav-item">
-                                        <a href="{{ route('bar.index') }}" class="nav-link">Bar</a>
-                                    </li>
-                                @endcan
-                                @can('manage tables')
-                                    <li class="nav-item">
-                                        <a href="{{ route('tables.index') }}" class="nav-link">Tables</a>
+                                        <a href="{{ route('employees.index') }}" class="nav-link">Employees</a>
                                     </li>
                                 @endcan
                                 {{-- @can('manage table arrangements')
@@ -269,154 +242,59 @@
                     </li>
                 @endcanany
 
-                @canany(['manage bookings', 'manage rooms', 'manage customers'])
+                {{-- peaple --}}
+                @canany(['manage users',   'manage customers', 'manage suppliers'])
                     <li class="nav-item">
-                        <a class="nav-link menu-link" href="#hotel" data-bs-toggle="collapse" role="button"
-                            aria-expanded="false" aria-controls="hotel">
-                            <i class="mdi mdi-office-building"></i> <span>Hotel Reservations</span>
+                        <a class="nav-link menu-link" href="#user" data-bs-toggle="collapse" role="button"
+                            aria-expanded="false" aria-controls="user">
+                            <i class="ri-account-circle-line" style="color: purple"></i> <span>People</span>
                         </a>
-                        <div class="collapse menu-dropdown" id="hotel">
+                        <div class="collapse menu-dropdown" id="user">
                             <ul class="nav nav-sm flex-column">
-                                @can('manage customers')
+                                @can('manage users')
                                     <li class="nav-item">
-                                        <a href="{{ route('customers.index') }}" class="nav-link">Guests</a>
+                                        <a href="{{ route('users.index') }}" class="nav-link">Users</a>
                                     </li>
                                 @endcan
-                                @can('manage bookings')
+                                 @can('manage customers')
                                     <li class="nav-item">
-                                        <a href="{{ route('additional-payments.index') }}" class="nav-link">Additional
-                                            Payments</a>
+                                        <a href="{{ route('customers.index') }}" class="nav-link">Customers</a>
                                     </li>
                                 @endcan
-                                @can('manage bookings')
+                                @can('manage suppliers')
                                     <li class="nav-item">
-                                        <a href="{{ route('check-availability') }}" class="nav-link">Check Availability</a>
+                                        <a href="{{ route('suppliers.index') }}" class="nav-link">Suppliers</a>
                                     </li>
                                 @endcan
-                                @can('manage bookings')
+                                  @can('manage suppliers')
                                     <li class="nav-item">
-                                        <a href="{{ route('bookings.index') }}" class="nav-link">Bookings</a>
+                                        {{-- <a href="{{ route('biller.index') }}" class="nav-link">Biller</a> --}}
                                     </li>
                                 @endcan
-
-                                @can('manage bookings')
-                                    <li class="nav-item">
-                                        <a href="{{ route('checkin.index') }}" class="nav-link">Check In</a>
-                                    </li>
-                                @endcan
-
-                                @can('manage bookings')
-                                    <li class="nav-item">
-                                        <a href="{{ route('checkout.index') }}" class="nav-link">Check Out</a>
-                                    </li>
-                                @endcan
-
-                                @can('manage bookings')
-                                    <li class="nav-item">
-                                        <a href="{{ route('tacheckout.index') }}" class="nav-link">Travel agent Check Out</a>
-                                    </li>
-                                @endcan
-
-                                @can('manage bookings')
-                                    <li class="nav-item">
-                                        <a href="{{ route('status') }}" class="nav-link">Room Status</a>
-                                    </li>
-                                @endcan
-                              
-                                {{-- @can('manage rooms')
-                                    <li class="nav-item">
-                                        <a href="{{ route('room-types.index') }}" class="nav-link">Room Types</a>
-                                    </li>
-                                @endcan
-                                @can('manage rooms')
-                                    <li class="nav-item">
-                                        <a href="{{ route('rooms.index') }}" class="nav-link">Rooms</a>
-                                    </li>
-                                @endcan --}}
-
+                        
                             </ul>
                         </div>
                     </li>
                 @endcanany
 
-                @can('manage housekeeping')
+                {{-- pos --}}
+                @canany(['manage Pos'])
                     <li class="nav-item">
-                        <a class="nav-link menu-link" href="#housekeeping" data-bs-toggle="collapse" role="button"
-                            aria-expanded="false" aria-controls="housekeeping">
-                            <i class="mdi mdi-office-building"></i> <span>Housekeeping</span>
-                        </a>
-                        <div class="collapse menu-dropdown" id="housekeeping">
-                            <ul class="nav nav-sm flex-column">
-                                <li class="nav-item">
-                                    <a href="{{ route('housekeeping.index') }}" class="nav-link">Add</a>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="collapse menu-dropdown" id="housekeeping">
-                            <ul class="nav nav-sm flex-column">
-                                <li class="nav-item">
-                                    <a href="{{ route('housekeeping.view') }}" class="nav-link">Housekeeping History</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-                @endcan
-
-
-
-
-                @can('manage rooms')
-                    <li class="nav-item">
-                        <a class="nav-link menu-link" href="#roomFacilities" data-bs-toggle="collapse" role="button"
-                            aria-expanded="false" aria-controls="roomFacilities">
-                            <i class="mdi mdi-office-building"></i> <span>Room Facilities</span>
-                        </a>
-                        <div class="collapse menu-dropdown" id="roomFacilities">
-                            <ul class="nav nav-sm flex-column">
-                                <li class="nav-item">
-                                    <a href="{{ route('room-facility.index') }}" class="nav-link">Facility List</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-                @endcan
-
-
-                @canany(['manage rooms'])
-                    <li class="nav-item">
-                        <a class="nav-link menu-link" href="#room-settings" data-bs-toggle="collapse" role="button"
-                            aria-expanded="false" aria-controls="room-settings">
-                            <i class="ri-settings-2-line"></i> <span>Room Settings</span>
-                        </a>
-                        <div class="collapse menu-dropdown" id="room-settings">
-                            <!-- Unique ID for Room Settings section -->
-                            <ul class="nav nav-sm flex-column">
-                                @can('manage rooms')
-                                    <li class="nav-item">
-                                        <a href="{{ route('rooms.index') }}" class="nav-link">Rooms</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('room-types.index') }}" class="nav-link">Room Types</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('room-size.index') }}" class="nav-link">Room Size</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('bording-type.index') }}" class="nav-link">Boarding Type</a>
-                                    </li>
-                                @endcan
-                            </ul>
-                        </div>
+                        @can('manage Pos')
+                            <a class="nav-link menu-link" href="{{ route('restaurant.index') }}">
+                                <i class="ri-menu-add-line" style="color: purple"></i> <span>POS</span>
+                            </a>
+                        @endcan
                     </li>
                 @endcanany
 
-                {{-- @canany(['manage report']) --}}
+                {{-- reports --}}
                 @canany(['User report', 'Customer report', 'Supplier report', 'Purchase report', 'Employee report',
                     'Product report', 'Booking report'])
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#report" data-bs-toggle="collapse" role="button"
-                            aria-expanded="false" aria-controls="purchase">
-                            <i class="ri-book-3-line"></i> <span>Reports</span>
+                            aria-expanded="false" aria-controls="report">
+                            <i class="ri-book-3-line" style="color: purple"></i> <span>Reports</span>
                         </a>
                         <div class="collapse menu-dropdown" id="report">
                             <ul class="nav nav-sm flex-column">
@@ -457,31 +335,8 @@
                                         <a href="{{ route('product.ReportsIndex') }}" class="nav-link">Product Reports</a>
                                     </li>
                                 @endcan
-                                @can('Booking report')
-                                    <li class="nav-item">
-                                        <a href="{{ route('booking.ReportsIndex') }}" class="nav-link">Reservation Reports</a>
-                                    </li>
-                                @endcan
-                                @can('Booking report')
-                                    <li class="nav-item">
-                                        <a href="{{ route('booking.ReportsIndex1') }}" class="nav-link">Booking Reports</a>
-                                    </li>
-                                @endcan
-                                @can('Booking report')
-                                    <li class="nav-item">
-                                        <a href="{{ route('TaReport') }}" class="nav-link">Order Reports</a>
-                                    </li>
-                                @endcan 
-                                @can('Booking report')
-                                <li class="nav-item">
-                                    <a href="{{ route('orders.Reports') }}" class="nav-link">Travel agent checkout Reports</a>
-                                </li>
-                            @endcan
-                                {{-- @can('Booking report')
-                                    <li class="nav-item">
-                                        <a href="{{ route('all.ReportsIndex') }}" class="nav-link">Final Report</a>
-                                    </li>
-                                @endcan --}}
+                               
+                             
 
 
 
@@ -490,19 +345,40 @@
                     </li>
                 @endcanany
 
-                @can('manage settings')
+                {{-- SETTINGS --}}
+                 @canany(['manage settings', 'manage modifiers', 'manage categories', 'manage units','manage roles'])
                     <li class="nav-item">
-                        <a class="nav-link menu-link" href="{{ route('settings.index') }}">
-                            <i class="ri-settings-2-line"></i> <span>Settings</span>
+                        <a class="nav-link menu-link" href="#settings" data-bs-toggle="collapse" role="button"
+                            aria-expanded="false" aria-controls="settings">
+                            <i class="ri-settings-2-line" style="color: purple"></i> <span>Settings</span>
                         </a>
-                    </li>
-                @endcan
 
-                {{-- <li class="nav-item">
-                    <a class="nav-link menu-link" href="">
-                        <i class="ri-book-2-line"></i> <span>User Manual</span>
-                    </a>
-                </li> --}}
+
+                        <div class="collapse menu-dropdown" id="settings">
+                            <ul class="nav nav-sm flex-column">
+                                @can('manage users')
+                                    <li class="nav-item">
+                                        <a href="{{ route('settings.index') }}" class="nav-link">General</a>
+                                    </li>
+                                @endcan
+                                @can('manage roles')
+                                    <li class="nav-item">
+                                        <a href="{{ route('roles.index') }}" class="nav-link">Roles</a>
+                                    </li>
+                                @endcan
+                           
+
+                              
+                                @can('manage units')
+                                    <li class="nav-item">
+                                        <a href="{{ route('units.index') }}" class="nav-link">Units</a>
+                                    </li>
+                                @endcan
+
+                            </ul>
+                        </div>
+                    </li>
+                @endcanany
             </ul>
         </div>
         <!-- Sidebar -->

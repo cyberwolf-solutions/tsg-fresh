@@ -120,7 +120,7 @@
 
     </div>
 @endsection
-@include('products.view-ingredients-modal')
+{{-- @include('products.view-ingredients-modal') --}}
 
 @section('script')
     <script>

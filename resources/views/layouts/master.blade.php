@@ -20,6 +20,18 @@
     <!-- App favicon -->
     <link rel="shortcut icon" href="{{ URL::asset('build/images/favicon.ico') }}">
     @include('layouts.head-css')
+
+    <style>.btn-purple {
+    background-color: #6f42c1;
+    color: #fff;
+    border: none;
+}
+
+.btn-purple:hover {
+    background-color: #5a35a4;
+    color: #fff;
+}
+</style>
 </head>
 
 @section('body')

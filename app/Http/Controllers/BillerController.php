@@ -2,17 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\RoomPricing;
+use App\Models\Biller;
 use Illuminate\Http\Request;
 
-class RoomPricingController extends Controller
+class BillerController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
+     public function index() {
+        $title = 'Biller';
+
+        $breadcrumbs = [
+            // ['label' => 'First Level', 'url' => '', 'active' => false],
+            ['label' => $title, 'url' => '', 'active' => true],
+        ];
+        // $data = Biller::all();
+     return view('pos.biller.index', compact('title', 'breadcrumbs'));
     }
 
     /**
@@ -34,7 +37,7 @@ class RoomPricingController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(RoomPricing $roomPricing)
+    public function show(Biller $biller)
     {
         //
     }
@@ -42,7 +45,7 @@ class RoomPricingController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(RoomPricing $roomPricing)
+    public function edit(Biller $biller)
     {
         //
     }
@@ -50,7 +53,7 @@ class RoomPricingController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, RoomPricing $roomPricing)
+    public function update(Request $request, Biller $biller)
     {
         //
     }
@@ -58,7 +61,7 @@ class RoomPricingController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(RoomPricing $roomPricing)
+    public function destroy(Biller $biller)
     {
         //
     }
