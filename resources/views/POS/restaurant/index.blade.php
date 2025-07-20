@@ -11,63 +11,97 @@
     </style>
     <!-- start page title -->
     <div class="col-12">
-        <div class="row position-relative   ">
-            <div class="card  mb-1">
-                <div class="card-body ">
-                    <div class="row gy-2">
-                        <a href="{{ route('home') }}" type="button"
-                            class="btn btn-light btn-icon waves-effect waves-light form-control" data-bs-toggle="tooltip"
-                            title="Home"><i class="mdi mdi-home label-icon align-middle fs-16"></i></a>
-                        <div class="col">
-                            <button type="button"
-                                class="btn btn-soft-danger btn-label waves-effect waves-light form-control"
-                                onclick="window.location.reload()"><i
-                                    class="mdi mdi-cancel label-icon align-middle fs-16 me-2"></i>Clear All</button>
-                        </div>
-                        <div class="col border-end pe-2">
-                            <select class="form-control js-example-basic-single" name="" id="type">
-                                <option value="Dining" selected>Room Delivery</option>
-                                {{-- <option value="TakeAway">TakeAway</option>
-                                <option value="RoomDelivery">Dining</option> --}}
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <input type="text" class="form-control" placeholder="Search product by names"
-                                id="searchInput">
-                        </div>
-                        <div class="col">
-                            <button type="button" class="btn btn-light btn-label waves-effect waves-light form-control"
-                                data-ajax-popup="true" data-title="Notes" data-size="xl"
-                                data-url="{{ route('restaurant.note') }}"><i
-                                    class="mdi mdi-book label-icon align-middle fs-16 me-2"></i>
-                                Notes</button>
-                        </div>
-                        {{-- @can('manage kitchen')
-                            <div class="col">
-                                <a href="{{ route('kitchen.index') }}" target="_blank" type="button"
-                                    class="btn btn-soft-info btn-label waves-effect waves-light form-control"><i
-                                        class="mdi mdi-silverware label-icon align-middle fs-16 me-2"></i> Kitchen</a>
+        <div class="card mb-1 mt-2" style="background-color: white; border-radius: 8px;margin-top:10px">
+            <div class="card-body py-2 px-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <!-- Left: Home Button -->
+                    <div>
+                        <a href="{{ route('home') }}" class="btn btn-light btn-icon waves-effect waves-light"
+                            data-bs-toggle="tooltip" title="Home">
+                            <i class="mdi mdi-home label-icon align-middle fs-16"></i>
+                        </a>
+                    </div>
+
+                    <!-- Right: Icons and User -->
+                    <div class="d-flex align-items-center">
+
+                        <!-- Cart -->
+                        <a href="#" class="btn btn-icon btn-ghost-secondary rounded-circle me-2"
+                            style="color: #6f42c1; border: none;">
+                            <i class="ri-shopping-cart-2-line fs-22"></i>
+                        </a>
+
+                        <!-- Print -->
+                        <a href="#" class="btn btn-icon btn-ghost-secondary rounded-circle me-2"
+                            style="color: #6f42c1; border: none;" title="Print">
+                            <i class="ri-printer-line fs-22"></i>
+                        </a>
+
+                        <!-- Settings -->
+                        <a href="{{ route('settings.index') }}" class="btn btn-icon btn-ghost-secondary rounded-circle me-2"
+                            style="color: #6f42c1; border: none;" title="Settings">
+                            <i class="ri-settings-3-line fs-22"></i>
+                        </a>
+
+                        <!-- Notifications -->
+                        <div class="dropdown me-2">
+                            <button type="button" class="btn btn-icon btn-ghost-secondary rounded-circle"
+                                style="color: #6f42c1; border: none;" id="notificationDropdown" data-bs-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">
+                                <i class="ri-notification-3-line fs-22"></i>
+                                <span
+                                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0">
+                                <!-- Notifications content -->
                             </div>
-                        @endcan
-                        @can('manage bar')
-                            <div class="col">
-                                <a href="{{ route('bar.index') }}" target="_blank" type="button"
-                                    class="btn btn-soft-secondary btn-label waves-effect waves-light form-control"><i
-                                        class="mdi mdi-glass-cocktail label-icon align-middle fs-16 me-2"></i> Bar</a>
+                        </div>
+
+                        <!-- Language -->
+                        <div class="dropdown me-2">
+                            <button type="button" class="btn btn-icon btn-ghost-secondary rounded-circle"
+                                style="color: #6f42c1; border: none;" data-bs-toggle="dropdown">
+                                <i class="ri-global-line fs-22"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end">
+                                <a href="?lang=en" class="dropdown-item">🇬🇧 English</a>
+                                <a href="?lang=si" class="dropdown-item">🇱🇰 Sinhala</a>
+                                <a href="?lang=ta" class="dropdown-item">🇮🇳 Tamil</a>
                             </div>
-                        @endcan --}}
-                        <div class="col">
-                            <button type="button"
-                                class="btn btn-soft-success btn-label waves-effect waves-light form-control"
-                                data-ajax-popup="true" data-title="Orders in process" data-size="lg"
-                                data-url="{{ route('restaurant.process') }}"><i
-                                    class="mdi mdi-list-box label-icon align-middle fs-16 me-2"></i> In
-                                Process</button>
+                        </div>
+
+                        <!-- User -->
+                        <div class="dropdown">
+                            <button type="button" class="btn d-flex align-items-center" id="page-header-user-dropdown"
+                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                style="background-color: transparent;">
+                                <img class="rounded-circle header-profile-user me-2"
+                                    src="@if (Auth::user()->avatar != '') {{ URL::asset('public/storage/' . Auth::user()->avatar) }} @else {{ URL::asset('build/images/users/user-dummy-img.jpg') }} @endif"
+                                    alt="Avatar" style="height: 32px; width: 32px;">
+                                <span class="d-none d-xl-block text-dark fw-semibold">{{ Auth::user()->name }}</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end">
+                                <a class="dropdown-item" href="{{ route('profile') }}"><i
+                                        class="mdi mdi-account-circle text-muted me-1"></i> Profile</a>
+                                <a class="dropdown-item" href="{{ route('settings.index') }}"><i
+                                        class="mdi mdi-cog-outline text-muted me-1"></i> Settings</a>
+                                <a class="dropdown-item" href="javascript:void();"
+                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    <i class="bx bx-power-off text-muted me-1"></i> Logout
+                                </a>
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                    @csrf
+                                </form>
+                            </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
+
+
+        {{-- body --}}
         <div class="row position-relative  ">
             <div class="card mb-0 ps-0">
                 {{-- <div class="card-body"> --}}
@@ -105,12 +139,16 @@
                                                         Select
                                                         Warehouse</span></button>
                                             </div>
+                                            <div class="col-md-12 mt-3">
+                                                <input type="text" class="form-control"
+                                                    placeholder="Search product by names" id="searchInput">
+                                            </div>
                                         </div>
                                     </div>
 
                                     <div class="col-12 mt-1">
                                         <div class="row overflow-auto gap-2" style="height: 50vh">
-                                            <div class="col-12 border position-relative">
+                                            <div class="col-12  position-relative">
                                                 <div id="cartBody"></div>
                                                 <div class="select-none bg-blue-gray-100 rounded flex flex-wrap content-center justify-center opacity-25 mt-5"
                                                     id="emptyCart">
@@ -124,56 +162,110 @@
                                             </div>
                                         </div>
                                         <div class="col-12">
-                                            <div class="row">
-                                                <div class="col-4 p-2 border rounded-3 bg-blue-gray-100 small">
-                                                    <span>Subtotal</span><br>
-                                                    <span id="currencySymbol1"></span>
-                                                    <span id="sub" value="0">LKR 0.00</span>
+                                            <div class="row g-2">
+
+                                                <!-- Row 1: Subtotal, Discount, Total -->
+                                                <div class="col-12 border-bottom pb-2">
+                                                    <div class="row g-2">
+                                                        <div class="col-md-4 small">
+                                                            <span class="text-muted">Subtotal</span><br>
+                                                            <strong id="sub">LKR 0.00</strong>
+                                                        </div>
+
+                                                        <div class="col-md-4 small">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <div>
+                                                                    <span class="text-muted">Discount</span><br>
+                                                                    <strong id="discount_html">LKR 0.00</strong>
+                                                                </div>
+                                                                <a href="javascript:void(0)" class="btn btn-sm "
+                                                                    data-ajax-popup="true" data-title="Edit Discount"
+                                                                    data-size="lg"
+                                                                    data-url="{{ route('restaurant.discount') }}">
+                                                                    <i class="bi bi-pencil" style="color: #318CE7"></i>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-4 small">
+                                                            <span class="text-muted">Total</span><br>
+                                                            <strong id="total_html">LKR 0.00</strong>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="col-4 p-2 border rounded-3 bg-blue-gray-100 small">
-                                                    <span>Discount </span><br>
-                                                    <span><span id="currencySymbol2"></span>
-                                                        <span id="discount_html">LKR 0.00</span> <a
-                                                            href="javascript:void(0)" class="float-end"
-                                                            id="discount-edit" data-ajax-popup="true"
-                                                            data-title="Discount Edit" data-size="lg"
-                                                            data-url="{{ route('restaurant.discount') }}">
-                                                            (Edit)
-                                                        </a></span>
+
+                                                <!-- Row 2: Coupon, Tax, Shipping -->
+                                                <div class="col-12 border-bottom pt-2 pb-2">
+                                                    <div class="row g-2">
+                                                        <div class="col-md-4 small">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <div>
+                                                                    <span class="text-muted">Coupon</span><br>
+                                                                    <strong id="coupon_html">LKR 0.00</strong>
+                                                                </div>
+                                                                <a href="javascript:void(0)" class="btn btn-sm"
+                                                                    data-ajax-popup="true" data-title="Edit Coupon"
+                                                                    data-size="lg" data-url="">
+                                                                    <i class="bi bi-pencil" style="color: #318CE7"></i>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-4 small">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <div>
+                                                                    <span class="text-muted">Tax</span><br>
+                                                                    <strong id="tax_html">LKR 0.00</strong>
+                                                                </div>
+                                                                <a href="javascript:void(0)" class="btn btn-sm"
+                                                                    data-ajax-popup="true" data-title="Edit Tax"
+                                                                    data-size="lg" data-url="">
+                                                                    <i class="bi bi-pencil" style="color: #318CE7"></i>
+
+                                                                </a>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-4 small">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <div>
+                                                                    <span class="text-muted">Shipping</span><br>
+                                                                    <strong id="shipping_html">LKR 0.00</strong>
+                                                                </div>
+                                                                <a href="javascript:void(0)" class="btn btn-sm "
+                                                                    data-ajax-popup="true" data-title="Edit Shipping"
+                                                                    data-size="lg" data-url="">
+                                                                    <i class="bi bi-pencil" style="color: #318CE7"></i>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="col-4 p-2 border rounded-3 bg-blue-gray-100 small">
-                                                    <span>VAT </span><br>
-                                                    <span><span id="currencySymbol3"></span>
-                                                        <span id="vat_html">LKR 0.00</span> <a href="javascript:void(0)"
-                                                            class="float-end" id="vat-edit" data-ajax-popup="true"
-                                                            data-title="VAT Edit" data-size="lg"
-                                                            data-url="{{ route('restaurant.vat') }}">
-                                                            (Edit)
-                                                        </a></span>
-                                                </div>
-                                                <div class="col-12 p-2 border bg-body rounded-3">
+
+                                                <!-- Grand Total -->
+                                                <div class="col-12 pt-3 pb-3 rounded-3"
+                                                    style="background-color: rgba(55, 140, 231, 0.1);">
                                                     <div class="row align-items-center">
                                                         <div class="col">
-                                                            <span class="fs-4">Total</span>
+                                                            <span class="fs-4 fw-semibold text-dark">Grand Total</span>
                                                         </div>
                                                         <div class="col text-end">
-                                                            <span id="currencySymbol4"></span><span class="fs-5"
-                                                                id="total" value="0">LKR
+                                                            <span class="fs-3 fw-bold text-dark" id="grand_total">LKR
                                                                 0.00</span>
-
-
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-12 rounded-3">
-                                                    <div class="row align-items-center p-2 ">
-                                                        <button class="btn btn-primary text-dark fw-bold"
-                                                            style="background-color: #378CE7;"
-                                                            onclick="checkout()">Checkout</button>
-                                                    </div>
+
+                                                <!-- Checkout Button -->
+                                                <div class="col-12 text-end mt-2">
+                                                    <button class="btn btn-primary fw-bold px-4"
+                                                        style="background-color: #378CE7;"
+                                                        onclick="checkout()">Checkout</button>
                                                 </div>
+
                                             </div>
                                         </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -186,90 +278,37 @@
 
                         <div class="row">
 
-                            {{-- <div class="col-md-12 d-flex flex-wrap "
-                                style="height: auto;padding-top:10px;padding-bottom:10px;margin-bottom:10px;">
-                                @foreach ($categories as $item)
-                                    @php
-                                        $image = $item->image_url
-                                            ? 'uploads/categories/' . $item->image_url
-                                            : 'uploads/cutlery.png';
-                                    @endphp
-                                    <div class="col-md-1 cursor-pointer category-item border border rounded position-relative text-center mx-1"
-                                        data-id="{{ $item->id }}" onclick="highlightCategoryItem(this)"
-                                        id="clickable-span{{ $item->id }}" title="{{ $item->name }}"
-                                        style="height: auto; width:100px; margin-top: 10px; color: black; background-color:#F5F5F5; display: block; text-align: center; padding: 10px; cursor: pointer;">
-
-
-                                        <span class="category-name"> {{ $item->name }}</span>
-
-                                    </div>
-                                @endforeach
-                            </div> --}}
-
+                   
                             <div class="col-md-4 d-flex flex-wrap "
                                 style="height: auto;padding-top:10px;padding-bottom:10px;margin-bottom:10px;">
 
                                 <div class="col-md-12 cursor-pointer category-item border border rounded position-relative text-center mx-1"
                                     data-id="" onclick="highlightCategoryItem(this)" id="clickable-span"
-                                    style="height: auto; width:90%; margin-top: 10px; color: rgb(251, 249, 249); background-color:#7aa7bb; display: block; text-align: center; padding: 10px; cursor: pointer;">
-
-
+                                    style="height: auto; width:90%; margin-top: 10px; color: rgb(251, 249, 249); background-color:#74d0da; display: block; text-align: center; padding: 10px; cursor: pointer;">
                                     <span class="category-name"> Category</span>
 
                                 </div>
 
                             </div>
-                              <div class="col-md-4 d-flex flex-wrap "
+                            <div class="col-md-4 d-flex flex-wrap "
                                 style="height: auto;padding-top:10px;padding-bottom:10px;margin-bottom:10px;">
 
                                 <div class="col-md-12 cursor-pointer category-item border border rounded position-relative text-center mx-1"
                                     data-id="" onclick="highlightCategoryItem(this)" id="clickable-span"
-                                    style="height: auto; width:90%; margin-top: 10px; color: rgb(249, 249, 249); background-color:#e45656; display: block; text-align: center; padding: 10px; cursor: pointer;">
-
-
-                                    <span class="category-name"> Category</span>
+                                    style="height: auto; width:90%; margin-top: 10px; color: rgb(249, 249, 249); background-color:#f65050; display: block; text-align: center; padding: 10px; cursor: pointer;">
+                                    <span class="category-name"> Brand</span>
 
                                 </div>
 
                             </div>
-                              <div class="col-md-4 d-flex flex-wrap "
+                            <div class="col-md-4 d-flex flex-wrap "
                                 style="height: auto;padding-top:10px;padding-bottom:10px;margin-bottom:10px;">
 
                                 <div class="col-md-12 cursor-pointer category-item border border rounded position-relative text-center mx-1"
                                     data-id="" onclick="highlightCategoryItem(this)" id="clickable-span"
-                                    style="height: auto; width:90%; margin-top: 10px; color: rgb(255, 255, 255); background-color:#ad72c0; display: block; text-align: center; padding: 10px; cursor: pointer;">
+                                    style="height: auto; width:90%; margin-top: 10px; color: rgb(255, 255, 255); background-color:#d58bed; display: block; text-align: center; padding: 10px; cursor: pointer;">
+                                    <span class="category-name"> Feature</span>
 
-
-                                    <span class="category-name"> Category</span>
-
-                                </div>
-
-                            </div>
-                            <div id="mealTypeSelector" class="col-md-3" style="display: none;">
-                                <label for="setmenuMealType" class="form-label">Setmenu Meal Type</label>
-                                <select class="form-select" id="setmenuMealType" name="setmenuMealType">
-                                    <option value="" selected disabled>Select Type</option>
-                                    @foreach ($type_meal as $mealType)
-                                        <option value="{{ $mealType->id }}">{{ $mealType->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-
-                            <div id="setmenuTypeSelector" class="col-md-3" style="display: none;">
-
-                                <label for="setmenuType" class="form-label">Setmenu Type</label>
-                                <select class="form-select" id="setmenuType" name="setmenuType">
-                                    <option value="" selected disabled>Select Type</option>
-                                    @foreach ($type as $menuType)
-                                        <option value="{{ $menuType->id }}">{{ $menuType->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div id="setmenusearch" class="col-md-2" style="display: none;">
-                                <label>*</label>
-                                <div id="srchbtn">
-                                    <button class=" btn btn-primary" id="fbtn" onclick="filter()">Filter</button>
                                 </div>
 
                             </div>
@@ -377,10 +416,73 @@
                     </div>
 
 
+                    <div class="row text-center justify-content-center" style="background-color: #f0f3f4; padding: 10px;margin-top:-20px">
 
+                        <!-- Cash -->
+                        <div class="col-auto mb-2">
+                            <div onclick="highlightCategoryItem(this)" class="category-item"
+                                style="background-color: #f95cc2; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; display: inline-block; transition: 0.3s;">
+                                <i class="ri-money-dollar-circle-line me-1"></i> Cash
+                            </div>
+                        </div>
 
+                        <!-- Draft -->
+                        <div class="col-auto mb-2">
+                            <div onclick="highlightCategoryItem(this)" class="category-item"
+                                style="background-color: #17a2b8; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; display: inline-block; transition: 0.3s;">
+                                <i class="ri-draft-line me-1"></i> Draft
+                            </div>
+                        </div>
 
+                        <!-- Card -->
+                        <div class="col-auto mb-2">
+                            <div onclick="highlightCategoryItem(this)" class="category-item"
+                                style="background-color: #6f42c1; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; display: inline-block; transition: 0.3s;">
+                                <i class="ri-bank-card-line me-1"></i> Card
+                            </div>
+                        </div>
 
+                        <!-- Cheque -->
+                        <div class="col-auto mb-2">
+                            <div onclick="highlightCategoryItem(this)" class="category-item"
+                                style="background-color: #fd7e14; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; display: inline-block; transition: 0.3s;">
+                                <i class="ri-file-text-line me-1"></i> Cheque
+                            </div>
+                        </div>
+
+                        <!-- Gift Card -->
+                        <div class="col-auto mb-2">
+                            <div onclick="highlightCategoryItem(this)" class="category-item"
+                                style="background-color: #20c997; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; display: inline-block; transition: 0.3s;">
+                                <i class="ri-gift-line me-1"></i> Gift Card
+                            </div>
+                        </div>
+
+                        <!-- Deposit -->
+                        <div class="col-auto mb-2">
+                            <div onclick="highlightCategoryItem(this)" class="category-item"
+                                style="background-color: #007bff; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; display: inline-block; transition: 0.3s;">
+                                <i class="ri-bank-line me-1"></i> Deposit
+                            </div>
+                        </div>
+
+                        <!-- Cancel -->
+                        <div class="col-auto mb-2">
+                            <div onclick="highlightCategoryItem(this)" class="category-item"
+                                style="background-color: #dc3545; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; display: inline-block; transition: 0.3s;">
+                                <i class="ri-close-circle-line me-1"></i> Cancel
+                            </div>
+                        </div>
+
+                        <!-- Recent Transactions -->
+                        <div class="col-auto mb-2">
+                            <div onclick="highlightCategoryItem(this)" class="category-item"
+                                style="background-color: #6c757d; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; display: inline-block; transition: 0.3s;">
+                                <i class="ri-history-line me-1"></i> Recent Transactions
+                            </div>
+                        </div>
+
+                    </div>
 
 
                 </div>
