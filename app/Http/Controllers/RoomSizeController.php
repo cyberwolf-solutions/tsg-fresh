@@ -21,7 +21,7 @@ class RoomSizeController extends Controller
 
             ['label' => $title, 'url' => '', 'active' => true],
         ];
-        return view('room-size.index',  compact('title', 'breadcrumbs', 'data'));
+     return view('pos.room-size.index',  compact('title', 'breadcrumbs', 'data'));
     }
 
     public function store(Request $request)

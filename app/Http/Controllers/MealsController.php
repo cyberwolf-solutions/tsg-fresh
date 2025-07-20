@@ -25,7 +25,7 @@ class MealsController extends Controller {
             ['label' => $title, 'url' => '', 'active' => true],
         ];
         $data = Meal::all();
-        return view('meals.index', compact('title', 'breadcrumbs', 'data'));
+     return view('pos.meals.index', compact('title', 'breadcrumbs', 'data'));
     }
 
     /**
@@ -43,7 +43,7 @@ class MealsController extends Controller {
         $products = Product::all();
         $categories = Category::all();
 
-        return view('meals.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'products', 'categories'));
+     return view('pos.meals.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'products', 'categories'));
     }
 
     /**
@@ -209,7 +209,7 @@ class MealsController extends Controller {
         $categories = Category::all();
         $total = number_format($total, 2);
 
-        return view('meals.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data', 'products',
+     return view('pos.meals.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data', 'products',
             'categories', 'prod_array', 'total'));
     }
 

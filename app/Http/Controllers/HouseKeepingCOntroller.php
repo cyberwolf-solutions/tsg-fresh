@@ -24,7 +24,7 @@ class HouseKeepingCOntroller extends Controller
         // Retrieve rooms where status is 'cleaning'
         $data = Room::where('status', 'Cleaning')->get();
 
-        return view('housekeeping.index', compact('title', 'breadcrumbs', 'data'));
+     return view('pos.housekeeping.index', compact('title', 'breadcrumbs', 'data'));
     }
 
 
@@ -41,7 +41,7 @@ class HouseKeepingCOntroller extends Controller
         $items = Inventory::all();
         // $is_edit = true;
 
-        return view('housekeeping.create-edit', compact('title', 'breadcrumbs', 'data', 'items'));
+     return view('pos.housekeeping.create-edit', compact('title', 'breadcrumbs', 'data', 'items'));
     }
 
     public function store(Request $request)
@@ -109,6 +109,6 @@ class HouseKeepingCOntroller extends Controller
         // Retrieve housekeeping data
         $data = Housekeeping::all();
 
-        return view('housekeeping.history', compact('title', 'breadcrumbs', 'data'));
+     return view('pos.housekeeping.history', compact('title', 'breadcrumbs', 'data'));
     }
 }

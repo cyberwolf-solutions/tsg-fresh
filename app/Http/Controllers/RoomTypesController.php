@@ -22,7 +22,7 @@ class RoomTypesController extends Controller {
         ];
         $data = RoomType::all();
         $data1 = RoomFacilities::all();
-        return view('room-types.index', compact('title', 'breadcrumbs', 'data' , 'data1'));
+     return view('pos.room-types.index', compact('title', 'breadcrumbs', 'data' , 'data1'));
     }
 
     /**

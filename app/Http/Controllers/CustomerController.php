@@ -26,7 +26,7 @@ class CustomerController extends Controller
             ['label' => $title, 'url' => '', 'active' => true],
         ];
         $data = Customer::all();
-        return view('customers.index', compact('title', 'breadcrumbs', 'data'));
+     return view('pos.customers.index', compact('title', 'breadcrumbs', 'data'));
     }
 
     /**
@@ -45,7 +45,7 @@ class CustomerController extends Controller
         $is_edit = false;
         $currencies = Currency::all();
 
-        return view('customers.create-edit', compact('title', 'breadcrumbs', 'is_edit' , 'currencies'));
+     return view('pos.customers.create-edit', compact('title', 'breadcrumbs', 'is_edit' , 'currencies'));
     }
 
     /**
@@ -181,7 +181,7 @@ class CustomerController extends Controller
         $data = Customer::find($id);
         $currencies = Currency::all();
 
-        return view('customers.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data','currencies'));
+     return view('pos.customers.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data','currencies'));
     }
 
     /**
@@ -278,6 +278,6 @@ class CustomerController extends Controller
         ];
         $data = Customer::all();
 
-        return view('reports.customerReports', compact('data'));
+     return view('pos.reports.customerReports', compact('data'));
     }
 }

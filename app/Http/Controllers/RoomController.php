@@ -31,7 +31,7 @@ class RoomController extends Controller
         ];
         $data = Room::all();
         $data1 = RoomFacilities::all();
-        return view('rooms.index', compact('title', 'breadcrumbs', 'data', 'data1'));
+     return view('pos.rooms.index', compact('title', 'breadcrumbs', 'data', 'data1'));
     }
 
     /**
@@ -55,7 +55,7 @@ class RoomController extends Controller
         $types = RoomType::all();
         $sizes = RoomSize::all();
 
-        return view('rooms.create-edit', compact('title', 'breadcrumbs','rtype','boarding', 'is_edit', 'types', 'sizes' ,  'data1'));
+     return view('pos.rooms.create-edit', compact('title', 'breadcrumbs','rtype','boarding', 'is_edit', 'types', 'sizes' ,  'data1'));
     }
 
     /**
@@ -233,7 +233,7 @@ class RoomController extends Controller
         $data1 = RoomFacilities::all();
         $boarding = BordingType::all();
         $rtype = RoomType::all();
-        return view('rooms.create-edit', compact('title', 'breadcrumbs','rtype','boarding', 'is_edit', 'data', 'types', 'sizes', 'data1'));
+     return view('pos.rooms.create-edit', compact('title', 'breadcrumbs','rtype','boarding', 'is_edit', 'data', 'types', 'sizes', 'data1'));
     }
 
     /**

@@ -20,7 +20,7 @@ class EmployeeDesignationsController extends Controller {
             ['label' => $title, 'url' => '', 'active' => true],
         ];
         $data = EmployeeDesignation::all();
-        return view('employee-designations.index', compact('title', 'breadcrumbs', 'data'));
+     return view('pos.employee-designations.index', compact('title', 'breadcrumbs', 'data'));
     }
 
     /**

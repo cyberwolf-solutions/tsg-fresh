@@ -46,7 +46,7 @@ class TACheckoutController extends Controller
         ->get();
     
 
-        return view('bookings.tacheckout', compact('title', 'breadcrumbs', 'data'));
+     return view('pos.bookings.tacheckout', compact('title', 'breadcrumbs', 'data'));
     }
 
     public function create()
@@ -66,7 +66,7 @@ class TACheckoutController extends Controller
 
         $items = AdditionalPayment::all();
 
-        return view('bookings.taaddcheckout', compact('title', 'breadcrumbs', 'is_edit', 'data', 'customers', 'items'));
+     return view('pos.bookings.taaddcheckout', compact('title', 'breadcrumbs', 'is_edit', 'data', 'customers', 'items'));
     }
     public function getBookingPaymentDetails($bookingId)
     {
@@ -358,7 +358,7 @@ class TACheckoutController extends Controller
         }
 
 
-        return view('bookings.invoice', compact('data', 'totalAdditionalPayment'));
+     return view('pos.bookings.invoice', compact('data', 'totalAdditionalPayment'));
     }
 
 
@@ -398,7 +398,7 @@ class TACheckoutController extends Controller
 
 
 
-        return view('bookings.additional', compact('data', 'checkinCheckout', 'orders', 'orderItems', 'cid'));
+     return view('pos.bookings.additional', compact('data', 'checkinCheckout', 'orders', 'orderItems', 'cid'));
     }
 
     public function additionalServiceInvoice($customerId, $checkoutDate)
@@ -419,6 +419,6 @@ class TACheckoutController extends Controller
 
 
 
-        return view('bookings.additionalservice', compact('checkinCheckout', 'additionalServices'));
+     return view('pos.bookings.additionalservice', compact('checkinCheckout', 'additionalServices'));
     }
 }

@@ -4,9 +4,9 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>@yield('title') | Ging Oya Resort Waikkal</title>
+    <title>@yield('title') | TSG fresh Resort Waikkal</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="Ging Oya Resort Waikkal" name="description" />
+    <meta content="TSG fresh Resort Waikkal" name="description" />
     <meta content="CyberWolf Solutions (Pvt) Ltd." name="author" />
     <meta name="csrf-token" content="{{ csrf_token() }}" />
 

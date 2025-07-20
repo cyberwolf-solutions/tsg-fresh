@@ -36,7 +36,7 @@ class BookingController extends Controller
         // Retrieve all bookings, including soft deleted records
         $data = Booking::withTrashed()->get();
 
-        return view('bookings.index', compact('title', 'breadcrumbs', 'data'));
+     return view('pos.bookings.index', compact('title', 'breadcrumbs', 'data'));
     }
 
     /**
@@ -307,7 +307,7 @@ class BookingController extends Controller
 
         $selected = implode(', ', $selectedArray);
 
-        return view('bookings.edit', compact('title', 'breadcrumbs', 'data', 'selectedRooms', 'selected'));
+     return view('pos.bookings.edit', compact('title', 'breadcrumbs', 'data', 'selectedRooms', 'selected'));
     }
 
     /**
@@ -471,7 +471,7 @@ class BookingController extends Controller
             ['label' => $title, 'url' => '', 'active' => true],
         ];
         $data = BordingType::all();
-        return view('bookings.check-availability', compact('title', 'cus', 'data', 'breadcrumbs', 'currencies', 'guests'));
+     return view('pos.bookings.check-availability', compact('title', 'cus', 'data', 'breadcrumbs', 'currencies', 'guests'));
     }
 
 
@@ -791,7 +791,7 @@ class BookingController extends Controller
     //         ['label' => $title, 'url' => '', 'active' => true],
     //     ];
 
-    //     return view('bookings.roomstatus', compact('data', 'title', 'breadcrumbs', 'type', 'data1'));
+    //  return view('pos.bookings.roomstatus', compact('data', 'title', 'breadcrumbs', 'type', 'data1'));
     // }
 
 
@@ -822,7 +822,7 @@ class BookingController extends Controller
             ['label' => $title, 'url' => '', 'active' => true],
         ];
 
-        return view('bookings.roomstatus', compact('data', 'title', 'breadcrumbs', 'type'));
+     return view('pos.bookings.roomstatus', compact('data', 'title', 'breadcrumbs', 'type'));
     }
 
 
@@ -836,7 +836,7 @@ class BookingController extends Controller
             ['label' => $title, 'url' => '', 'active' => true],
         ];
         $data = Booking::all();
-        return view('reports.bookingReports', compact('data'));
+     return view('pos.reports.bookingReports', compact('data'));
     }
 
 

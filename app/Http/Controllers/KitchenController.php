@@ -47,7 +47,7 @@ class KitchenController extends Controller
 
     //     $data = $data->get();
 
-    //     return view('kot.index', compact('title', 'breadcrumbs', 'data', 'type'));
+    //  return view('pos.kot.index', compact('title', 'breadcrumbs', 'data', 'type'));
     // }
 
     public function index(Request $request)
@@ -74,7 +74,7 @@ class KitchenController extends Controller
 
         $data = $data->get();
 
-        return view('kot.index', compact('title', 'breadcrumbs', 'data', 'type'));
+     return view('pos.kot.index', compact('title', 'breadcrumbs', 'data', 'type'));
     }
 
 
@@ -95,7 +95,7 @@ class KitchenController extends Controller
 
 
 
-    //     return view('kot.print', compact('data'));
+    //  return view('pos.kot.print', compact('data'));
     // }
 
     public function print(string $id)
@@ -117,7 +117,7 @@ class KitchenController extends Controller
     //     abort(404); // Or handle the case where order with $id is not found
     // }
 
-    return view('kot.print', compact('data'));
+ return view('pos.kot.print', compact('data'));
 }
 
     /**

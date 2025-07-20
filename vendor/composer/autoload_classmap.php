@@ -6,6 +6,7 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'App\\Bootstrappers\\DatabaseTenancyBootstrapper' => $baseDir . '/app/Bootstrappers/DatabaseTenancyBootstrapper.php',
     'App\\Console\\Commands\\CreateTenant' => $baseDir . '/app/Console/Commands/CreateTenant.php',
     'App\\Console\\Kernel' => $baseDir . '/app/Console/Kernel.php',
     'App\\Events\\notifyBot' => $baseDir . '/app/Events/notifyBot.php',
@@ -121,6 +122,7 @@ return array(
     'App\\Models\\Table' => $baseDir . '/app/Models/Table.php',
     'App\\Models\\TableArrangement' => $baseDir . '/app/Models/TableArrangement.php',
     'App\\Models\\Tenant' => $baseDir . '/app/Models/Tenant.php',
+    'App\\Models\\TenantUser' => $baseDir . '/app/Models/TenantUser.php',
     'App\\Models\\Unit' => $baseDir . '/app/Models/Unit.php',
     'App\\Models\\User' => $baseDir . '/app/Models/User.php',
     'App\\Models\\checkincheckout' => $baseDir . '/app/Models/checkincheckout.php',
@@ -130,6 +132,7 @@ return array(
     'App\\Providers\\EventServiceProvider' => $baseDir . '/app/Providers/EventServiceProvider.php',
     'App\\Providers\\RouteServiceProvider' => $baseDir . '/app/Providers/RouteServiceProvider.php',
     'App\\Providers\\TenancyServiceProvider' => $baseDir . '/app/Providers/TenancyServiceProvider.php',
+    'App\\Providers\\TenantAwareAuthServiceProvider' => $baseDir . '/app/Providers/TenantAwareAuthServiceProvider.php',
     'App\\Services\\EmailService' => $baseDir . '/app/Services/EmailService.php',
     'App\\Traits\\MailConfigTrait' => $baseDir . '/app/Traits/MailConfigTrait.php',
     'Attribute' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
@@ -249,6 +252,7 @@ return array(
     'Database\\Seeders\\PermissionSeeder' => $baseDir . '/database/seeders/PermissionSeeder.php',
     'Database\\Seeders\\SetmenuTypeSeeder' => $baseDir . '/database/seeders/SetmenuTypeSeeder.php',
     'Database\\Seeders\\SettingsSeeder' => $baseDir . '/database/seeders/SettingsSeeder.php',
+    'Database\\Seeders\\TenantDatabaseSeeder' => $baseDir . '/database/seeders/TenantDatabaseSeeder.php',
     'Database\\Seeders\\UserSeeder' => $baseDir . '/database/seeders/UserSeeder.php',
     'DateError' => $vendorDir . '/symfony/polyfill-php83/Resources/stubs/DateError.php',
     'DateException' => $vendorDir . '/symfony/polyfill-php83/Resources/stubs/DateException.php',

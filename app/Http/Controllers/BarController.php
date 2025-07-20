@@ -48,7 +48,7 @@ class BarController extends Controller
 
         $data = $data->get();
 
-        return view('bot.index', compact('title', 'breadcrumbs', 'data', 'type'));
+     return view('pos.bot.index', compact('title', 'breadcrumbs', 'data', 'type'));
     }
     public function print(string $id)
     {
@@ -63,7 +63,7 @@ class BarController extends Controller
             });
         })
         ->first();
-        return view('bot.print', compact('data'));
+     return view('pos.bot.print', compact('data'));
     }
 
     /**

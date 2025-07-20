@@ -21,7 +21,7 @@ class RoleController extends Controller {
 
         $data = Role::all();
 
-        return view('roles.index', compact('title', 'breadcrumbs', 'data'));
+     return view('pos.roles.index', compact('title', 'breadcrumbs', 'data'));
     }
 
     /**
@@ -41,7 +41,7 @@ class RoleController extends Controller {
 
         $is_edit = false;
 
-        return view('roles.create-edit', compact('title', 'breadcrumbs', 'data', 'is_edit', 'permissions'));
+     return view('pos.roles.create-edit', compact('title', 'breadcrumbs', 'data', 'is_edit', 'permissions'));
     }
 
     /**
@@ -103,7 +103,7 @@ class RoleController extends Controller {
 
         $is_edit = true;
 
-        return view('roles.create-edit', compact('title', 'breadcrumbs', 'data', 'is_edit', 'permissions'));
+     return view('pos.roles.create-edit', compact('title', 'breadcrumbs', 'data', 'is_edit', 'permissions'));
     }
 
     /**

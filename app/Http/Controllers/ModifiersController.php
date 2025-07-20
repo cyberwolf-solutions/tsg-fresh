@@ -27,7 +27,7 @@ class ModifiersController extends Controller
             ['label' => $title, 'url' => '', 'active' => true],
         ];
         $data = Modifier::all();
-        return view('modifiers.index', compact('title', 'breadcrumbs', 'data'));
+     return view('pos.modifiers.index', compact('title', 'breadcrumbs', 'data'));
     }
 
     /**
@@ -46,7 +46,7 @@ class ModifiersController extends Controller
         $ingredients = Ingredient::all();
         $categories = Category::all();
 
-        return view('modifiers.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'ingredients', 'categories'));
+     return view('pos.modifiers.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'ingredients', 'categories'));
     }
 
     /**
@@ -246,7 +246,7 @@ class ModifiersController extends Controller
         $categories = Category::all();
         $total = number_format($total, 2);
 
-        return view('modifiers.create-edit', compact(
+     return view('pos.modifiers.create-edit', compact(
             'title',
             'breadcrumbs',
             'is_edit',

@@ -30,7 +30,7 @@ class OrderController extends Controller {
             $data = $data->where('status', $status);
         }
 
-        return view('order.index', compact('title', 'breadcrumbs', 'data', 'status'));
+     return view('pos.order.index', compact('title', 'breadcrumbs', 'data', 'status'));
     }
 
     /**
@@ -53,11 +53,11 @@ class OrderController extends Controller {
         $data = Order::find($id);
 
         
-        return view('order.show', compact('data'));
+     return view('pos.order.show', compact('data'));
     }
     public function print(string $id) {
         $data = Order::find($id);
-        return view('order.print', compact('data'));
+     return view('pos.order.print', compact('data'));
     }
 
     /**

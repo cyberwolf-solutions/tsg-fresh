@@ -21,7 +21,7 @@ class TablesController extends Controller {
             ['label' => $title, 'url' => '', 'active' => true],
         ];
         $data = Table::all();
-        return view('tables.index', compact('title', 'breadcrumbs', 'data'));
+     return view('pos.tables.index', compact('title', 'breadcrumbs', 'data'));
     }
 
     /**
@@ -37,7 +37,7 @@ class TablesController extends Controller {
 
         $is_edit = false;
 
-        return view('tables.create-edit', compact('title', 'breadcrumbs', 'is_edit'));
+     return view('pos.tables.create-edit', compact('title', 'breadcrumbs', 'is_edit'));
     }
 
     /**
@@ -126,7 +126,7 @@ class TablesController extends Controller {
         $is_edit = true;
         $data = Table::find($id);
 
-        return view('tables.create-edit', compact('title', 'breadcrumbs', 'data', 'is_edit'));
+     return view('pos.tables.create-edit', compact('title', 'breadcrumbs', 'data', 'is_edit'));
     }
 
     /**

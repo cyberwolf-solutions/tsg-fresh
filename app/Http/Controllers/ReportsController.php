@@ -105,7 +105,7 @@ class ReportsController extends Controller
     //     // Merge the two collections
     //     $data = $purchases->merge($otherPurchases);
     
-    //     return view('reports.purchaseindex', compact('title', 'breadcrumbs', 'data'));
+    //  return view('pos.reports.purchaseindex', compact('title', 'breadcrumbs', 'data'));
     // }
     
 
@@ -171,7 +171,7 @@ class ReportsController extends Controller
         $data = Order::all();
 
 
-        return view('reports.orderindex' ,compact('title', 'breadcrumbs','data') );
+     return view('pos.reports.orderindex' ,compact('title', 'breadcrumbs','data') );
 
 
 
@@ -189,7 +189,7 @@ class ReportsController extends Controller
         $data = Order::all();
 
 
-        return view('reports.tacheckout' ,compact('title', 'breadcrumbs','data') );
+     return view('pos.reports.tacheckout' ,compact('title', 'breadcrumbs','data') );
 
 
 

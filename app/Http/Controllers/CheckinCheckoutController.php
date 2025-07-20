@@ -28,7 +28,7 @@ class CheckinCheckoutController extends Controller
             ['label' => $title, 'url' => '', 'active' => true],
         ];
         $data = CheckinCheckout::with('customer', 'roomType')->get();
-        return view('bookings.checkin', compact('title', 'breadcrumbs', 'data'));
+     return view('pos.bookings.checkin', compact('title', 'breadcrumbs', 'data'));
     }
 
     public function create(Request $request)
@@ -51,7 +51,7 @@ class CheckinCheckoutController extends Controller
         $data1 = Room::all();
         $data2 = RoomPricing::all();
 
-        return view('bookings.addcheckin', compact('title', 'breadcrumbs', 'data', 'is_edit', 'data1', 'customers', 'data2'));
+     return view('pos.bookings.addcheckin', compact('title', 'breadcrumbs', 'data', 'is_edit', 'data1', 'customers', 'data2'));
     }
 
     public function getBookingRooms($customerId)

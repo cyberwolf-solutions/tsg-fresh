@@ -350,13 +350,13 @@ class ComposerStaticInit1918f54f3334b509055defecabf931a2
         ),
         'Spatie\\LaravelIgnition\\' => 
         array (
-            0 => __DIR__ . '/..' . '/spatie/error-solutions/legacy/laravel-ignition',
-            1 => __DIR__ . '/..' . '/spatie/laravel-ignition/src',
+            0 => __DIR__ . '/..' . '/spatie/laravel-ignition/src',
+            1 => __DIR__ . '/..' . '/spatie/error-solutions/legacy/laravel-ignition',
         ),
         'Spatie\\Ignition\\' => 
         array (
-            0 => __DIR__ . '/..' . '/spatie/error-solutions/legacy/ignition',
-            1 => __DIR__ . '/..' . '/spatie/ignition/src',
+            0 => __DIR__ . '/..' . '/spatie/ignition/src',
+            1 => __DIR__ . '/..' . '/spatie/error-solutions/legacy/ignition',
         ),
         'Spatie\\FlareClient\\' => 
         array (
@@ -603,6 +603,7 @@ class ComposerStaticInit1918f54f3334b509055defecabf931a2
     );
 
     public static $classMap = array (
+        'App\\Bootstrappers\\DatabaseTenancyBootstrapper' => __DIR__ . '/../..' . '/app/Bootstrappers/DatabaseTenancyBootstrapper.php',
         'App\\Console\\Commands\\CreateTenant' => __DIR__ . '/../..' . '/app/Console/Commands/CreateTenant.php',
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
         'App\\Events\\notifyBot' => __DIR__ . '/../..' . '/app/Events/notifyBot.php',
@@ -718,6 +719,7 @@ class ComposerStaticInit1918f54f3334b509055defecabf931a2
         'App\\Models\\Table' => __DIR__ . '/../..' . '/app/Models/Table.php',
         'App\\Models\\TableArrangement' => __DIR__ . '/../..' . '/app/Models/TableArrangement.php',
         'App\\Models\\Tenant' => __DIR__ . '/../..' . '/app/Models/Tenant.php',
+        'App\\Models\\TenantUser' => __DIR__ . '/../..' . '/app/Models/TenantUser.php',
         'App\\Models\\Unit' => __DIR__ . '/../..' . '/app/Models/Unit.php',
         'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',
         'App\\Models\\checkincheckout' => __DIR__ . '/../..' . '/app/Models/checkincheckout.php',
@@ -727,6 +729,7 @@ class ComposerStaticInit1918f54f3334b509055defecabf931a2
         'App\\Providers\\EventServiceProvider' => __DIR__ . '/../..' . '/app/Providers/EventServiceProvider.php',
         'App\\Providers\\RouteServiceProvider' => __DIR__ . '/../..' . '/app/Providers/RouteServiceProvider.php',
         'App\\Providers\\TenancyServiceProvider' => __DIR__ . '/../..' . '/app/Providers/TenancyServiceProvider.php',
+        'App\\Providers\\TenantAwareAuthServiceProvider' => __DIR__ . '/../..' . '/app/Providers/TenantAwareAuthServiceProvider.php',
         'App\\Services\\EmailService' => __DIR__ . '/../..' . '/app/Services/EmailService.php',
         'App\\Traits\\MailConfigTrait' => __DIR__ . '/../..' . '/app/Traits/MailConfigTrait.php',
         'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
@@ -846,6 +849,7 @@ class ComposerStaticInit1918f54f3334b509055defecabf931a2
         'Database\\Seeders\\PermissionSeeder' => __DIR__ . '/../..' . '/database/seeders/PermissionSeeder.php',
         'Database\\Seeders\\SetmenuTypeSeeder' => __DIR__ . '/../..' . '/database/seeders/SetmenuTypeSeeder.php',
         'Database\\Seeders\\SettingsSeeder' => __DIR__ . '/../..' . '/database/seeders/SettingsSeeder.php',
+        'Database\\Seeders\\TenantDatabaseSeeder' => __DIR__ . '/../..' . '/database/seeders/TenantDatabaseSeeder.php',
         'Database\\Seeders\\UserSeeder' => __DIR__ . '/../..' . '/database/seeders/UserSeeder.php',
         'DateError' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/DateError.php',
         'DateException' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/DateException.php',

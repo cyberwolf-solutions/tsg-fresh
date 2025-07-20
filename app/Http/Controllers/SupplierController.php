@@ -21,7 +21,7 @@ class SupplierController extends Controller {
             ['label' => $title, 'url' => '', 'active' => true],
         ];
         $data = Supplier::all();
-        return view('suppliers.index', compact('title', 'breadcrumbs', 'data'));
+     return view('pos.suppliers.index', compact('title', 'breadcrumbs', 'data'));
     }
 
     /**
@@ -38,7 +38,7 @@ class SupplierController extends Controller {
 
         $is_edit = false;
 
-        return view('suppliers.create-edit', compact('title', 'breadcrumbs', 'is_edit'));
+     return view('pos.suppliers.create-edit', compact('title', 'breadcrumbs', 'is_edit'));
     }
 
     /**
@@ -150,7 +150,7 @@ class SupplierController extends Controller {
 
         $data = Supplier::find($id);
 
-        return view('suppliers.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data'));
+     return view('pos.suppliers.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data'));
     }
 
     /**

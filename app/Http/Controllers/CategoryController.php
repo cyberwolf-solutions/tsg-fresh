@@ -23,7 +23,7 @@ class CategoryController extends Controller {
             ['label' => $title, 'url' => '', 'active' => true],
         ];
         $data = Category::all();
-        return view('categories.index', compact('title', 'breadcrumbs', 'data'));
+     return view('pos.categories.index', compact('title', 'breadcrumbs', 'data'));
     }
 
     /**
@@ -40,7 +40,7 @@ class CategoryController extends Controller {
 
         $is_edit = false;
 
-        return view('categories.create-edit', compact('title', 'breadcrumbs', 'is_edit'));
+     return view('pos.categories.create-edit', compact('title', 'breadcrumbs', 'is_edit'));
     }
 
     /**
@@ -162,7 +162,7 @@ class CategoryController extends Controller {
         $is_edit = true;
         $data = Category::find($id);
 
-        return view('categories.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data'));
+     return view('pos.categories.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data'));
     }
 
     /**

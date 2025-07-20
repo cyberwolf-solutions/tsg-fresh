@@ -24,7 +24,7 @@ class BordingTypeCOntroller extends Controller
         ];
 
 
-        return view('bording.index', compact('data', 'title', 'breadcrumbs'));
+     return view('pos.bording.index', compact('data', 'title', 'breadcrumbs'));
     }
 
     public function store(Request $request)

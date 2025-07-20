@@ -4,7 +4,7 @@
             <div class="col-sm-6">
                 <script>
                     document.write(new Date().getFullYear())
-                </script> © Ging Oya Resort Waikkal.
+                </script> © TSG fresh Resort Waikkal.
             </div>
             <div class="col-sm-6">
                 <div class="text-sm-end d-none d-sm-block">

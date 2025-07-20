@@ -150,7 +150,7 @@ Route::middleware([
 
     Route::middleware(['guest'])->group(function () {
         Route::get('/', function () {
-            return view('auth.login');
+         return view('pos.auth.login');
         })->name('login');
     });
     Auth::routes();

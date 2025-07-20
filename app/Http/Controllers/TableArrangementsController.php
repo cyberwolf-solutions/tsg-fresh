@@ -23,7 +23,7 @@ class TableArrangementsController extends Controller {
             ['label' => $title, 'url' => '', 'active' => true],
         ];
         $data = TableArrangement::all();
-        return view('table-arrangements.index', compact('title', 'breadcrumbs', 'data'));
+     return view('pos.table-arrangements.index', compact('title', 'breadcrumbs', 'data'));
     }
 
     /**
@@ -39,7 +39,7 @@ class TableArrangementsController extends Controller {
 
         $is_edit = false;
 
-        return view('table-arrangements.create-edit', compact('title', 'breadcrumbs', 'is_edit'));
+     return view('pos.table-arrangements.create-edit', compact('title', 'breadcrumbs', 'is_edit'));
     }
 
     /**

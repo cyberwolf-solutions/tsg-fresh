@@ -28,7 +28,7 @@
                                         height="20">
                                 </a>
                             </div>
-                            <p class="mt-3 fs-15 fw-medium">Ging Oya Resort Waikkal.</p>
+                            <p class="mt-3 fs-15 fw-medium">TSG fresh Resort Waikkal.</p>
                         </div>
                     </div>
                 </div>
@@ -41,7 +41,7 @@
                             <div class="card-body p-4">
                                 <div class="text-center mt-2">
                                     <h5 class="text-primary">Forgot Password?</h5>
-                                    <p class="text-muted">Reset password with Ging Oya Resort Waikkal</p>
+                                    <p class="text-muted">Reset password with TSG fresh Resort Waikkal</p>
 
                                     <lord-icon src="https://cdn.lordicon.com/rhvddzym.json" trigger="loop"
                                         colors="primary:#0ab39c" class="avatar-xl">
@@ -105,7 +105,7 @@
                         <div class="text-center">
                             <script>
                                 document.write(new Date().getFullYear())
-                            </script> Ging Oya Resort Waikkal. Crafted with <i
+                            </script> TSG fresh Resort Waikkal. Crafted with <i
                                 class="mdi mdi-heart text-danger"></i> by
                             CyberWolf Solutions (Pvt) Ltd.</p>
                         </div>

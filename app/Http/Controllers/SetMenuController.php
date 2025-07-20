@@ -27,7 +27,7 @@ class SetMenuController extends Controller
             ['label' => $title, 'url' => '', 'active' => true],
         ];
         $data = SetMenu::all();
-        return view('setmenu.index', compact('title', 'breadcrumbs', 'data'));
+     return view('pos.setmenu.index', compact('title', 'breadcrumbs', 'data'));
     }
 
 
@@ -46,7 +46,7 @@ class SetMenuController extends Controller
         $mealtype = SetMenuMealType::all();
         $setmenutype = SetMenuType::all();
 
-        return view('setmenu.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'categories', 'ingredients','mealtype','setmenutype'));
+     return view('pos.setmenu.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'categories', 'ingredients','mealtype','setmenutype'));
     }
 
 

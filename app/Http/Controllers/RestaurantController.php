@@ -57,7 +57,7 @@ class RestaurantController extends Controller
             return $item;
         });
 
-        return view('restaurant.index', compact('title', 'breadcrumbs', 'categories', 'meals', 'products', 'setmenu', 'items', 'type', 'type_meal'));
+     return view('pos.restaurant.index', compact('title', 'breadcrumbs', 'categories', 'meals', 'products', 'setmenu', 'items', 'type', 'type_meal'));
     }
 
     /**
@@ -110,25 +110,25 @@ class RestaurantController extends Controller
 
     public function note()
     {
-        return view('restaurant.notes');
+     return view('pos.restaurant.notes');
     }
     public function process()
     {
         $inProgress = Order::where('status', 'Pending')->get();
         $ready = Order::where('status', 'InProgress')->get();
-        return view('restaurant.in-process', compact('inProgress', 'ready'));
+     return view('pos.restaurant.in-process', compact('inProgress', 'ready'));
     }
     public function tables(Request $request)
     {
         $table = $request->table;
         $tables = Table::all()->where('availability', 'Available');
-        return view('restaurant.tables-modal', compact('tables', 'table'));
+     return view('pos.restaurant.tables-modal', compact('tables', 'table'));
     }
     public function rooms(Request $request)
     {
         $room = $request->room;
         $rooms = BookingsRooms::all();
-        return view('restaurant.rooms-modal', compact('rooms', 'room'));
+     return view('pos.restaurant.rooms-modal', compact('rooms', 'room'));
     }
     public function customer(Request $request)
     {
@@ -136,30 +136,30 @@ class RestaurantController extends Controller
         $customers = Customer::all();
         $currencies = Currency::all();
 
-        return view('restaurant.customer-modal', compact('customers', 'customer', 'currencies'));
+     return view('pos.restaurant.customer-modal', compact('customers', 'customer', 'currencies'));
     }
     public function customerAdd()
     {
-        return view('restaurant.customer-add-modal');
+     return view('pos.restaurant.customer-add-modal');
     }
     public function discount(Request $request)
     {
         $discount = $request->discount;
         $discount_method = $request->discount_method;
-        return view('restaurant.discount-modal', compact('discount', 'discount_method'));
+     return view('pos.restaurant.discount-modal', compact('discount', 'discount_method'));
     }
     public function vat(Request $request)
     {
         $vat = $request->vat;
         $vat_method = $request->vat_method;
-        return view('restaurant.vat-modal', compact('vat', 'vat_method'));
+     return view('pos.restaurant.vat-modal', compact('vat', 'vat_method'));
     }
     public function modifiers(Request $request)
     {
         $id = $request->id;
         $category = Product::find($id)->category_id;
         $modifiers = ModifiersCategories::where('category_id', $category)->get();
-        return view('restaurant.modifiers-modal', compact('modifiers', 'id'));
+     return view('pos.restaurant.modifiers-modal', compact('modifiers', 'id'));
     }
 
     // public function checkout(Request $request) {

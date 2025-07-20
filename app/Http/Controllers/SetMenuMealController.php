@@ -22,7 +22,7 @@ class SetMenuMealController extends Controller
 
         $data = SetMenuMealType::all();
 
-        return view('setmenumeal.index' , compact('breadcrumbs','data','title'));
+     return view('pos.setmenumeal.index' , compact('breadcrumbs','data','title'));
 
     }
 

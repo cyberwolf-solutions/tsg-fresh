@@ -23,7 +23,7 @@ class UserController extends Controller {
             ['label' => $title, 'url' => '', 'active' => true],
         ];
         $data = User::all();
-        return view('users.index', compact('title', 'breadcrumbs', 'data'));
+     return view('pos.users.index', compact('title', 'breadcrumbs', 'data'));
     }
 
     /**
@@ -41,7 +41,7 @@ class UserController extends Controller {
 
         $is_edit = false;
 
-        return view('users.create-edit', compact('title', 'breadcrumbs', 'roles', 'is_edit'));
+     return view('pos.users.create-edit', compact('title', 'breadcrumbs', 'roles', 'is_edit'));
     }
 
     /**
@@ -119,7 +119,7 @@ class UserController extends Controller {
 
         $is_edit = true;
 
-        return view('users.create-edit', compact('title', 'breadcrumbs', 'data', 'roles', 'is_edit'));
+     return view('pos.users.create-edit', compact('title', 'breadcrumbs', 'data', 'roles', 'is_edit'));
     }
 
     /**
@@ -245,7 +245,7 @@ class UserController extends Controller {
     }
 
     public function profile() {
-        return view('auth.profile');
+     return view('pos.auth.profile');
     }
 
     public function profileUpdate(Request $request) {

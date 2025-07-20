@@ -48,7 +48,7 @@ class CheckoutController extends Controller
             ->where('type', 'customer')
             ->get();
 
-        return view('bookings.checkout', compact('title', 'breadcrumbs', 'data'));
+     return view('pos.bookings.checkout', compact('title', 'breadcrumbs', 'data'));
     }
 
     public function create()
@@ -69,7 +69,7 @@ class CheckoutController extends Controller
         $customers = Customer::where('type', 'customer')->get();
         $items = AdditionalPayment::all();
 
-        return view('bookings.addcheckout', compact('title', 'breadcrumbs', 'is_edit', 'data', 'customers', 'items'));
+     return view('pos.bookings.addcheckout', compact('title', 'breadcrumbs', 'is_edit', 'data', 'customers', 'items'));
     }
     public function getBookingPaymentDetails($bookingId)
     {
@@ -346,7 +346,7 @@ class CheckoutController extends Controller
         }
 
 
-        return view('bookings.invoice', compact('data', 'totalAdditionalPayment'));
+     return view('pos.bookings.invoice', compact('data', 'totalAdditionalPayment'));
     }
 
 
@@ -386,7 +386,7 @@ class CheckoutController extends Controller
 
 
 
-        return view('bookings.additional', compact('data', 'checkinCheckout', 'orders', 'orderItems', 'cid'));
+     return view('pos.bookings.additional', compact('data', 'checkinCheckout', 'orders', 'orderItems', 'cid'));
     }
 
     public function additionalServiceInvoice($customerId, $checkoutDate)
@@ -407,6 +407,6 @@ class CheckoutController extends Controller
 
 
 
-        return view('bookings.additionalservice', compact('checkinCheckout', 'additionalServices'));
+     return view('pos.bookings.additionalservice', compact('checkinCheckout', 'additionalServices'));
     }
 }

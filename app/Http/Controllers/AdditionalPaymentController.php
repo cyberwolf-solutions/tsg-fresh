@@ -26,7 +26,7 @@ class AdditionalPaymentController extends Controller
         ];
 
 
-        return view('additionalpayment.index', compact('data', 'title', 'breadcrumbs'));
+     return view('pos.additionalpayment.index', compact('data', 'title', 'breadcrumbs'));
     }
 
     public function store(Request $request)

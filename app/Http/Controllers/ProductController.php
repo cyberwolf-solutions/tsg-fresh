@@ -28,7 +28,7 @@ class ProductController extends Controller {
         ];
         $data = Product::all();
 
-        return view('products.index', compact('title', 'breadcrumbs', 'data'));
+     return view('pos.products.index', compact('title', 'breadcrumbs', 'data'));
     }
 
     /**
@@ -47,7 +47,7 @@ class ProductController extends Controller {
         $ingredients = Ingredient::all();
         $categories = Category::all();
 
-        return view('products.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'categories', 'ingredients'));
+     return view('pos.products.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'categories', 'ingredients'));
     }
 
     /**
@@ -269,7 +269,7 @@ class ProductController extends Controller {
         $categories = Category::all();
         $total = number_format($total, 2);
 
-        return view('products.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data', 'ingredients',
+     return view('pos.products.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data', 'ingredients',
             'categories', 'ing_array', 'total'));
     }
 

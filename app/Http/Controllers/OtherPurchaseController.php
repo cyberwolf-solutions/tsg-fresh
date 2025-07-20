@@ -28,7 +28,7 @@ class OtherPurchaseController extends Controller
             ['label' => $title, 'url' => '', 'active' => true],
         ];
         $data = OtherPurchase::all();
-        return view('purchases.Other_index', compact('title', 'breadcrumbs', 'data'));
+     return view('pos.purchases.Other_index', compact('title', 'breadcrumbs', 'data'));
     }
 
     public function create()
@@ -56,7 +56,7 @@ class OtherPurchaseController extends Controller
 
         $latest++;
 
-        return view('purchases.Other_create-edit', compact('title', 'breadcrumbs', 'is_edit', 'suppliers', 'products', 'latest'));
+     return view('pos.purchases.Other_create-edit', compact('title', 'breadcrumbs', 'is_edit', 'suppliers', 'products', 'latest'));
     }
 
     public function store(Request $request)
@@ -165,7 +165,7 @@ class OtherPurchaseController extends Controller
         ];
 
 
-        return view('purchases.Other_show', compact('title', 'breadcrumbs', 'data'));
+     return view('pos.purchases.Other_show', compact('title', 'breadcrumbs', 'data'));
     }
 
     /**
@@ -188,7 +188,7 @@ class OtherPurchaseController extends Controller
 
         $data = OtherPurchase::find($id);
 
-        return view('purchases.Other_create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data', 'suppliers', 'products'));
+     return view('pos.purchases.Other_create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data', 'suppliers', 'products'));
     }
 
     /**
@@ -442,7 +442,7 @@ class OtherPurchaseController extends Controller
 
         $is_edit = false;
 
-        return view('purchases.Other_payment', compact('data', 'is_edit', 'due'));
+     return view('pos.purchases.Other_payment', compact('data', 'is_edit', 'due'));
     }
 
     public function viewPayments(string $id)
@@ -450,7 +450,7 @@ class OtherPurchaseController extends Controller
         // Assuming you want to fetch all payments related to a specific purchase
         $data = InventoryPurchasePayment::where('purchase_id', $id)->get();
 
-        return view('purchases.other_payments-modal', compact('data'));
+     return view('pos.purchases.other_payments-modal', compact('data'));
     }
 
 
@@ -466,6 +466,6 @@ class OtherPurchaseController extends Controller
         ];
         // $data = Purchases::all();
         $data = Purchases::with(['supplier', 'items.product', 'payments'])->get();
-        return view('reports.purchaseReports', compact('data'));
+     return view('pos.reports.purchaseReports', compact('data'));
     }
 }

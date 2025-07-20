@@ -55,6 +55,6 @@ class HomeController extends Controller {
         $Products1 = Inventory::orderBy('quantity')->get();
 
 
-        return view('home', compact('totalOrders', 'totalBookings', 'todayOrders', 'todayBookings' ,'customers' , 'employees' ,'suppliers' , 'Products' ,'Products1'));
+     return view('pos.home', compact('totalOrders', 'totalBookings', 'todayOrders', 'todayBookings' ,'customers' , 'employees' ,'suppliers' , 'Products' ,'Products1'));
     }
 }

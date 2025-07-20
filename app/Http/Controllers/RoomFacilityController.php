@@ -24,7 +24,7 @@ class RoomFacilityController extends Controller
         ];
 
 
-        return view('facilities.index', compact('data', 'title', 'breadcrumbs'));
+     return view('pos.facilities.index', compact('data', 'title', 'breadcrumbs'));
     }
 
     public function store(Request $request)

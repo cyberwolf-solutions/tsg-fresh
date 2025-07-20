@@ -22,7 +22,7 @@ class EmployeeController extends Controller {
             ['label' => $title, 'url' => '', 'active' => true],
         ];
         $data = Employee::all();
-        return view('employees.index', compact('title', 'breadcrumbs', 'data'));
+     return view('pos.employees.index', compact('title', 'breadcrumbs', 'data'));
     }
 
     /**
@@ -40,7 +40,7 @@ class EmployeeController extends Controller {
         $is_edit = false;
         $designations = EmployeeDesignation::all();
 
-        return view('employees.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'designations'));
+     return view('pos.employees.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'designations'));
     }
 
     /**
@@ -181,7 +181,7 @@ class EmployeeController extends Controller {
         $designations = EmployeeDesignation::all();
         $data = Employee::find($id);
 
-        return view('employees.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data', 'designations'));
+     return view('pos.employees.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data', 'designations'));
     }
 
     /**

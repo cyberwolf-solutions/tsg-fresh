@@ -29,7 +29,7 @@ class IngredientsController extends Controller
         ];
         $data = Ingredient::all();
 
-        return view('ingredients.index', compact('title', 'breadcrumbs', 'data'));
+     return view('pos.ingredients.index', compact('title', 'breadcrumbs', 'data'));
     }
 
     /**
@@ -48,7 +48,7 @@ class IngredientsController extends Controller
         $is_edit = false;
         $units = Unit::all();
 
-        return view('ingredients.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'units'));
+     return view('pos.ingredients.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'units'));
     }
 
     /**
@@ -163,7 +163,7 @@ class IngredientsController extends Controller
         $units = Unit::all();
         $data = Ingredient::find($id);
 
-        return view('ingredients.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data', 'units'));
+     return view('pos.ingredients.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data', 'units'));
     }
 
     /**

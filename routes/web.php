@@ -45,7 +45,7 @@ use App\Http\Controllers\EmployeeDesignationsController;
 foreach (config('tenancy.central_domains') as $domain) {
     Route::domain($domain)->group(function () {
         Route::get('/', function () {
-            return view('admin.branches.index');
+         return view('pos.admin.branches.index');
         });
 
         Route::get('/branches', [BranchController::class, 'index']);
@@ -54,16 +54,16 @@ foreach (config('tenancy.central_domains') as $domain) {
 
 
         Route::get('/landing', function () {
-            return view('landing-page.home');
+         return view('pos.landing-page.home');
         });
         // Route::get('/abountus', [App\Http\Controllers\LandingPageController::class, 'aboutus'])->name('landing.about');
 
         Route::get('/about', function () {
-            return view('Landing-page.about');
+         return view('pos.Landing-page.about');
         });
 
         Route::get('/contact', function () {
-            return view('Landing-page.contact');
+         return view('pos.Landing-page.contact');
         });
     });
 }

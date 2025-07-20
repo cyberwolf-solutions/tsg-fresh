@@ -65,7 +65,7 @@
                                     <div class="p-lg-5 p-4">
                                         <div>
                                             <h5 class="text-primary">Welcome Back !</h5>
-                                            <p class="text-muted">Sign in to continue to Ging Oya Resort Waikkal.</p>
+                                            <p class="text-muted">Sign in to continue to TSG fresh Resort Waikkal.</p>
                                         </div>
 
                                         <div class="mt-4">
@@ -141,7 +141,7 @@
                         <div class="text-center">
                             <script>
                                 document.write(new Date().getFullYear())
-                            </script> © Ging Oya Resort Waikkal. Crafted with <i
+                            </script> © TSG fresh Resort Waikkal. Crafted with <i
                                 class="mdi mdi-heart text-danger"></i> by
                             CyberWolf Solutions (Pvt) Ltd.</p>
                         </div>
