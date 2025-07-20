@@ -23,7 +23,7 @@
 
         <!-- Centered Logo -->
         <div style="position: absolute; left: 50%; transform: translateX(-50%);">
-            <img src="{{ asset('build/images/fishlogo.png') }}" alt="Logo" style="height: 60px;">
+            <img src="{{ asset('build/images/landing/flogo.png') }}" alt="Logo" style="height: 60px;">
         </div>
     </nav>
 
