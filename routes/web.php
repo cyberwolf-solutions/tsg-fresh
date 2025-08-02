@@ -40,15 +40,31 @@ use App\Http\Controllers\CheckinCheckoutController;
 use App\Http\Controllers\AdditionalPaymentController;
 use App\Http\Controllers\TableArrangementsController;
 use App\Http\Controllers\EmployeeDesignationsController;
+use Stancl\Tenancy\Facades\Tenancy;
 
+use Stancl\Tenancy\Database\Models\Tenant;
 
 foreach (config('tenancy.central_domains') as $domain) {
     Route::domain($domain)->group(function () {
         Route::get('/', function () {
 
-         return view('admin.branches.index');
-
+            return view('admin.branches.index');
         });
+
+
+// tenet
+        // Route::get('/select-branch/{branch}', function ($branch) {
+        //     $tenant = Tenant::find($branch); // or `where('id', $branch)->first()`
+
+        //     if (! $tenant) {
+        //         abort(404, 'Branch not found');
+        //     }
+
+        //     $domain = $tenant->domains()->first()->domain;
+
+        //     return redirect()->away("http://{$domain}/store");
+        // })->name('select.branch');
+
 
         Route::get('/branches', [BranchController::class, 'index']);
 
@@ -57,8 +73,7 @@ foreach (config('tenancy.central_domains') as $domain) {
 
         Route::get('/landing', function () {
 
-         return view('landing-page.home');
-
+            return view('landing-page.home');
         });
         // Route::get('/abountus', [App\Http\Controllers\LandingPageController::class, 'aboutus'])->name('landing.about');
 
@@ -74,15 +89,22 @@ foreach (config('tenancy.central_domains') as $domain) {
             return view('Landing-page.dynamic');
         });
 
-        Route::get('/contact', function () {
-            return view('Landing-page.contact');
+        Route::get('/single', function () {
+            return view('Landing-page.singleView');
+        });
 
-         return view('Landing-page.about');
+
+        Route::get('/cart', function () {
+            return view('Landing-page.cart');
+        });
+
+
+        Route::get('/checkout', function () {
+            return view('Landing-page.checkout');
         });
 
         Route::get('/contact', function () {
-         return view('Landing-page.contact');
-
+            return view('Landing-page.contact');
         });
     });
 }

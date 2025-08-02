@@ -15,7 +15,7 @@ class BranchController extends Controller
     public function index()
     {
         $branches = Tenant::all();
-     return view('pos.admin.branches.index', compact('branches'));
+     return view('admin.branches.index', compact('branches'));
     }
     // public function store(Request $request)
     // {

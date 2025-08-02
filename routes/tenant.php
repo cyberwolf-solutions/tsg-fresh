@@ -149,11 +149,18 @@ Route::middleware([
         return "Tenant not found";
     });
 
+
+
+// Route::get('/store', function () {
+//     $branch = tenant()->id; // e.g., 'galle', 'kandy'
+//     $products = \App\Models\Product::all(); // Loaded from tenant DB
+//     return view('Landing-page.dynamic', compact('products', 'branch'));
+// })->name('tenant.store');
+
     Route::middleware(['guest'])->group(function () {
         Route::get('/', function () {
 
-         return view('auth.login');
-
+            return view('auth.login');
         })->name('login');
     });
     Auth::routes();

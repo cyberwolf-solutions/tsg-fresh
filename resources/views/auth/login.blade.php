@@ -7,7 +7,7 @@
 @section('content')
     <!-- Auth Page Wrapper -->
     <div class="auth-page-wrapper d-flex justify-content-center align-items-center min-vh-100" 
-         style="background: linear-gradient(135deg, #7930c7 0%, #2367dd 100%);">
+         style="background: linear-gradient(135deg, #9e68d7 0%, #1b4081 100%);">
 
         <!-- Auth Card -->
         <div class="card shadow-lg rounded-4" style="width: 100%; max-width: 450px;">
