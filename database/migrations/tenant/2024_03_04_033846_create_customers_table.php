@@ -17,20 +17,19 @@ return new class extends Migration
             $table->string('contact')->nullable();
             $table->string('email')->nullable();
             $table->string('address')->nullable();
-            $table->string('type')->nullable();
-            $table->string('passport_no')->nullable();
-            $table->string('next_destination')->nullable();
-            $table->string('nationality')->nullable();
-            $table->unsignedBigInteger('currency_id')->nullable();
-            $table->text('signature')->nullable();
-            $table->string('image_url')->nullable();
+            $table->string('company_name');
+            $table->string('vat');
+            $table->string('city');
+            $table->string('state');
+            $table->string('postalcode');
+            $table->string('country');
+            $table->string('group');
+
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->unsignedBigInteger('deleted_by')->nullable();
             $table->softDeletes();
             $table->timestamps();
-
-            $table->foreign('currency_id')->references('id')->on('currency')->onDelete('set null');
         });
     }
 

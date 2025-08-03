@@ -9,11 +9,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class SupplierController extends Controller {
+class SupplierController extends Controller
+{
     /**
      * Display a listing of the resource.
      */
-    public function index() {
+    public function index()
+    {
         $title = 'Suppliers';
 
         $breadcrumbs = [
@@ -21,13 +23,14 @@ class SupplierController extends Controller {
             ['label' => $title, 'url' => '', 'active' => true],
         ];
         $data = Supplier::all();
-     return view('pos.suppliers.index', compact('title', 'breadcrumbs', 'data'));
+        return view('pos.suppliers.index', compact('title', 'breadcrumbs', 'data'));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create() {
+    public function create()
+    {
         $title = 'Suppliers';
 
         $breadcrumbs = [
@@ -38,19 +41,26 @@ class SupplierController extends Controller {
 
         $is_edit = false;
 
-     return view('pos.suppliers.create-edit', compact('title', 'breadcrumbs', 'is_edit'));
+        return view('pos.suppliers.create-edit', compact('title', 'breadcrumbs', 'is_edit'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255|unique:suppliers,name',
-            'contact_primary' => 'required|string|max:15', // Assuming a maximum length of 15 characters for a phone number
-            'contact_secondary' => 'nullable|string|max:15', // Assuming a maximum length of 15 characters for a phone number
+            'contact' => 'required|string|max:15', // Assuming a maximum length of 15 characters for a phone number
             'email' => 'nullable|email|max:255',
             'address' => 'required|string',
+            'companyname' => 'required|string',
+            'vat' => 'required|string',
+            'city' => 'required|string',
+            'state' => 'required|string',
+            'postal' => 'required|string',
+            'country' => 'required|string',
+            'image' => 'nullable|max:5000',
         ]);
 
         if ($validator->fails()) {
@@ -64,13 +74,28 @@ class SupplierController extends Controller {
 
             return response()->json(['success' => false, 'message' => $all_errors]);
         }
+
+        if ($request->file('image') != null) {
+            $preferred_name = trim($request->name);
+            $image_url = $preferred_name . '.' . $request['image']->extension();
+        } else {
+            $image_url = null;
+        }
+
         try {
             $data = [
                 'name' => $request->name,
-                'contact_primary' => $request->contact_primary,
-                'contact_secondary' => $request->contact_secondary,
+                'contact' => $request->contact,
                 'email' => $request->email,
                 'address' => $request->address,
+                'image_url' => $image_url,
+                'company_name' => $request->companyname,
+                'vat' => $request->vat,
+                'city' => $request->city,
+                'state' => $request->state,
+                'postalcode' => $request->postal,
+                'country' => $request->country,
+
                 'created_by' => Auth::user()->id,
             ];
 
@@ -86,7 +111,8 @@ class SupplierController extends Controller {
     /**
      * Display the specified resource.
      */
-    public function show(string $id) {
+    public function show(string $id)
+    {
         $data = Supplier::find($id);
 
         $settings = Settings::latest()->first();
@@ -103,11 +129,11 @@ class SupplierController extends Controller {
         $html .= '</tr>';
         $html .= '<tr>';
         $html .= '<td>Contact Primary :</td>';
-        $html .= '<td>' . $data->contact_primary . '</td>';
+        $html .= '<td>' . $data->contact . '</td>';
         $html .= '</tr>';
         $html .= '<tr>';
         $html .= '<td>Contact Secondary :</td>';
-        $html .= '<td>' . $data->contact_secondary ?? '-' . '</td>';
+        $html .= '<td>' . $data->company_name ?? '-' . '</td>';
         $html .= '</tr>';
         $html .= '<tr>';
         $html .= '<td>Email :</td>';
@@ -118,8 +144,8 @@ class SupplierController extends Controller {
         $html .= '<td>' . $data->address . '</td>';
         $html .= '</tr>';
         $html .= '<tr>';
-        $html .= '<td>Balance :</td>';
-        $html .= '<td>' . $settings->currency . ' ' . number_format($data->balance, 2) . '</td>';
+        $html .= '<td>postalcode :</td>';
+        $html .= '<td>' . $data->postalcode . '</td>';
         $html .= '</tr>';
         $html .= '<tr>';
         $html .= '<td>Created By :</td>';
@@ -137,7 +163,8 @@ class SupplierController extends Controller {
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id) {
+    public function edit(string $id)
+    {
         $title = 'Suppliers';
 
         $breadcrumbs = [
@@ -150,19 +177,26 @@ class SupplierController extends Controller {
 
         $data = Supplier::find($id);
 
-     return view('pos.suppliers.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data'));
+        return view('pos.suppliers.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id) {
+    public function update(Request $request, string $id)
+    {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255|unique:suppliers,name,' . $id,
-            'contact_primary' => 'required|string|max:15', // Assuming a maximum length of 15 characters for a phone number
-            'contact_secondary' => 'nullable|string|max:15', // Assuming a maximum length of 15 characters for a phone number
+            'name' => 'required|string|max:255|unique:suppliers,name',
+            'contact' => 'required|string|max:15', // Assuming a maximum length of 15 characters for a phone number
             'email' => 'nullable|email|max:255',
             'address' => 'required|string',
+            'companyname' => 'required|string',
+            'vat' => 'required|string',
+            'city' => 'required|string',
+            'state' => 'required|string',
+            'postal' => 'required|string',
+            'country' => 'required|string',
+            'image' => 'nullable|max:5000',
         ]);
 
         if ($validator->fails()) {
@@ -176,13 +210,27 @@ class SupplierController extends Controller {
 
             return response()->json(['success' => false, 'message' => $all_errors]);
         }
+
+        if ($request->file('image') != null) {
+            $preferred_name = trim($request->name);
+            $image_url = $preferred_name . '.' . $request['image']->extension();
+        } else {
+            $image_url = null;
+        }
+
         try {
             $data = [
                 'name' => $request->name,
-                'contact_primary' => $request->contact_primary,
-                'contact_secondary' => $request->contact_secondary,
+                'contact' => $request->contact,
                 'email' => $request->email,
                 'address' => $request->address,
+                'image_url' => $image_url,
+                'company_name' => $request->companyname,
+                'vat' => $request->vat,
+                'city' => $request->city,
+                'state' => $request->state,
+                'postalcode' => $request->postal,
+                'country' => $request->country,
                 'updated_by' => Auth::user()->id,
             ];
 
@@ -199,7 +247,8 @@ class SupplierController extends Controller {
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id) {
+    public function destroy(string $id)
+    {
         try {
 
             $Supplier = Supplier::find($id);
@@ -213,7 +262,8 @@ class SupplierController extends Controller {
         }
     }
 
-    public function suppliersReport(){
+    public function suppliersReport()
+    {
         $title = 'Suppliers Report';
 
         $breadcrumbs = [
@@ -222,6 +272,6 @@ class SupplierController extends Controller {
         ];
         $data = Supplier::all();
 
-        return view ('reports.spplierReports' , compact('data'));
+        return view('reports.spplierReports', compact('data'));
     }
 }
