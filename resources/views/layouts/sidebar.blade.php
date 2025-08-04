@@ -129,6 +129,31 @@ border-right: none !important;">
                     </li>
                 @endcanany
 
+                 {{-- order --}}
+                @canany(['manage orders'])
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="#order" data-bs-toggle="collapse" role="button"
+                            aria-expanded="false" aria-controls="order">
+                            <i class="mdi mdi-food-outline" style="color: purple"></i> <span>Orders</span>
+                        </a>
+                        <div class="collapse menu-dropdown" id="order">
+                            <ul class="nav nav-sm flex-column">
+                                @can('manage orders')
+                                    <li class="nav-item">
+                                        <a href="{{ route('orders.index') }}" class="nav-link">Orders</a>
+                                    </li>
+                                @endcan
+                                {{-- @can('manage orders')
+                                    <li class="nav-item">
+                                        <a href="{{ route('inventory.stock') }}" class="nav-link">Stock</a>
+                                    </li>
+                                @endcan --}}
+
+                            </ul>
+                        </div>
+                    </li>
+                @endcanany
+
                 {{-- Expenses --}}
                 @canany(['manage orders', 'manage kitchen', 'manage bar', 'manage tables', 'manage table-arrangements'])
                     <li class="nav-item">

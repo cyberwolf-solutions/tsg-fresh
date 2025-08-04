@@ -41,7 +41,6 @@ use App\Http\Controllers\AdditionalPaymentController;
 use App\Http\Controllers\TableArrangementsController;
 use App\Http\Controllers\EmployeeDesignationsController;
 use Stancl\Tenancy\Facades\Tenancy;
-
 use Stancl\Tenancy\Database\Models\Tenant;
 
 foreach (config('tenancy.central_domains') as $domain) {
@@ -50,6 +49,9 @@ foreach (config('tenancy.central_domains') as $domain) {
 
             return view('admin.branches.index');
         });
+
+       
+
 
 
 // tenet

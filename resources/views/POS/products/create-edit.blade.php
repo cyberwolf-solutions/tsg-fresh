@@ -193,6 +193,32 @@
                         </div>
 
                         <div class="col-md-4 mb-3 required">
+                            <label for="" class="form-label">Tax status</label>
+                            <select name="taxmethod" class="form-control js-example-basic-single" id=""
+                                required>
+                                <option value="">Nothing selected</option>
+                                @foreach ($categories as $item)
+                                    <option value="{{ $item->id }}"
+                                        {{ $is_edit ?? $data->category_id == $item->id ? 'selected' : '' }}>
+                                        {{ $item->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-md-4 mb-3 required">
+                            <label for="" class="form-label">Tax class</label>
+                            <select name="taxmethod" class="form-control js-example-basic-single" id=""
+                                required>
+                                <option value="">Nothing selected</option>
+                                @foreach ($categories as $item)
+                                    <option value="{{ $item->id }}"
+                                        {{ $is_edit ?? $data->category_id == $item->id ? 'selected' : '' }}>
+                                        {{ $item->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-md-4 mb-3 required">
 
                             <div class="form-check mt-4">
                                 <input class="form-check-input" type="checkbox" value="" id="checkDefault">
@@ -202,6 +228,10 @@
                             </div>
                         </div>
                     </div>
+
+                    <hr style="border: none; border-top: 1px solid #666; margin: 1rem 0;">
+
+
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <label for="" class="form-label">Product image</label>
@@ -227,6 +257,57 @@
 
                         </div>
 
+                        <hr style="border: none; border-top: 1px solid #666; margin: 1rem 0;">
+
+
+                        {{-- variable product --}}
+                        <div class="col-md-12 col-12 mb-3 required">
+                            <div class="row">
+                                <div class="col-12 col-md-3 col-lg-3">
+                                    <label for="" class="form-label">Product type</label>
+                                    <select name="ptype" class="form-control js-example-basic-single" id="ptype"
+                                        required>
+                                        <option value="">Nothing selected</option>
+                                        <option value="simple">Simple product</option>
+                                        <option value="grouped">Grouped product</option>
+                                        <option value="variable">Variable product</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div id="variant-group" style="display: none;">
+                                <div id="variant-container">
+                                    <div class="row variant-row">
+                                        <div class="col-12 col-md-4 col-lg-4">
+                                            <label for="" class="form-label">Type name</label>
+                                            <input type="text" name="tname[]" class="form-control"
+                                                placeholder="Enter Type Name" required>
+                                        </div>
+                                        <div class="col-12 col-md-4 col-lg-4">
+                                            <label for="" class="form-label">Type price</label>
+                                            <input type="text" name="tprice[]" class="form-control"
+                                                placeholder="Enter Type Price" required>
+                                        </div>
+                                        <div class="col-12 col-md-2 col-lg-2 d-flex align-items-end">
+                                            <button type="button" class="btn btn-danger remove-row">Remove</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 mt-2">
+                                        <button type="button" class="btn btn-primary" id="add-variant">+ Add
+                                            Variant</button>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        <hr style="border: none; border-top: 1px solid #666; margin: 1rem 0;">
+
+
+
                         <div class="col-12">
                             <div class="form-check mt-3">
                                 <input class="form-check-input" type="checkbox" value="" id="checkDefault">
@@ -246,12 +327,20 @@
                                     This product has varient
                                 </label>
                             </div>
-                              <div class="form-check mt-3">
+                            <div class="form-check mt-3">
                                 <input class="form-check-input" type="checkbox" value="" id="checkDefault">
                                 <label class="form-check-label" for="checkDefault">
                                     Add promotional price
                                 </label>
                             </div>
+
+                            <div class="form-check mt-3">
+                                <input class="form-check-input" type="checkbox" value="" id="checkDefault">
+                                <label class="form-check-label" for="checkDefault">
+                                    Limit purchase to 1 item per order
+                                </label>
+                            </div>
+
                         </div>
                     </div>
 
@@ -263,8 +352,6 @@
                                 onclick="collectTableData()">{{ $is_edit ? 'Update' : 'Create' }}</button> --}}
                             <button class="btn btn-primary"
                                 onclick="sendDataToServer()">{{ $is_edit ? 'Update' : 'Create' }}</button>
-
-
                         </div>
                     </div>
 
@@ -290,17 +377,53 @@
             });
     </script>
     <script>
-       
-            function handleDrop(event) {
-                event.preventDefault();
-                const file = event.dataTransfer.files[0];
-                if (file && file.type.startsWith("image/")) {
-                    document.getElementById('imageInput').files = event.dataTransfer.files;
-                    handleFile(file);
+        $(document).ready(function() {
+            // Toggle visibility based on product type
+            $('#ptype').on('change', function() {
+                if ($(this).val() === 'variable') {
+                    $('#variant-group').show();
+                    $('#variant-group input').prop('required', true);
+                } else {
+                    $('#variant-group').hide();
+                    $('#variant-group input').prop('required', false);
                 }
-                event.currentTarget.style.backgroundColor = '#f9f9f9';
-                event.currentTarget.style.borderColor = '#ccc';
+            });
+
+            // Add new variant row
+            $('#add-variant').click(function() {
+                const row = `
+                <div class="row variant-row">
+                    <div class="col-12 col-md-4 col-lg-4">
+                        <input type="text" name="tname[]" class="form-control mt-2" placeholder="Enter Type Name" required>
+                    </div>
+                    <div class="col-12 col-md-4 col-lg-4">
+                        <input type="text" name="tprice[]" class="form-control mt-2" placeholder="Enter Type Price" required>
+                    </div>
+                    <div class="col-12 col-md-2 col-lg-2 d-flex align-items-end">
+                        <button type="button" class="btn btn-danger mt-2 remove-row">Remove</button>
+                    </div>
+                </div>`;
+                $('#variant-container').append(row);
+            });
+
+            // Remove variant row
+            $(document).on('click', '.remove-row', function() {
+                $(this).closest('.variant-row').remove();
+            });
+        });
+    </script>
+
+    <script>
+        function handleDrop(event) {
+            event.preventDefault();
+            const file = event.dataTransfer.files[0];
+            if (file && file.type.startsWith("image/")) {
+                document.getElementById('imageInput').files = event.dataTransfer.files;
+                handleFile(file);
             }
+            event.currentTarget.style.backgroundColor = '#f9f9f9';
+            event.currentTarget.style.borderColor = '#ccc';
+        }
 
         function handleFile(file) {
             const reader = new FileReader();
@@ -311,105 +434,105 @@
             };
             reader.readAsDataURL(file);
         }
-   
-
-    $("#ingredient").change(function(e) {
-    e.preventDefault();
-    var el = $(this);
-    var ing_id = el.val();
-    $.ajax({
-    url: '{{ route('get-ingredients') }}',
-    type: 'GET',
-    headers: {
-    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    },
-    data: {
-    "ing_id": ing_id
-    },
-    success: function(result) {
-    var cols = result.col;
-    $('#ingredient_tbl tbody').append(cols);
-    // $("#ingredient option:selected").remove();
-    $('#ingredient_tbl tbody tr:last #quantity').focus();
-    }
-    });
-    });
-
-    $(document).on('change', '#quantity', function(e) {
-    e.preventDefault();
-    var el = $(this);
-    var quantity = el.val();
-    // var unit_price = el.closest('tr').find('span.uprice').text();
-
-    var unit_price_str = el.closest('tr').find('span.uprice').text();
-
-    // Remove commas from unit_price_str
-    var unit_price = parseFloat(unit_price_str.replace(/,/g, ''));
-    // alert(unit_price);
-    var cost = Number(quantity) * Number(unit_price);
-    el.closest('tr').find('span.cost').html(Number(cost).toFixed(2));
-    getTotal();
-    });
-
-    $(document).on('click', '.remove_row', function(e) {
-    e.preventDefault();
-    var id = $(this).closest('tr').find('.ing_id').val();
-    var name = $(this).closest('tr').find('span.iname').text();
-    $(this).closest("tr").remove();
-    $("#ingredient").append('<option value="' + id + '">' + name + '</option>');
-    getTotal();
-    });
-
-    function getTotal() {
-    var sum = 0;
-    $('.cost').each(function() {
-    sum += +$(this).text() || 0;
-    });
-    $(".total").text(sum.toFixed(2));
-    }
 
 
+        $("#ingredient").change(function(e) {
+            e.preventDefault();
+            var el = $(this);
+            var ing_id = el.val();
+            $.ajax({
+                url: '{{ route('get-ingredients') }}',
+                type: 'GET',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    "ing_id": ing_id
+                },
+                success: function(result) {
+                    var cols = result.col;
+                    $('#ingredient_tbl tbody').append(cols);
+                    // $("#ingredient option:selected").remove();
+                    $('#ingredient_tbl tbody tr:last #quantity').focus();
+                }
+            });
+        });
 
+        $(document).on('change', '#quantity', function(e) {
+            e.preventDefault();
+            var el = $(this);
+            var quantity = el.val();
+            // var unit_price = el.closest('tr').find('span.uprice').text();
 
+            var unit_price_str = el.closest('tr').find('span.uprice').text();
 
-    function sendDataToServer() {
+            // Remove commas from unit_price_str
+            var unit_price = parseFloat(unit_price_str.replace(/,/g, ''));
+            // alert(unit_price);
+            var cost = Number(quantity) * Number(unit_price);
+            el.closest('tr').find('span.cost').html(Number(cost).toFixed(2));
+            getTotal();
+        });
+
+        $(document).on('click', '.remove_row', function(e) {
+            e.preventDefault();
+            var id = $(this).closest('tr').find('.ing_id').val();
+            var name = $(this).closest('tr').find('span.iname').text();
+            $(this).closest("tr").remove();
+            $("#ingredient").append('<option value="' + id + '">' + name + '</option>');
+            getTotal();
+        });
+
+        function getTotal() {
+            var sum = 0;
+            $('.cost').each(function() {
+                sum += +$(this).text() || 0;
+            });
+            $(".total").text(sum.toFixed(2));
+        }
 
 
 
 
-    var tableData = [];
-    $('#ingredient_tbl tbody tr').each(function(index, row) {
 
-
-    var rowData = {
-
-    'name': $(row).find('.iname').text(),
-    'available_qty': $(row).find('.available_qty').val(),
-    'consumption_qty': $(row).find('.consumption_qty').val(),
-    'unit_price': $(row).find('.uprice').text(),
-    'cost': $(row).find('.cost').text()
-
-    };
-    tableData.push(rowData);
-    // console.log($(row).find('.consumption_qty'));
-    // console.log($(row).find('.iname'));
-    });
+        function sendDataToServer() {
 
 
 
-    // Serialize the table data to JSON
-    var serializedTableData = JSON.stringify(tableData);
 
-    // alert("Table Data: " + serializedTableData);
-
-
-    // Append the serialized table data to the form
-    $('#table_data_input').val(serializedTableData);
-
-    // Submit the form
-    // $('#product_form').submit();
+            var tableData = [];
+            $('#ingredient_tbl tbody tr').each(function(index, row) {
 
 
-    }
+                var rowData = {
+
+                    'name': $(row).find('.iname').text(),
+                    'available_qty': $(row).find('.available_qty').val(),
+                    'consumption_qty': $(row).find('.consumption_qty').val(),
+                    'unit_price': $(row).find('.uprice').text(),
+                    'cost': $(row).find('.cost').text()
+
+                };
+                tableData.push(rowData);
+                // console.log($(row).find('.consumption_qty'));
+                // console.log($(row).find('.iname'));
+            });
+
+
+
+            // Serialize the table data to JSON
+            var serializedTableData = JSON.stringify(tableData);
+
+            // alert("Table Data: " + serializedTableData);
+
+
+            // Append the serialized table data to the form
+            $('#table_data_input').val(serializedTableData);
+
+            // Submit the form
+            // $('#product_form').submit();
+
+
+        }
     </script>
 @endsection

@@ -32,7 +32,7 @@ class HomeController extends Controller {
 
 
         $totalOrders = Order::all()->count();
-        $totalBookings = Booking::all()->count();
+      
 
         // Get today's date
         $todayDate = Carbon::now()->toDateString();
@@ -41,7 +41,7 @@ class HomeController extends Controller {
         $todayOrders = Order::whereDate('created_at', $todayDate)->get();
 
         // Get today's bookings 
-        $todayBookings = Booking::whereDate('created_at', $todayDate)->get();
+    //    ÷ $todayBookings = Booking::whereDate('created_at', $todayDate)->get();
         // dd($todayBookings);
 
         $customers = Customer::all();
@@ -72,6 +72,6 @@ $monthlyCashData = [55, 35, 10];
         'paymentsReceived', 
         'paymentsSent', 
         'monthlyCashLabels', 
-        'monthlyCashData','totalBookings', 'todayOrders', 'todayBookings' ,'customers' , 'employees' ,'suppliers' , 'Products' ,'Products1'));
+        'monthlyCashData', 'todayOrders' ,'customers' , 'employees' ,'suppliers' , 'Products' ,'Products1'));
     }
 }

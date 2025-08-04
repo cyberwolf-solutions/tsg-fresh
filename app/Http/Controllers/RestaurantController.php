@@ -45,19 +45,15 @@ class RestaurantController extends Controller
         $categories = Category::all()->where('type', 'Restaurant');
         $meals = Meal::all();
         $products = Product::all();
-        $setmenu = SetMenu::all();
-
-
-        $type = SetMenuType::all();
-        $type_meal = SetMenuMealType::all();
+      
 
         // $items = $products->merge($setmenu);
-        $items = $products->merge($setmenu)->map(function($item) {
+        $items = $products->map(function($item) {
             $item->item_type = get_class($item);
             return $item;
         });
 
-     return view('pos.restaurant.index', compact('title', 'breadcrumbs', 'categories', 'meals', 'products', 'setmenu', 'items', 'type', 'type_meal'));
+     return view('pos.restaurant.index', compact('title', 'breadcrumbs', 'categories', 'meals', 'products', 'items'));
     }
 
     /**
@@ -118,18 +114,8 @@ class RestaurantController extends Controller
         $ready = Order::where('status', 'InProgress')->get();
      return view('pos.restaurant.in-process', compact('inProgress', 'ready'));
     }
-    public function tables(Request $request)
-    {
-        $table = $request->table;
-        $tables = Table::all()->where('availability', 'Available');
-     return view('pos.restaurant.tables-modal', compact('tables', 'table'));
-    }
-    public function rooms(Request $request)
-    {
-        $room = $request->room;
-        $rooms = BookingsRooms::all();
-     return view('pos.restaurant.rooms-modal', compact('rooms', 'room'));
-    }
+   
+   
     public function customer(Request $request)
     {
         $customer = $request->customer;
@@ -396,19 +382,13 @@ class RestaurantController extends Controller
                             }
                         }
                     } else {
-                        $setmenu = SetMenu::where('id', $value['id'])
-                            ->where('name', $value['name'])
-                            ->first();
+                     
 
 
-                        if ($setmenu->type == 'KOT') {
-                            $isKOT = true;
-                        } elseif ($setmenu->type == 'BOT') {
-                            $isBOT = true;
-                        }
+                        
 
                         $data = [
-                            'itemable_type' => 'App\Models\SetMenu',
+                           
                             'itemable_id' => $value['id'],
                             'order_id' => $order->id,
                             'price' => $value['price'],
@@ -481,11 +461,7 @@ class RestaurantController extends Controller
             OrderPayment::create($data);
 
             // Reserve the table if selected
-            if ($request->table != 0) {
-                $table = Table::find($request->table);
-                $table->availability = 'Order Taken';
-                $table->save();
-            }
+         
 
             if ($isKOT) {
                 event(new notifyKot('New KOT'));
@@ -673,12 +649,7 @@ class RestaurantController extends Controller
             if ($totalItems == $totalCompletedItems) {
                 $order->status = 'InProgress';
 
-                //Order Complete the table if selected
-                if ($order->table_id != 0) {
-                    $table = Table::find($order->table_id);
-                    $table->availability = 'Order Complete';
-                    $table->save();
-                }
+              
             }
 
             $order->save();
@@ -713,12 +684,7 @@ class RestaurantController extends Controller
             $order->status = 'Complete';
             $order->save();
 
-            //Make the table available
-            if ($order->table_id != 0) {
-                $table = Table::find($order->table_id);
-                $table->availability = 'Available';
-                $table->save();
-            }
+           
 
             return response()->json(['success' => true, 'message' => 'Order completed!']);
         } catch (\Throwable $th) {
@@ -732,16 +698,8 @@ class RestaurantController extends Controller
         $setmenuTypeId = $request->input('setmenu_type_id');
         $setmenuMealTypeId = $request->input('setmenu_meal_type_id');
 
-        $filteredSetmenus = SetMenu::where('setmenu_type', $setmenuTypeId)
-            ->where('setmenu_meal_type', $setmenuMealTypeId)
-            ->get();
+       
 
-
-
-        // dd($filteredSetmenus);
-
-
-
-        return response()->json(['setmenus' => $filteredSetmenus]);
+        
     }
 }
