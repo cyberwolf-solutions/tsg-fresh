@@ -15,7 +15,7 @@ class BranchController extends Controller
     public function index()
     {
         $branches = Tenant::all();
-     return view('admin.branches.index', compact('branches'));
+        return view('admin.branches.index', compact('branches'));
     }
     // public function store(Request $request)
     // {
@@ -91,55 +91,30 @@ class BranchController extends Controller
             // 3. Build DB name
             $dbName = $tenant->getDatabaseName();
 
-            // 4. Check if DB already exists
-            // if ($this->doesDatabaseExist($dbName)) {
-            //     Log::warning("Database $dbName already exists. Skipping creation.");
-            // } else {
-            //     // 5. Create tenant DB
-            //     CreateDatabase::dispatchSync($tenant);
-            //     Log::info("Database $dbName created for tenant {$tenant->id}");
-            // }
-
-            // 6. Update DB config dynamically
+            // 4. Update DB config dynamically
             config(['database.connections.tenant.database' => $dbName]);
             DB::purge('tenant');
             DB::reconnect('tenant');
 
-            // 7. Initialize tenancy
-            tenancy()->initialize($tenant);
-            Log::info("Tenancy initialized for {$tenant->id}. Active DB: " . DB::connection('tenant')->getDatabaseName());
+            // 5. Initialize tenancy and run migrations in tenant context
+            $tenant->run(function () use ($tenant) {
+                Log::info("Tenancy initialized for {$tenant->id}. Active DB: " . DB::connection('tenant')->getDatabaseName());
 
-            // 8. Run tenant migrations
-            Artisan::call('migrate', [
-                '--database' => 'tenant',
-                '--path'     => '/database/migrations/tenant',
-                '--force'    => true,
-            ]);
-            Log::info("Migrations finished for tenant {$tenant->id}");
+                // Run migrations only in tenant context
+                Artisan::call('migrate', [
+                    '--database' => 'tenant',
+                    '--path' => 'database/migrations/tenant', // Ensure this path is correct
+                    '--force' => true,
+                ]);
+                Log::info("Migrations finished for tenant {$tenant->id}");
 
-            // 9. Log DB context and run seeders
-            $tenant->run(function () {
-                Log::info('Inside tenant context for ' . tenant('id') . ' | current DB: ' . DB::connection('tenant')->getDatabaseName());
-            });
-
-
-            $tenant->run(function () {
-                DB::setDefaultConnection('tenant');
-
-                $dbName = DB::getDatabaseName();
-                Log::info("Inside tenant context for " . tenant('id') . " | current DB: $dbName");
-
+                // Run seeders
                 Artisan::call('db:seed', [
                     '--database' => 'tenant',
-                    '--class'    => 'Database\\Seeders\\TenantDatabaseSeeder',
-                    '--force'    => true,
+                    '--class' => 'Database\\Seeders\\TenantDatabaseSeeder',
+                    '--force' => true,
                 ]);
             });
-
-
-
-            // 10. End tenancy
-            tenancy()->end();
 
             return redirect()
                 ->back()
