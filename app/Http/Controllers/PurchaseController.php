@@ -46,7 +46,7 @@ class PurchaseController extends Controller
         $is_edit = false;
 
         $suppliers = Supplier::all();
-        $products = Ingredient::all();
+        $products = Product::all();
 
         $latest = Purchases::latest()->first();
 

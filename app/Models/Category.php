@@ -25,6 +25,12 @@ class Category extends Model
         return $this->belongsToMany(Modifier::class, 'modifiers_categories', 'category_id', 'modifier_id');
     }
 
+public function products()
+{
+    return $this->belongsToMany(Product::class, 'category_products');
+}
+
+
     public function createdBy()
     {
         return $this->hasOne(User::class, 'id', 'created_by');

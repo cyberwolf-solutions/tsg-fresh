@@ -56,14 +56,18 @@
                         </div>
                         <div class="col-md-4 required">
                             <label for="" class="form-label">Supplier</label>
-                            <select name="supplier" class="form-control js-example-basic-single" id="" required>
+                            <select name="supplier" class="form-control js-example-basic-single" id="supplier-select"
+                                required>
                                 <option value="">Select...</option>
                                 @foreach ($suppliers as $item)
-                                    <option value="{{ $item->id }}"
-                                        {{ $is_edit ?? $data->supplier_id == $item->id ? 'selected' : '' }}>
-                                        {{ $item->name }}</option>
+                                    <option value="{{ $item->id }}" data-vat="{{ $item->vat }}"
+                                        {{ $is_edit && $data->supplier_id == $item->id ? 'selected' : '' }}>
+                                        {{ $item->name }}
+                                    </option>
                                 @endforeach
                             </select>
+<input type="text" class="w-50 border" id="vat-input" readonly>
+
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -75,14 +79,28 @@
                     <div class="row mb-3 mt-4">
                         <div class="col-12 required">
                             <label for="" class="form-label">Choose Products</label>
-                            <select name="" class="form-control js-example-basic-single" id="product-select"
+                            {{-- <select name="" class="form-control js-example-basic-single" id="product-select"
                                 required>
                                 <option value="">Select...</option>
                                 @foreach ($products as $item)
-                                    <option value="{{ $item->id }}" data-price="{{ $item->unit_price }}">
+                                    <option value="{{ $item->id }}" data-price="{{ $item->cost }}">
                                         {{ $item->name }}</option>
                                 @endforeach
+                            </select> --}}
+
+                            <!-- Product dropdown -->
+                            <select class="form-control" id="product-select">
+                                <option value="">Select Product</option>
+                                @foreach ($products as $product)
+                                    <option value="{{ $product->id }}" data-type="{{ $product->product_type }}">
+                                        {{ $product->name }}
+                                    </option>
+                                @endforeach
                             </select>
+
+                            <!-- Variant dropdown -->
+                            <select class="form-control mt-2 d-none" id="variant-select"></select>
+
                         </div>
                     </div>
                     <div class="row mb-3 mt-5 px-2">
@@ -313,6 +331,15 @@
     </script>
     <script>
         $(document).ready(function() {
+            $('#supplier-select').change(function() {
+                let vat = $(this).find('option:selected').data('vat');
+                if (!isNaN(vat)) {
+                    $('#vat-input').val(vat);
+                    $('#vat').val(vat);
+                    $('#vat-input').trigger('input'); // To recalculate totals
+                }
+            });
+
             // Function to calculate total
             function calculateTotal() {
                 var subtotal = 0;

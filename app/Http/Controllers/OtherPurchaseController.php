@@ -12,6 +12,7 @@ use App\Models\InventoryPurchasePayment;
 use App\Models\PurchaseItem;
 use Illuminate\Http\Request;
 use App\Models\OtherPurchase;
+use App\Models\Product;
 use App\Models\PurchasePayment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -44,7 +45,7 @@ class OtherPurchaseController extends Controller
         $is_edit = false;
 
         $suppliers = Supplier::all();
-        $products = Inventory::all();
+        $products = Product::all();
 
         $latest = OtherPurchase::latest()->first();
 
@@ -139,15 +140,6 @@ class OtherPurchaseController extends Controller
             return json_encode(['success' => false, 'message' => 'Something went wrong!' . $th]);
         }
     }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -287,30 +279,7 @@ class OtherPurchaseController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    // public function destroy(string $id)
-    // {
-    //     try {
-
-    //         $purchase = OtherPurchase::find($id);
-    //         $purchase->update(['deleted_by' => Auth::user()->id]);
-
-    //         $items = InventoryPurchaseItem::where('purchase_id', $purchase->id)->delete();
-
-    //         $supplier = Supplier::find($purchase->supplier_id);
-    //         $balance = $supplier->balance - $purchase->total;
-    //         $supplier->update(['balance' => $balance]);
-
-    //         $purchase->delete();
-
-    //         return json_encode(['success' => true, 'message' => 'Purchase deleted', 'url' => route('purchases.index')]);
-    //     } catch (\Throwable $th) {
-    //         //throw $th;
-    //         return json_encode(['success' => false, 'message' => 'Something went wrong!']);
-    //     }
-    // }
+   
 
     
     public function destroy(string $id)
@@ -452,10 +421,6 @@ class OtherPurchaseController extends Controller
 
      return view('pos.purchases.other_payments-modal', compact('data'));
     }
-
-
-
-
     public function purchaseReport()
     {
         $title = 'Purchase Report';

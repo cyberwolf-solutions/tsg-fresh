@@ -13,7 +13,6 @@ class Product extends Model
     protected $table = 'products';
     protected $fillable = [
         'name',
-        'category_id',
         'image_url',
         'description',
         'product_code',
@@ -29,16 +28,20 @@ class Product extends Model
         'tax_class',
         'product_type',
         'status',
-        'created_by',
+        'final_price'
+,        'created_by',
         'updated_by',
         'deleted_by'
     ];
 
 
-    public function category()
-    {
-        return $this->hasOne(Category::class, 'id', 'category_id');
-    }
+   
+
+public function categories()
+{
+    return $this->belongsToMany(Category::class, 'category_products');
+}
+
 
     public function brand()
     {
