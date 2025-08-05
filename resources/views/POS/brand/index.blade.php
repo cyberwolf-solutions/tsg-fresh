@@ -27,15 +27,12 @@
 
                 <div class="page-title-right">
                     {{-- Add Buttons Here --}}
-                    @can('create products')
-                        <a href="{{ route('setmenu.create') }}" class="btn btn-primary btn-icon" data-bs-toggle="tooltip"
+                    @can('create brands')
+                        <a href="{{ route('brand.create') }}" class="btn btn-primary btn-icon" data-bs-toggle="tooltip"
                             title="Create">
                             <i class="ri-add-line"></i>
                         </a>
                     @endcan
-                    {{-- <a href="{{route('product.Reports')}}" >
-                        <button  class="btn btn-border btn-danger">Reports</button>
-                    </a> --}}
                 </div>
             </div>
         </div>
@@ -50,49 +47,41 @@
                             <th>#</th>
                             <th>&nbsp;</th>
                             <th>Name</th>
-                            <th>Category</th>
-                            <th>Price lkr</th>
-                            <th>Price usd</th>
-                            <th>Price eu</th>
-                            <th>Description</th>
                             <th>Type</th>
+                            <th>Description</th>
                             <th>Action</th>
                         </thead>
                         <tbody>
                             @foreach ($data as $key => $item)
                                 @php
                                     if($item->image_url != null){
-                                        $image = 'uploads/setmenu/'.$item->image_url;
+                                        $image = 'uploads/categories/'.$item->image_url;
                                     }else{
                                         $image = 'uploads/cutlery.png';
                                     }
                                 @endphp
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
-                                    <td>
-                                        <div class="zoom-box">
-                                            <img class="product" src="{{ URL::asset($image) }}" alt="" height="40">
-                                        </div>
-                                    </td>
+                                   
                                     <td>{{ $item->name }}</td>
-                                    <td>{{ $item->category->name }}</td>
-                                    <td>LKR.{{ number_format($item->unit_price_lkr, 2) }}</td>
-                                    <td>USD.{{ number_format($item->unit_price_usd, 2) }}</td>
-                                    <td>EURO.{{ number_format($item->unit_price_eu, 2) }}</td>
-                                    <td>{{ $item->description }}</td>
                                     <td>{{ $item->type }}</td>
+                                    <td>{{ $item->description }}</td>
                                     <td>
-                                        
-                                        @can('view products')
-                                            <a data-url="{{ route('setmenu.show', [$item->id]) }}"
-                                               class="btn btn-light btn-sm small btn-icon text-dark show-more">
+                                        @can('view brands')
+                                            <a data-url="{{ route('brand.show', [$item->id]) }}"
+                                                class="btn btn-light btn-sm small btn-icon text-dark show-more">
                                                 <i class="bi bi-eye" data-bs-toggle="tooltip" title="View"></i>
                                             </a>
                                         @endcan
-                                        
-                                        @can('delete products')
+                                        @can('edit brands')
+                                            <a href="{{ route('brand.edit', [$item->id]) }}"
+                                                class="btn btn-secondary btn-sm small btn-icon">
+                                                <i class="bi bi-pencil-square" data-bs-toggle="tooltip" title="Edit"></i>
+                                            </a>
+                                        @endcan
+                                        @can('delete brands')
                                             <a href="javascript:void(0)"
-                                                data-url="{{ route('setmenu.destroy', [$item->id]) }}"
+                                                data-url="{{ route('brand.destroy', [$item->id]) }}"
                                                 class="btn btn-danger btn-sm small btn-icon delete_confirm">
                                                 <i class="bi bi-trash" data-bs-toggle="tooltip" title="Delete"></i>
                                             </a>
@@ -108,37 +97,16 @@
 
     </div>
 @endsection
-@include('products.view-ingredients-modal')
 
 @section('script')
     <script>
         $(function(){
-            $(".product").jqZoom({
+            $(".category").jqZoom({
                 selectorWidth: 30,
                 selectorHeight: 30,
                 viewerWidth: 200,
                 viewerHeight: 90
             });
         })
-
-        $(document).on('click', '.show-ingredients', function(e) {
-            e.preventDefault();
-            var url = $(this).data('url');
-            var id = $(this).data('id');
-            $.ajax({
-                url: url,
-                type: 'GET',
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                data: {
-                    "id": id
-                },
-                success: function(result) {
-                    $('.ingredientBody').html(result);
-                }
-            });
-            $('#viewIngredientModal').modal('show');
-        });
     </script>
 @endsection

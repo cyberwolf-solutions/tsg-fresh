@@ -51,6 +51,13 @@ class PermissionSeeder extends Seeder
             ['name' => 'view categories', 'guard_name' => 'web'],
             ['name' => 'edit categories', 'guard_name' => 'web'],
             ['name' => 'delete categories', 'guard_name' => 'web'],
+
+               ['name' => 'manage brands', 'guard_name' => 'web'],
+            ['name' => 'create brands', 'guard_name' => 'web'],
+            ['name' => 'view brands', 'guard_name' => 'web'],
+            ['name' => 'edit brands', 'guard_name' => 'web'],
+            ['name' => 'delete brands', 'guard_name' => 'web'],
+
             ['name' => 'manage units', 'guard_name' => 'web'],
             ['name' => 'create units', 'guard_name' => 'web'],
             ['name' => 'view units', 'guard_name' => 'web'],

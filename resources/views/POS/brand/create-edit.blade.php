@@ -40,7 +40,7 @@
     <div class="row mt-2">
         <div class="card">
             <div class="card-body">
-                <form method="POST" class="ajax-form" action="{{ $is_edit ? route('categories.update', $data->id) : route('categories.store') }}"
+                <form method="POST" class="ajax-form" action="{{ $is_edit ? route('brand.update', $data->id) : route('brand.store') }}"
                       enctype="multipart/form-data">
                     @csrf
                     @if ($is_edit)
@@ -52,35 +52,15 @@
                             <input type="text" name="name" id="" class="form-control"
                                 value="{{ $is_edit ? $data->name : '' }}" placeholder="Enter Name" required />
                         </div>
-                        {{-- <div class="col-md-6 mb-3 required">
-                            <label for="" class="form-label">Parent category</label>
-                            <select name="type" class="form-control js-example-basic-single" id="" required>
-                                <option value="">Select...</option>
-                                @php
-                                    $types = ['Restaurant', 'Hotel'];
-                                @endphp
-                                @foreach ($types as $item)
-                                    <option value="{{ $item }}"
-                                        {{ $is_edit && $data->type == $item ? 'selected' : '' }}>
-                                        {{ $item }}</option>
-                                @endforeach
-                            </select>
-                        </div> --}}
+                     
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="" class="form-label">Image</label>
-                            <input type="file" accept="image/png, image/jpeg, image/gif"
-                                   class="form-control" name="image">
-                        </div>
-                       
-                    </div>
+                 
 
                     <div class="row mb-3">
                         <div class="col-12 text-end">
                             <button type="button" class="btn btn-light me-2"
-                                onclick="window.location='{{ route('categories.index') }}'">Cancel</button>
+                                onclick="window.location='{{ route('brand.index') }}'">Cancel</button>
                             <button class="btn btn-primary">{{ $is_edit ? 'Update' : 'Create' }}</button>
                         </div>
                     </div>

@@ -6,24 +6,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Category extends Model
+class Brand extends Model
 {
+
     use HasFactory, SoftDeletes;
     protected $connection = 'tenant';
-    protected $table = 'categories';
+    protected $table = 'brands';
     protected $fillable = [
         'name',
-        'description',
-        'image_url',
         'created_by',
         'updated_by',
         'deleted_by'
     ];
-
-    public function modifiers()
-    {
-        return $this->belongsToMany(Modifier::class, 'modifiers_categories', 'category_id', 'modifier_id');
-    }
 
     public function createdBy()
     {

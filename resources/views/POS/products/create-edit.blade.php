@@ -92,7 +92,7 @@
                             <label for="" class="form-label">Brand</label>
                             <select name="brand" class="form-control js-example-basic-single" id="" required>
                                 <option value="">Nothing selected</option>
-                                @foreach ($categories as $item)
+                                @foreach ($ingredients as $item)
                                     <option value="{{ $item->id }}"
                                         {{ $is_edit ?? $data->category_id == $item->id ? 'selected' : '' }}>
                                         {{ $item->name }}</option>
@@ -125,7 +125,7 @@
                         </div>
 
 
-                        <div class="col-md-4 mb-3 required">
+                        {{-- <div class="col-md-4 mb-3 required">
                             <label for="" class="form-label">Sale Unit</label>
                             <select name="sunit" class="form-control js-example-basic-single" id="" required>
                                 <option value="">Nothing selected</option>
@@ -148,7 +148,7 @@
                                         {{ $item->name }}</option>
                                 @endforeach
                             </select>
-                        </div>
+                        </div> --}}
 
 
 
@@ -194,7 +194,7 @@
 
                         <div class="col-md-4 mb-3 required">
                             <label for="" class="form-label">Tax status</label>
-                            <select name="taxmethod" class="form-control js-example-basic-single" id=""
+                            <select name="taxstatus" class="form-control js-example-basic-single" id=""
                                 required>
                                 <option value="">Nothing selected</option>
                                 @foreach ($categories as $item)
@@ -207,7 +207,7 @@
 
                         <div class="col-md-4 mb-3 required">
                             <label for="" class="form-label">Tax class</label>
-                            <select name="taxmethod" class="form-control js-example-basic-single" id=""
+                            <select name="taxclass" class="form-control js-example-basic-single" id=""
                                 required>
                                 <option value="">Nothing selected</option>
                                 @foreach ($categories as $item)
@@ -221,11 +221,12 @@
                         <div class="col-md-4 mb-3 required">
 
                             <div class="form-check mt-4">
-                                <input class="form-check-input" type="checkbox" value="" id="checkDefault">
-                                <label class="form-check-label" for="checkDefault">
-                                    Default checkbox
-                                </label>
-                            </div>
+    <input class="form-check-input" type="checkbox" name="status" value="private" id="checkDefault">
+    <label class="form-check-label" for="checkDefault">
+        Make product private
+    </label>
+</div>
+
                         </div>
                     </div>
 

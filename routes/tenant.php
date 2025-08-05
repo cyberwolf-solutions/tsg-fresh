@@ -45,6 +45,7 @@ use App\Http\Controllers\OtherPurchaseController;
 use App\Http\Controllers\CheckinCheckoutController;
 use App\Http\Controllers\AdditionalPaymentController;
 use App\Http\Controllers\BillerController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\TableArrangementsController;
 use App\Http\Controllers\EmployeeDesignationsController;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
@@ -198,6 +199,7 @@ Route::middleware([
         Route::post('/purchase-payment', [PurchaseController::class, 'addPayment'])->name('purchases.payment.add');
         Route::get('/purchase-payments/view/{id}', [PurchaseController::class, 'viewPayments'])->name('purchases.payments.view');
         Route::resource('categories', CategoryController::class)->middleware('can:manage categories');
+        Route::resource('brand', BrandController::class)->middleware('can:manage categories');
         Route::resource('units', UnitController::class)->middleware('can:manage units');
         Route::resource('ingredients', IngredientsController::class)->middleware('can:manage ingredients');
         Route::resource('products', ProductController::class)->middleware('can:manage products');

@@ -46,8 +46,8 @@ border-right: none !important;">
                 @canany([
                     
                     'manage products',
-                    'manage
-                    categories',
+                    'manage categories',
+                    'manage brands',
                   
                     ])
                     <li class="nav-item">
@@ -72,7 +72,11 @@ border-right: none !important;">
                                         <a href="{{ route('categories.index') }}" class="nav-link">Categories</a>
                                     </li>
                                 @endcan
-                             
+                               @can('manage brands')
+                                    <li class="nav-item">
+                                        <a href="{{ route('brand.index') }}" class="nav-link">Brand</a>
+                                    </li>
+                                @endcan
 
                             </ul>
                         </div>
@@ -371,7 +375,7 @@ border-right: none !important;">
                 @endcanany
 
                 {{-- SETTINGS --}}
-                 @canany(['manage settings', 'manage modifiers', 'manage categories', 'manage units','manage roles'])
+                 @canany(['manage settings', 'manage modifiers', 'manage units','manage roles'])
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#settings" data-bs-toggle="collapse" role="button"
                             aria-expanded="false" aria-controls="settings">

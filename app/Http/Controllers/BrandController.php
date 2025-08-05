@@ -2,56 +2,48 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
-use App\Models\Modifier;
+use App\Models\Brand;
 use App\Models\Settings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 use DateTime;
+use Illuminate\Support\Facades\URL;
 
-class CategoryController extends Controller {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index() {
-        $title = 'Categories';
+
+class BrandController extends Controller
+{
+     public function index() {
+        $title = 'Brand';
 
         $breadcrumbs = [
             // ['label' => 'First Level', 'url' => '', 'active' => false],
             ['label' => $title, 'url' => '', 'active' => true],
         ];
-        $data = Category::all();
-     return view('pos.categories.index', compact('title', 'breadcrumbs', 'data'));
+        $data = Brand::all();
+     return view('pos.brand.index', compact('title', 'breadcrumbs', 'data'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+  
     public function create() {
-        $title = 'Categories';
+        $title = 'Brand';
 
         $breadcrumbs = [
             // ['label' => 'First Level', 'url' => '', 'active' => false],
-            ['label' => $title, 'url' => route('categories.index'), 'active' => false],
+            ['label' => $title, 'url' => route('brand.index'), 'active' => false],
             ['label' => 'Create', 'url' => '', 'active' => true],
         ];
 
         $is_edit = false;
 
-     return view('pos.categories.create-edit', compact('title', 'breadcrumbs', 'is_edit'));
+     return view('pos.brand.create-edit', compact('title', 'breadcrumbs', 'is_edit'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255|unique:categories,name',
-            'description' => 'nullable',
-            'image' => 'nullable|max:5000'
+            'name' => 'required|string|max:255|unique:brands,name',
         ]);
 
         if ($validator->fails()) {
@@ -66,28 +58,26 @@ class CategoryController extends Controller {
             return response()->json(['success' => false, 'message' => $all_errors]);
         }
 
-        if($request->file('image') != null) {
+        if ($request->file('image') != null) {
             $preferred_name = trim($request->name);
             $image_url = $preferred_name . '.' . $request['image']->extension();
-        }else{
+        } else {
             $image_url = null;
         }
 
         try {
             $data = [
                 'name' => $request->name,
-                'description' => $request->description,
-                'image_url' => $image_url,
                 'created_by' => Auth::user()->id,
             ];
 
-            $Category = Category::create($data);
+            $Category = Brand::create($data);
 
-            if($Category != null){
-                if($request->file('image') != null) {
+            if ($Category != null) {
+                if ($request->file('image') != null) {
                     $preferred_name = trim($request->name);
                     $path = public_path() . '/uploads/categories/' . $preferred_name . '.' . $request['image']->extension();
-                    if(file_exists($path)) {
+                    if (file_exists($path)) {
                         unlink($path);
                     }
 
@@ -95,18 +85,15 @@ class CategoryController extends Controller {
                 }
             }
 
-            return json_encode(['success' => true, 'message' => 'Category created', 'url' => route('categories.index')]);
+            return json_encode(['success' => true, 'message' => 'Brand created', 'url' => route('brand.index')]);
         } catch (\Throwable $th) {
             //throw $th;
             return json_encode(['success' => false, 'message' => 'Something went wrong!' . $th]);
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id) {
-        $data = Category::find($id);
+  public function show(string $id) {
+        $data = Brand::find($id);
 
         $settings = Settings::latest()->first();
 
@@ -117,17 +104,12 @@ class CategoryController extends Controller {
         }
 
         $html = '<table class="table" cellspacing="0" cellpadding="0">';
-        $html .= '<tr>';
-        $html .= '<td colspan="2"><img style="padding-left: 25%;" src="' . URL::asset($image) . '" alt="" height="100"></td>';
-        $html .= '</tr>';
+     
         $html .= '<tr>';
         $html .= '<td>Name :</td>';
         $html .= '<td>' . $data->name . '</td>';
         $html .= '</tr>';
         $html .= '<tr>';
-        $html .= '<td>Description :</td>';
-        $html .= '<td>' . $data->description . '</td>';
-        $html .= '</tr>';
         $html .= '<tr>';
         $html .= '<td>Created By :</td>';
         $html .= '<td>' . $data->createdBy->name . '</td>';
@@ -145,18 +127,18 @@ class CategoryController extends Controller {
      * Show the form for editing the specified resource.
      */
     public function edit(string $id) {
-        $title = 'Categories';
+        $title = 'Brand';
 
         $breadcrumbs = [
             // ['label' => 'First Level', 'url' => '', 'active' => false],
-            ['label' => $title, 'url' => route('categories.index'), 'active' => false],
+            ['label' => $title, 'url' => route('brand.index'), 'active' => false],
             ['label' => 'Edit', 'url' => '', 'active' => true],
         ];
 
         $is_edit = true;
-        $data = Category::find($id);
+        $data = Brand::find($id);
 
-     return view('pos.categories.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data'));
+     return view('pos.brand.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data'));
     }
 
     /**
@@ -164,9 +146,7 @@ class CategoryController extends Controller {
      */
     public function update(Request $request, string $id) {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:15|unique:categories,name,' . $id,
-            'description' => 'nullable',
-            'image' => 'nullable|max:5000'
+            'name' => 'required|string|max:15|unique:brands,name,' . $id,
         ]);
 
         if ($validator->fails()) {
@@ -189,7 +169,6 @@ class CategoryController extends Controller {
         try {
             $data = [
                 'name' => $request->name,
-                'description' => $request->description,
                 'updated_by' => Auth::user()->id,
             ];
 
@@ -197,7 +176,7 @@ class CategoryController extends Controller {
                 $data['image_url'] = $image_url;
             }
 
-            $Category = Category::find($id)->update($data);
+            $Category = Brand::find($id)->update($data);
 
             if($Category != null){
                 if($request->file('image') != null) {
@@ -211,7 +190,7 @@ class CategoryController extends Controller {
                 }
             }
 
-            return json_encode(['success' => true, 'message' => 'Category updated', 'url' => route('categories.index')]);
+            return json_encode(['success' => true, 'message' => 'Brand updated', 'url' => route('brand.index')]);
         } catch (\Throwable $th) {
             //throw $th;
             return json_encode(['success' => false, 'message' => 'Something went wrong!']);
@@ -224,33 +203,14 @@ class CategoryController extends Controller {
     public function destroy(string $id) {
         try {
 
-            $Category = Category::find($id);
+            $Category = Brand::find($id);
             $Category->update(['deleted_by' => Auth::user()->id]);
             $Category->delete();
 
-            return json_encode(['success' => true, 'message' => 'Category deleted', 'url' => route('categories.index')]);
+            return json_encode(['success' => true, 'message' => 'brand deleted', 'url' => route('brand.index')]);
         } catch (\Throwable $th) {
             //throw $th;
             return json_encode(['success' => false, 'message' => 'Something went wrong!']);
         }
-    }
-
-    /**
-     * Get Modifier Category Details
-     */
-    public function getModifierCategories(Request $request){
-        $id = $request['id'];
-        $modifier = Modifier::find($id);
-        $html = '<table class="table" cellspacing="0" cellpadding="0">';
-
-        foreach($modifier->categories as $cat){
-            $html .= '<tr>';
-            $html .= '<td>' . $cat->name . '</td>';
-            $html .= '</tr>';
-        }
-
-        $html .= '</table>';
-
-        return response()->json([$html]);
     }
 }

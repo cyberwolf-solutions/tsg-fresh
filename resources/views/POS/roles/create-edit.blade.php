@@ -69,6 +69,7 @@
                                                 'suppliers',
                                                 'products',
                                                 'categories',
+                                                'brands',
                                                 'units',
                                                 'purchases',
                                                 'Pos',                                            
