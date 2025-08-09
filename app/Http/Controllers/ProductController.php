@@ -160,7 +160,7 @@ class ProductController extends Controller
                 $request['image']->move(public_path('uploads/products'), $image_url);
             }
 
-          
+
 
             // ✅ Save product variants if type is 'variable'
             if ($Product && $request->ptype === 'variable') {
@@ -193,7 +193,7 @@ class ProductController extends Controller
 
     public function show(string $id)
     {
-        $data = Product::with([ 'brand', 'variants', 'createdBy', 'updatedBy', 'deletedBy'])->find($id);
+        $data = Product::with(['brand', 'variants', 'createdBy', 'updatedBy', 'deletedBy'])->find($id);
         $settings = Settings::latest()->first();
 
         if (!$data) {
@@ -463,6 +463,17 @@ class ProductController extends Controller
     /**
      * Get Product Details
      */
+
+    public function getVariants($productId)
+    {
+        $product = Product::with('variants:id,product_id,variant_name')->findOrFail($productId);
+
+        return response()->json([
+            'variants' => $product->variants,
+        ]);
+    }
+
+
     public function getProducts(Request $request)
     {
         $prodId = $request['prod_id'];

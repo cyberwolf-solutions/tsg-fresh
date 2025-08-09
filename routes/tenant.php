@@ -232,6 +232,9 @@ Route::middleware([
         Route::get('/inventory/stock', [InventoryController::class, 'stock'])->name('inventory.stock');
         Route::resource('inventory', InventoryController::class)->middleware('can:manage Inventory');
 
+        Route::get('/get-variants/{product}', [ProductController::class, 'getVariants']);
+
+        
         //user profile
         Route::get('/profile', [UserController::class, 'profile'])->name('profile');
         Route::post('/profile', [UserController::class, 'profileUpdate'])->name('profile.update');

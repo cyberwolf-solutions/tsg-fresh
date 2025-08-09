@@ -8,15 +8,19 @@ return new class extends Migration {
     /**
      * Run the migrations.
      */
-    public function up(): void {
+    public function up(): void
+    {
         Schema::create('purchase_items', function (Blueprint $table) {
             $table->id();
-            $table->integer('purchase_id');
-            $table->integer('product_id');
-            $table->float('price')->default(0);
-            $table->string('quantity');
-            // $table->string('ingredient_name');
-            $table->float('total')->default(0);
+            $table->foreignId('purchase_id')->constrained('other_purchase')->onDelete('cascade');
+            $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
+            $table->foreignId('variant_id')->nullable()->constrained('product_variants')->onDelete('cascade');
+            $table->decimal('buying_price', 10, 2);
+            $table->integer('quantity');
+            $table->string('unit');
+            $table->decimal('total', 10, 2);
+            $table->date('manufacture_date')->nullable();
+            $table->date('expiry_date')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->unsignedBigInteger('deleted_by')->nullable();
@@ -28,7 +32,8 @@ return new class extends Migration {
     /**
      * Reverse the migrations.
      */
-    public function down(): void {
+    public function down(): void
+    {
         Schema::dropIfExists('purchase_items');
     }
 };

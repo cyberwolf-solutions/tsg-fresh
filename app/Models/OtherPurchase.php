@@ -33,7 +33,7 @@ class OtherPurchase extends Model
     }
     public function items()
     {
-        return $this->hasMany(InventoryPurchaseItem::class, 'purchase_id', 'id');
+        return $this->hasMany(PurchaseItem::class, 'purchase_id');
     }
 
     // public function payments() {
