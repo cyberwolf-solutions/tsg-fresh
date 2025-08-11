@@ -278,7 +278,7 @@
 
                         <div class="row">
 
-                   
+
                             <div class="col-md-4 d-flex flex-wrap "
                                 style="height: auto;padding-top:10px;padding-bottom:10px;margin-bottom:10px;">
 
@@ -354,13 +354,13 @@
 
                                                 <div class="col-md-3 cursor-pointer meal-item shadow rounded-3"
                                                     data-id="{{ $item->id }}" style="height:100%; width: 25%"
-                                                    data-category="{{ $item->category_id }}"
+                                                    data-category="{{ isset($item->categories) ? $item->categories->pluck('id')->implode(',') : '' }}"
                                                     data-image="{{ URL::asset($image) }}"
-                                                    data-price-lkr="{{ floatval($item->unit_price_lkr) }}"
-                                                    data-price-usd="{{ floatval($item->unit_price_usd) }}"
-                                                    data-price-eu="{{ floatval($item->unit_price_eu) }}"
-                                                    data-type="{{ $item->setmenu_type }}"
-                                                    data-mealtype="{{ $item->setmenu_meal_type }}">
+                                                    data-price-lkr="{{ floatval($item->unit_price) }}"
+                                                    data-price-usd="{{ floatval($item->unit_price) }}"
+                                                    data-price-eu="{{ floatval($item->unit_price) }}"
+                                                    data-type="{{ $item->setmenu_type ?? '' }}"
+                                                    data-mealtype="{{ $item->setmenu_meal_type ?? '' }}">
                                                     <div class="card border mb-0 rounded-4"
                                                         style="height: 30vh; overflow: hidden;background: #ffffff;">
                                                         <img src="{{ URL::asset($image) }}" alt=""
@@ -392,10 +392,11 @@
                                                                 </p>
                                                             </div>
                                                             <div class="col-4 d-none">
-                                                                <span id="type">{{ $item->setmenu_type }}</span>
-                                                                <span id="mealtype">{{ $item->setmenu_meal_type }}</span>
+                                                                <span
+                                                                    id="type">{{ $item->setmenu_type ?? '' }}</span>
+                                                                <span
+                                                                    id="mealtype">{{ $item->setmenu_meal_type ?? '' }}</span>
                                                             </div>
-
                                                         </div>
                                                     </div>
                                                 </div>
@@ -416,7 +417,8 @@
                     </div>
 
 
-                    <div class="row text-center justify-content-center" style="background-color: #f0f3f4; padding: 10px;margin-top:-20px">
+                    <div class="row text-center justify-content-center"
+                        style="background-color: #f0f3f4; padding: 10px;margin-top:-20px">
 
                         <!-- Cash -->
                         <div class="col-auto mb-2">

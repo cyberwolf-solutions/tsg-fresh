@@ -39,8 +39,10 @@ class Product extends Model
 
 public function categories()
 {
-    return $this->belongsToMany(Category::class, 'category_products');
+    return $this->belongsToMany(Category::class, 'category_products')
+        ->using(CategoryProduct::class);
 }
+
 
 
     public function brand()

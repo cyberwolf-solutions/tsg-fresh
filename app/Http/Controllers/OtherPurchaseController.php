@@ -458,42 +458,122 @@ class OtherPurchaseController extends Controller
     }
 
 
+    // public function addPayment(Request $request)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'date' => 'required',
+    //         'amount' => 'required',
+    //     ]);
+    //     if ($validator->fails()) {
+    //         $all_errors = null;
+
+    //         foreach ($validator->errors()->messages() as $errors) {
+    //             foreach ($errors as $error) {
+    //                 $all_errors .= $error . "<br>";
+    //             }
+    //         }
+
+    //         return response()->json(['success' => false, 'message' => $all_errors]);
+    //     }
+    //     try {
+
+    //         $id = decrypt($request->id);
+
+    //         $purchaseOrder = OtherPurchase::find($id);
+
+    //         $purchaseOrder = OtherPurchase::find($id);
+
+
+    //         $total = $purchaseOrder->total;
+
+    //         // Retrieve all payments for the purchase-order
+    //         $payments = InventoryPurchasePayment::where('purchase_id', $purchaseOrder->id)->get();
+
+    //         // Calculate the total amount paid, including the current payment
+    //         $totalAmountPaid = $payments->sum('amount') + $request->amount;
+
+
+    //         // Determine the payment status
+    //         if ($totalAmountPaid >= $total) {
+    //             $status = 'Paid';
+    //         } elseif ($totalAmountPaid > 0) {
+    //             $status = 'Partially Paid';
+    //         } else {
+    //             $status = 'Unpaid';
+    //         }
+
+    //         // Update the payment status in the database
+    //         $purchaseOrder->update(['payment_status' => $status]);
+
+    //         $data = [
+    //             'purchase_id' => $purchaseOrder->id,
+    //             'date' => $request->date,
+    //             'amount' => $request->amount,
+    //             'reference' => $request->reference,
+    //             'description' => $request->description,
+    //             'created_by' => Auth::user()->id,
+    //         ];
+
+    //         // Handle file upload for receipt
+    //         if ($request->hasFile('receipt')) {
+    //             $file = $request->file('receipt');
+
+    //             // Generate a unique filename based on date and other details
+    //             $fileName = sprintf(
+    //                 'purchase_payment_%s_%s.%s', // Add placeholders for the purchase order ID and file extension
+    //                 $purchaseOrder->id,
+    //                 now()->format('YmdHis'), // Use the current date and time for uniqueness
+    //                 $file->getClientOriginalExtension() // Get the original file extension
+    //             );
+
+
+    //             // Store the file with the custom name
+    //             $filePath = $file->storeAs('receipts', $fileName, 'public');
+
+    //             // Add the file path to the $data array
+    //             $data['receipt'] = $filePath;
+    //         }
+
+    //         $payment = InventoryPurchasePayment::create($data);
+
+    //         $supplier = Supplier::find($purchaseOrder->supplier_id);
+    //         $balance = $supplier->balance - $request->amount;
+    //         $supplier->update(['balance' => $balance]);
+
+    //         return json_encode(['success' => true, 'message' => 'Payment Added', 'url' => route('opurchases.index')]);
+    //     } catch (\Throwable $th) {
+    //         //throw $th;
+    //         return json_encode(['success' => false, 'message' => 'Something went wrong!']);
+    //     }
+    // }
+
+
+
+
     public function addPayment(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'date' => 'required',
-            'amount' => 'required',
+            'date' => 'required|date',
+            'amount' => 'required|numeric|min:0',
         ]);
+
         if ($validator->fails()) {
-            $all_errors = null;
-
-            foreach ($validator->errors()->messages() as $errors) {
-                foreach ($errors as $error) {
-                    $all_errors .= $error . "<br>";
-                }
-            }
-
+            $all_errors = implode('<br>', array_merge(...array_values($validator->errors()->messages())));
             return response()->json(['success' => false, 'message' => $all_errors]);
         }
+
+        DB::beginTransaction();
         try {
-
             $id = decrypt($request->id);
-
-            $purchaseOrder = OtherPurchase::find($id);
-
-            $purchaseOrder = OtherPurchase::find($id);
-
+            $purchaseOrder = OtherPurchase::findOrFail($id);
 
             $total = $purchaseOrder->total;
 
-            // Retrieve all payments for the purchase-order
+            // Payments so far
             $payments = InventoryPurchasePayment::where('purchase_id', $purchaseOrder->id)->get();
-
-            // Calculate the total amount paid, including the current payment
             $totalAmountPaid = $payments->sum('amount') + $request->amount;
 
-
-            // Determine the payment status
+            // Determine payment status
             if ($totalAmountPaid >= $total) {
                 $status = 'Paid';
             } elseif ($totalAmountPaid > 0) {
@@ -502,48 +582,94 @@ class OtherPurchaseController extends Controller
                 $status = 'Unpaid';
             }
 
-            // Update the payment status in the database
             $purchaseOrder->update(['payment_status' => $status]);
 
+            // Save payment
             $data = [
                 'purchase_id' => $purchaseOrder->id,
                 'date' => $request->date,
                 'amount' => $request->amount,
                 'reference' => $request->reference,
                 'description' => $request->description,
-                'created_by' => Auth::user()->id,
+                'created_by' => Auth::id(),
             ];
 
-            // Handle file upload for receipt
             if ($request->hasFile('receipt')) {
                 $file = $request->file('receipt');
-
-                // Generate a unique filename based on date and other details
                 $fileName = sprintf(
-                    'purchase_payment_%s_%s.%s', // Add placeholders for the purchase order ID and file extension
+                    'purchase_payment_%s_%s.%s',
                     $purchaseOrder->id,
-                    now()->format('YmdHis'), // Use the current date and time for uniqueness
-                    $file->getClientOriginalExtension() // Get the original file extension
+                    now()->format('YmdHis'),
+                    $file->getClientOriginalExtension()
                 );
-
-
-                // Store the file with the custom name
                 $filePath = $file->storeAs('receipts', $fileName, 'public');
-
-                // Add the file path to the $data array
                 $data['receipt'] = $filePath;
             }
 
-            $payment = InventoryPurchasePayment::create($data);
+            InventoryPurchasePayment::create($data);
 
+            // Update supplier balance
             $supplier = Supplier::find($purchaseOrder->supplier_id);
-            $balance = $supplier->balance - $request->amount;
-            $supplier->update(['balance' => $balance]);
+            $supplier->update([
+                'balance' => $supplier->balance - $request->amount
+            ]);
 
-            return json_encode(['success' => true, 'message' => 'Payment Added', 'url' => route('opurchases.index')]);
-        } catch (\Throwable $th) {
-            //throw $th;
-            return json_encode(['success' => false, 'message' => 'Something went wrong!']);
+            // ✅ If paid in full, update inventory
+            if ($status === 'Paid') {
+                $purchaseItems = PurchaseItem::with(['product', 'productvarient'])
+                    ->where('purchase_id', $purchaseOrder->id)
+                    ->get();
+
+                foreach ($purchaseItems as $item) {
+                    $productName = $item->product->name ?? 'Unknown Product';
+                    $variantName = $item->variant_id && $item->productvarient
+                        ? ' ' . $item->productvarient->variant_name
+                        : '';
+
+                    $fullName = trim($productName . $variantName);
+
+                    $inventoryItem = Inventory::where('product_id', $item->product_id)
+                        ->where('variant_id', $item->variant_id)
+                        ->where('manufacture_date', $item->manufacture_date)
+                        ->where('expiry_date', $item->expiry_date)
+                        ->first();
+
+                    if ($inventoryItem) {
+                        // Update quantity
+                        $inventoryItem->update([
+                            'quantity' => $inventoryItem->quantity + $item->quantity,
+                            'updated_by' => Auth::id()
+                        ]);
+                    } else {
+                        // Create new batch
+                        Inventory::create([
+                            'product_id' => $item->product_id,
+                            'variant_id' => $item->variant_id,
+                            'name' => $fullName,
+                            'unit_price' => $item->buying_price,
+                            'quantity' => $item->quantity,
+                            'min_quantity' => 0,
+                            'unit' => $item->unit,
+                            'description' => '',
+                            'manufacture_date' => $item->manufacture_date,
+                            'expiry_date' => $item->expiry_date,
+                            'created_by' => Auth::id()
+                        ]);
+                    }
+                }
+            }
+
+
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Payment Added', 'url' => route('opurchases.index')]);
+        } catch (\Throwable $e) {
+            Log::error('Inventory update failed', [
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw $e; // rethrow so transaction rolls back
         }
     }
 

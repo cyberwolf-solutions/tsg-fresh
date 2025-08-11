@@ -4,15 +4,17 @@
 @endsection
 @section('content')
     <!-- start page title -->
+   
+
+    
+     {{-- btns --}}
     <div class="row">
         <div class="col-12">
-            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+            <div class="page-title-box">
                 <div>
                     <h3 class="mb-sm-0">{{ $title }}</h3>
-
                     <ol class="breadcrumb m-0 mt-2">
                         <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-
                         @foreach ($breadcrumbs as $breadcrumb)
                             <li class="breadcrumb-item {{ $breadcrumb['active'] ? 'active' : '' }}">
                                 @if (!$breadcrumb['active'])
@@ -24,26 +26,45 @@
                         @endforeach
                     </ol>
                 </div>
+                <!-- Action Buttons Row -->
+                <div class="row mt-3">
+                      @can('create users')
+                        <!-- Left Buttons -->
+                        <div class="col d-flex gap-2">
+                            <a href="{{ route('users.create') }}" class="btn btn-sm btn-purple" style="  color: white;">
+                                <i class="ri-add-line me-1"></i> Add user
+                            </a>
 
-                <div class="page-title-right">
-                    {{-- Add Buttons Here --}}
-                    @can('create users')
-                        <a href="{{ route('users.create') }}" class="btn btn-primary btn-icon" data-bs-toggle="tooltip"
-                            title="Create">
-                            <i class="ri-add-line"></i>
-                        </a>
+                            <a href="" class="btn btn-sm" style="background-color: #00cfc8; color: white;">
+                                <i class="ri-upload-cloud-line me-1"></i> Import
+                            </a>
+                        </div>
+                        <!-- Right Buttons -->
+                        <div class="col text-end d-flex justify-content-end gap-2">
+                            <a href="" class="btn btn-sm" style="background-color: #3e3e3e; color: white;">
+                                <i class="ri-file-pdf-line me-1"></i> PDF
+                            </a>
+
+                            <a href="" class="btn btn-sm" style="background-color: #fb9746; color: white;">
+                                <i class="ri-file-line me-1"></i> CSV
+                            </a>
+
+                            <button onclick="window.print()" class="btn btn-sm"
+                                style="background-color: #2d9cd4; color: white;">
+                                <i class="ri-printer-line me-1"></i> Print
+                            </button>
+
+                            <button onclick="deleteSelected()" class="btn btn-sm"
+                                style="background-color: #ef4444; color: white;">
+                                <i class="ri-delete-bin-line me-1"></i> Delete
+                            </button>
+                        </div>
                     @endcan
-
-                    {{-- <a href="{{route('users.Reports')}}" >
-                        <button  class="btn btn-border btn-danger">Reports</button>
-                    </a> --}}
-                 
                 </div>
-                
-                    
             </div>
         </div>
     </div>
+    {{-- btns --}}
 
     <div class="row px-3 mt-3 gy-2">
         @foreach ($data as $item)

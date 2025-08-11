@@ -22,9 +22,11 @@ class InventoryController extends Controller
             // ['label' => 'First Level', 'url' => '', 'active' => false],
             ['label' => $title, 'url' => '', 'active' => true],
         ];
-        $data = Inventory::all();
+        // $data = Inventory::all();
+        $data = Inventory::with(['product', 'variant'])->get();
 
-     return view('pos.inventory.index', compact('title', 'breadcrumbs', 'data'));
+
+        return view('pos.inventory.index', compact('title', 'breadcrumbs', 'data'));
     }
 
     public function create()
@@ -40,7 +42,7 @@ class InventoryController extends Controller
         $is_edit = false;
         $units = Unit::all();
 
-     return view('pos.inventory.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'units'));
+        return view('pos.inventory.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'units'));
     }
 
 
@@ -97,7 +99,7 @@ class InventoryController extends Controller
         ];
         $data = Inventory::all();
 
-     return view('pos.inventory.stock', compact('title', 'breadcrumbs', 'data'));
+        return view('pos.inventory.stock', compact('title', 'breadcrumbs', 'data'));
     }
 
 
@@ -166,7 +168,7 @@ class InventoryController extends Controller
         $units = Unit::all();
         $data = Inventory::find($id);
 
-     return view('pos.inventory.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data', 'units'));
+        return view('pos.inventory.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data', 'units'));
     }
 
     /**

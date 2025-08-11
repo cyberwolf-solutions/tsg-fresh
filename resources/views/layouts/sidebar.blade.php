@@ -93,11 +93,11 @@ border-right: none !important;">
                         <div class="collapse menu-dropdown" id="purchase">
                             <ul class="nav nav-sm flex-column">
 
-                                @can('manage purchases')
+                                {{-- @can('manage purchases')
                                     <li class="nav-item">
                                         <a href="{{ route('purchases.index') }}" class="nav-link">Ingredients Purchases</a>
                                     </li>
-                                @endcan
+                                @endcan --}}
                                 @can('manage purchases')
                                     <li class="nav-item">
                                         <a href="{{ route('opurchases.index') }}" class="nav-link">Inventory Purchases</a>
@@ -117,11 +117,11 @@ border-right: none !important;">
                         </a>
                         <div class="collapse menu-dropdown" id="inventory">
                             <ul class="nav nav-sm flex-column">
-                                @can('manage Inventory')
+                                {{-- @can('manage Inventory')
                                     <li class="nav-item">
                                         <a href="{{ route('inventory.index') }}" class="nav-link">Item</a>
                                     </li>
-                                @endcan
+                                @endcan --}}
                                 @can('manage Inventory')
                                     <li class="nav-item">
                                         <a href="{{ route('inventory.stock') }}" class="nav-link">Stock</a>
