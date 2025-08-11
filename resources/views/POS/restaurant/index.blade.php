@@ -317,102 +317,64 @@
                             <div class="col-md-12 mt-2 mt-md-0">
                                 <div class="row">
                                     <div class="col-md-12 pe-2">
-                                        <div class="d-flex flex-wrap overflow-auto gap-2 pe-3 p-3 bg-light rounded-4"
-                                            style="max-height: 80vh; min-height: 80vh;background: #ffffff;"
+                                        <div class="d-flex flex-wrap overflow-auto gap-3 pe-3 p-3 bg-light rounded-4"
+                                            style="max-height: 60vh; min-height: 30vh; background: #ffffff;"
                                             id="setmenuContainer">
 
                                             @foreach ($items as $item)
-                                                {{-- @php
-                                                    $image = $item->image_url
-                                                        ? 'uploads/products/' . $item->image_url
-                                                        : 'uploads/cutlery.png';
-
-                                                    // Check if setmenu_type and setmenu_meal_type exist
-                                                    $setmenuType = $item->setmenutype->name ?? '';
-                                                    $setmenuMealType = $item->setmenumealtype->name ?? '';
-                                                @endphp --}}
-
-                                                @php
-                                                    if ($item->item_type === 'App\Models\Product') {
-                                                        $image = $item->image_url
-                                                            ? 'uploads/products/' . $item->image_url
-                                                            : 'uploads/cutlery.png';
-                                                    } elseif ($item->item_type === 'App\Models\SetMenu') {
-                                                        $image = $item->image_url
-                                                            ? 'uploads/setmenu/' . $item->image_url
-                                                            : 'uploads/cutlery.png';
-                                                    } else {
-                                                        $image = 'uploads/cutlery.png';
-                                                    }
-
-                                                    // Check if setmenu_type and setmenu_meal_type exist
-                                                    $setmenuType = $item->setmenutype->name ?? '';
-                                                    $setmenuMealType = $item->setmenumealtype->name ?? '';
-                                                @endphp
-
-
-
-                                                <div class="col-md-3 cursor-pointer meal-item shadow rounded-3"
-                                                    data-id="{{ $item->id }}" style="height:100%; width: 25%"
-                                                    data-category="{{ isset($item->categories) ? $item->categories->pluck('id')->implode(',') : '' }}"
-                                                    data-image="{{ URL::asset($image) }}"
+                                                <div class="col-md-3 cursor-pointer meal-item shadow rounded-3 p-2"
+                                                    data-id="{{ $item->id }}"
+                                                    data-category="{{ $item->categories->pluck('id')->implode(',') }}"
+                                                    data-image="{{ URL::asset($item->product_image_url) }}"
                                                     data-price-lkr="{{ floatval($item->unit_price) }}"
-                                                    data-price-usd="{{ floatval($item->unit_price) }}"
-                                                    data-price-eu="{{ floatval($item->unit_price) }}"
-                                                    data-type="{{ $item->setmenu_type ?? '' }}"
-                                                    data-mealtype="{{ $item->setmenu_meal_type ?? '' }}">
-                                                    <div class="card border mb-0 rounded-4"
-                                                        style="height: 30vh; overflow: hidden;background: #ffffff;">
-                                                        <img src="{{ URL::asset($image) }}" alt=""
-                                                            class="card-img-top"
+                                                    style="background: #fff; border: 1px solid #e0e0e0;">
+
+                                                    <div class="card border-0 mb-2 rounded-4 overflow-hidden"
+                                                        style="height: 20vh;">
+                                                        <img src="{{ URL::asset($item->product_image_url) }}"
+                                                            alt="{{ $item->full_name }}" class="card-img-top"
                                                             style="width: 100%; height: 100%; object-fit: cover;">
                                                     </div>
+
                                                     <div class="text-center"
-                                                        style="background-color: #ffffff;margin-top:10px;border-radius: 10px;">
+                                                        style="background-color: #ffffff; border-radius: 0 0 10px 10px; padding: 8px;">
                                                         <div class="row">
                                                             <div class="col-12">
-                                                                <span class="meal-name">{{ $item->name }}</span>
+                                                                <h6 class="meal-name mb-1"
+                                                                    style="font-weight: 600; font-size: 0.9rem; color: #222;">
+                                                                    {{ $item->full_name }}
+                                                                </h6>
+                                                                <small class="d-block text-muted"
+                                                                    style="font-size: 0.55rem;">
+                                                                    MFD:
+                                                                    {{ $item->manufacture_date ? \Carbon\Carbon::parse($item->manufacture_date)->format('Y-m-d') : 'N/A' }}
+                                                                    &nbsp;&nbsp;|&nbsp;&nbsp;
+                                                                    EXP:
+                                                                    {{ $item->expiry_date ? \Carbon\Carbon::parse($item->expiry_date)->format('Y-m-d') : 'N/A' }}
+                                                                </small>
                                                             </div>
-                                                            <div class="col-4">
-                                                                <p style="color: #318CE7; font-size: 12px;">
-                                                                    <span>LKR.</span>
-                                                                    {{ number_format($item->unit_price_lkr, 2) }}
+                                                            <div class="col-12 mb-2 mt-1">
+                                                                @foreach ($item->categories as $category)
+                                                                    <span class="badge bg-secondary me-1"
+                                                                        style="font-size: 0.65rem;">{{ $category->name }}</span>
+                                                                @endforeach
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <p class="text-primary fw-semibold"
+                                                                    style="font-size: 0.85rem;">
+                                                                    LKR. {{ number_format($item->unit_price, 2) }}
                                                                 </p>
-                                                            </div>
-                                                            <div class="col-4">
-                                                                <p style="color: #318CE7; font-size: 12px;">
-                                                                    <span>USD.</span>
-                                                                    {{ number_format($item->unit_price_usd, 2) }}
-                                                                </p>
-                                                            </div>
-                                                            <div class="col-4">
-                                                                <p style="color: #318CE7; font-size: 12px;">
-                                                                    <span>EURO.</span>
-                                                                    {{ number_format($item->unit_price_eu, 2) }}
-                                                                </p>
-                                                            </div>
-                                                            <div class="col-4 d-none">
-                                                                <span
-                                                                    id="type">{{ $item->setmenu_type ?? '' }}</span>
-                                                                <span
-                                                                    id="mealtype">{{ $item->setmenu_meal_type ?? '' }}</span>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             @endforeach
-                                            <div id="noResultsMessage" style="display: none;">
-                                                <h1>No products found.</h1>
-                                            </div>
+
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
-
-
                         </div>
-
 
                     </div>
 
@@ -518,9 +480,6 @@
             console.log(myObject.toLocaleString()); // Check if myObject is defined and has the toLocaleString method
         </script>
 
-
-
-
         <script>
             function beep() {
                 var context = new AudioContext();
@@ -563,16 +522,16 @@
                     // alert("clicked");
 
                     // Check if customer is selected
-                    if (customer === 0) {
-                        display_error('Please select a customer first.');
-                        $('#loader').addClass('d-none');
-                        return;
-                    }
-                    if (room === 0) {
-                        display_error('Please select a Room first.');
-                        $('#loader').addClass('d-none');
-                        return;
-                    }
+                    // if (customer === 0) {
+                    //     display_error('Please select a customer first.');
+                    //     $('#loader').addClass('d-none');
+                    //     return;
+                    // }
+                    // if (room === 0) {
+                    //     display_error('Please select a Room first.');
+                    //     $('#loader').addClass('d-none');
+                    //     return;
+                    // }
 
 
 
@@ -597,6 +556,7 @@
                     });
 
                     $('#loader').addClass('d-none');
+                    console.log('Cart after push:', cart);
                     loadCart();
                 });
 
@@ -674,16 +634,6 @@
                     }
                     $('#loader').addClass('d-none');
 
-
-
-
-
-
-
-
-
-
-
                 });
 
 
@@ -724,12 +674,13 @@
             var total = 0;
 
             function loadCart() {
+                console.log('Loading cart...');
                 sub = 0;
                 total = 0;
                 $('#loader').removeClass('d-none');
                 beep()
 
-                var symbol = document.getElementById('currencySymbol3').textContent;
+                var symbol = "lkr";
 
 
                 $('#emptyCart').hide();
@@ -737,9 +688,14 @@
                 var cartItemHtml = '';
                 cart.forEach((element, key) => {
 
+                    var price = Number(element.price) || 0;
                     var priceFormatted =
-                        `${symbol} ${Number(element.price).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`;
-                    // alert(priceFormatted);
+                        `${symbol} ${price.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`;
+
+
+                    // var priceFormatted =
+                    //     `${symbol} ${Number(element.price).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`;
+
                     sub += element.price * element.quantity;
 
                     // Add price for each modifier

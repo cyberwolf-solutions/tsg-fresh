@@ -8,6 +8,7 @@ use App\Models\BookingsRooms;
 use App\Models\Category;
 use App\Models\Currency;
 use App\Models\Customer;
+use App\Models\Inventory;
 use App\Models\Meal;
 use App\Models\Modifier;
 use App\Models\ModifiersCategories;
@@ -56,60 +57,89 @@ class RestaurantController extends Controller
     //  return view('pos.restaurant.index', compact('title', 'breadcrumbs', 'categories', 'meals', 'products', 'items'));
     // }
 
+   
+
+    // public function index()
+    // {
+    //     $title = 'POS';
+
+    //     $breadcrumbs = [
+    //         ['label' => $title, 'url' => '', 'active' => true],
+    //     ];
+
+    //     $categories = Category::all();  // or filter if you want
+
+    //     // Load inventory items with product & variant eager loaded, only with quantity > 0
+    //     $items = Inventory::with(['product.categories', 'variant'])
+    //         ->where('quantity', '>', 0)
+    //         ->get()
+    //         ->map(function ($item) {
+    //             $obj = (object) $item->toArray();  // convert to stdClass to add dynamic props
+
+    //             $name = $item->product ? $item->product->name : 'Unknown Product';
+    //             if ($item->variant) {
+    //                 $name .= ' - ' . $item->variant->variant_name;
+    //             }
+    //             $obj->full_name = $name;
+
+    //             $obj->categories = $item->product ? $item->product->categories : collect();
+
+    //             return $obj;
+    //         });
+
+
+
+    //     return view('pos.restaurant.index', compact(
+    //         'title',
+    //         'breadcrumbs',
+    //         'categories',
+    //         'items'
+    //     ));
+    // }
+
+
     public function index()
-    {
-        $title = 'POS';
+{
+    $title = 'POS';
 
-        $breadcrumbs = [
-            ['label' => $title, 'url' => '', 'active' => true],
-        ];
+    $breadcrumbs = [
+        ['label' => $title, 'url' => '', 'active' => true],
+    ];
 
-        // Load all categories of type 'Restaurant' to use for filtering/displaying
-        // $categories = Category::where('type', 'Restaurant')->get();
-        $categories = Category::all();
+    $categories = Category::all();  // Or filter if needed
 
+    // Load inventory items with product & variant eager loaded, only with quantity > 0
+    $items = Inventory::with(['product.categories', 'variant'])
+        ->where('quantity', '>', 0)
+        ->get()
+        ->map(function ($item) {
+            $obj = (object) $item->toArray();  // convert to stdClass to add dynamic props
 
-        $meals = Meal::all();
-
-        // Load products with their variants AND categories eager loaded
-        $products = Product::with(['variants', 'categories'])->get();
-
-        $items = collect();
-
-        foreach ($products as $product) {
-            if ($product->variants->count() > 0) {
-                foreach ($product->variants as $variant) {
-                    $variantItem = $product->toArray();
-
-                    $variantItem['name'] = $product->name . ' - ' . $variant->variant_name;
-                    $variantItem['unit_price_lkr'] = $variant->variant_price;
-                    $variantItem['variant_id'] = $variant->id;
-                    $variantItem['categories'] = $product->categories;
-                    $variantItem['item_type'] = 'App\Models\Product';
-
-                    $items->push((object) $variantItem);
-                }
-            } else {
-                $arrayProduct = $product->toArray();
-                $arrayProduct['item_type'] = 'App\Models\Product';
-                $arrayProduct['categories'] = $product->categories;
-                $items->push((object) $arrayProduct);
+            // Compose full name with variant if exists
+            $name = $item->product ? $item->product->name : 'Unknown Product';
+            if ($item->variant) {
+                $name .= ' - ' . $item->variant->variant_name;
             }
-        }
+            $obj->full_name = $name;
 
+            // Categories from product relation
+            $obj->categories = $item->product ? $item->product->categories : collect();
 
+            // Add product image url, fallback to default if none
+            $obj->product_image_url = $item->product && $item->product->image_url
+                ? 'uploads/products/' . $item->product->image_url
+                : 'uploads/cutlery.png';
 
-        return view('pos.restaurant.index', compact(
-            'title',
-            'breadcrumbs',
-            'categories',
-            'meals',
-            'products',
-            'items'
-        ));
-    }
+            return $obj;
+        });
 
-
+    return view('pos.restaurant.index', compact(
+        'title',
+        'breadcrumbs',
+        'categories',
+        'items'
+    ));
+}
 
     /**
      * Show the form for creating a new resource.

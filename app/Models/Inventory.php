@@ -58,6 +58,20 @@ class Inventory extends Model
         return $this->hasOne(User::class, 'id', 'updated_by');
     }
 
+    public function getFullNameAttribute()
+{
+    $name = $this->product ? $this->product->name : 'Unknown Product';
+    if ($this->variant) {
+        $name .= ' - ' . $this->variant->variant_name;
+    }
+    return $name;
+}
+
+// Add categories accessor to get categories of related product
+public function getCategoriesAttribute()
+{
+    return $this->product ? $this->product->categories : collect();
+}
     public function deletedBy()
     {
         return $this->hasOne(User::class, 'id', 'deleted_by');
