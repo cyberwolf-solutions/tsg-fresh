@@ -365,15 +365,22 @@
                     <div class="row">
                         <!-- Left Column: Product Image -->
                         <div class="col-md-8" style="text-align: center;">
-                            <img src="https://images.pexels.com/photos/128420/pexels-photo-128420.jpeg?auto=compress&cs=tinysrgb&w=800"
+
+                            @if ($product->image_url)
+                                <img src="{{ asset('uploads/products/' . $product->image_url) }}" alt="{{ $product->name }}"
+                                    style="width: 100%; max-width: 100%; border-radius: 0px;">
+                            @endif
+
+                            {{-- <img src="https://images.pexels.com/photos/128420/pexels-photo-128420.jpeg?auto=compress&cs=tinysrgb&w=800"
                                 alt="Product Image" style="width: 100%; max-width: 100%; border-radius: 8px;">
+                        --}}
                         </div>
 
                         <!-- Right Column: Product Details -->
                         <div class="col-md-4" style="padding-top: 10px;">
                             <!-- Name -->
                             <h3 class="mb-4" style="text-transform: uppercase; font-weight: bold; color: black;">
-                                Prawns/Shrimps</h3>
+                                {{ $product->name }}</h3>
 
                             <!-- Short grey line -->
                             <hr class="mb-4" style="border-top: 2px solid lightgray; width: 40px; margin: 10px 0;">
@@ -381,24 +388,49 @@
                             <!-- Price -->
                             <p class="mb-4" style="font-size: 1rem; margin-bottom: 10px;">
                                 <span style="color: gray;">From:</span>
-                                <span style="color: black;">Rs 2,000</span>
+                                <span style="color: black;">
+                                    {{ number_format($product->final_price ?? $product->product_price, 2) }}</span>
                             </p>
 
                             <!-- Dropdown -->
-                            <div class="mb-4" style="margin-bottom: 15px;">
+                            {{-- <div class="mb-4" style="margin-bottom: 15px;">
                                 <select id="priceOption" class="form-control" onchange="updatePrice()"
                                     style="font-size: 0.95rem;">
                                     <option value="2000">Small - Rs 2,000</option>
                                     <option value="3000">Medium - Rs 3,000</option>
                                     <option value="4000">Large - Rs 4,000</option>
                                 </select>
-                            </div>
+                            </div> --}}
+
+                            {{-- Variant Selector --}}
+                            @if ($product->variants->count() > 0)
+                                <div class="mb-4" style="margin-bottom: 15px;">
+                                    <select id="priceOption" class="form-control" onchange="updatePrice()"
+                                        style="font-size: 0.95rem;">
+                                        @foreach ($product->variants as $variant)
+                                            <option value="{{ $variant->variant_price }}">
+                                                {{ $variant->variant_name }} - Rs
+                                                {{ number_format($variant->variant_price, 2) }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            @endif
+
 
                             <!-- Dynamic Price Update -->
-                            <div class="mb-4" id="updatedPrice" style="font-size: 1rem; margin-bottom: 15px;">
+                            {{-- <div class="mb-4" id="updatedPrice" style="font-size: 1rem; margin-bottom: 15px;">
                                 <span style="color: gray;">Selected:</span>
                                 <span id="priceDisplay" style="color: black;">Rs 2,000</span>
-                            </div>
+                            </div> --}}
+
+                            <p>
+                                <strong>Price:</strong>
+                                <span id="productPrice">
+                                    Rs
+                                    {{ number_format($product->variants->first()->price ?? ($product->final_price ?? $product->product_price), 2) }}
+                                </span>
+                            </p>
 
                             <!-- Quantity Selector -->
                             <div class="mb-4" style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
@@ -416,13 +448,30 @@
                                 Add to Cart
                             </button>
 
+                            {{-- <button class="btn btn-add-to-cart" data-id="{{ $product->id }}"
+                                data-name="{{ $product->name }}" data-description="{{ $product->description ?? '' }}"
+                                data-price="{{ $product->final_price ?? $product->product_price }}"
+                                data-image="{{ asset('uploads/products/' . $product->image_url) }}"
+                                data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample"
+                                aria-controls="offcanvasExample"
+                                style="background-color: #58a6f9; color: white; width: 100%; margin-bottom: 20px; border-style:none">
+                                Add to Cart
+                            </button> --}}
+
+                            {{-- <button id="addToCartBtn" 
+        class="btn"
+        style="background-color: #58a6f9; color: white; width: 100%; margin-bottom: 20px; border-style:none">
+    Add to Cart
+</button> --}}
+
                             <!-- Grey line -->
                             <hr style="border-top: 1px solid #ccc;">
 
                             <!-- SKU and Category -->
                             <p style="font-size: 0.9rem; color: gray; margin-bottom: 5px;">SKU: <span
                                     style="color: black;">N/A</span></p>
-                            <p style="font-size: 0.9rem; color: gray;">Category: <span style="color: black;">Seafood</span>
+                            <p style="font-size: 0.9rem; color: gray;">Category: <span
+                                    style="color: black;">{{ $product->categories->pluck('name')->implode('/') }}</span>
                             </p>
                         </div>
                     </div>
@@ -464,8 +513,7 @@
                                 <tr style="border-top: 1px solid #eee;">
                                     <td style="font-weight: bold; color: #555; padding: 10px;">CLEAN PRAWNS</td>
                                     <td style="padding: 10px;">
-                                        Clean Prawns Large 16/20, Clean Prawns Medium 26/30, Clean Prawns Medium 31/40,
-                                        Clean Prawns Small 41/50
+                                        {!! nl2br(e($product->description)) !!}
                                     </td>
                                 </tr>
                             </table>
@@ -687,4 +735,19 @@
             }
         }
     </script>
+    <script>
+        function updatePrice() {
+            let selectedPrice = document.getElementById("priceOption").value;
+            let priceDisplay = document.getElementById("productPrice");
+
+            if (priceDisplay) {
+                priceDisplay.textContent = "Rs " + Number(selectedPrice).toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+        }
+     
+   </script>
+
 @endsection

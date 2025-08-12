@@ -93,9 +93,9 @@ foreach (config('tenancy.central_domains') as $domain) {
             return view('Landing-page.dynamic');
         });
 
-        Route::get('/single', function () {
-            return view('Landing-page.singleView');
-        });
+        // Route::get('/single', function () {
+        //     return view('Landing-page.singleView');
+        // });
 
 
         Route::get('/cart', function () {

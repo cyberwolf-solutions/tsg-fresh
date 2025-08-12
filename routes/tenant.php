@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\SingelProductController;
 use App\Models\Tenant;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -155,6 +156,8 @@ Route::middleware([
 
     Route::get('/shop-now', [ShopNowController::class, 'product'])->name('shopnow.product');
 
+    Route::get('/single/{product}', [SingelProductController::class, 'index'])->name('single.index');
+    
     Route::middleware(['guest'])->group(function () {
         Route::get('/', function () {
 
