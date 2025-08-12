@@ -45,6 +45,7 @@ use App\Http\Controllers\SetMenuMealController;
 use App\Http\Controllers\HouseKeepingCOntroller;
 use App\Http\Controllers\RoomFacilityController;
 use App\Http\Controllers\OtherPurchaseController;
+use App\Http\Controllers\SingelProductController;
 use App\Http\Controllers\CheckinCheckoutController;
 use App\Http\Controllers\AdditionalPaymentController;
 use App\Http\Controllers\TableArrangementsController;
@@ -154,6 +155,9 @@ Route::middleware([
 
 
     Route::get('/shop-now', [ShopNowController::class, 'product'])->name('shopnow.product');
+    Route::get('/cart/{product}', [SingelProductController::class, 'index'])->name('cart.index');
+
+
 
     Route::middleware(['guest'])->group(function () {
         Route::get('/', function () {

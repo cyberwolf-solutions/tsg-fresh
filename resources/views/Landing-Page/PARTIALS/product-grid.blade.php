@@ -1,29 +1,26 @@
 <div class="row">
     @forelse ($products as $product)
         <div class="col-md-3 col-sm-4 mb-4">
-            <div class="card product-card mb-0">
-                <img src="{{ asset('uploads/products/' . $product->image_url) }}" class="card-img-top"
-                    alt="{{ $product->name }}">
-
-                <div class="card-body text-center">
-                    <div class="category">
-                        {{ $product->categories->first()->name ?? 'Item' }}
+            <a href="{{ route('cart.index', ['product' => $product->id]) }}" class="text-decoration-none text-dark">
+                <div class="card product-card mb-0">
+                    <img src="{{ asset('uploads/products/' . $product->image_url) }}" class="card-img-top"
+                        alt="{{ $product->name }}">
+                    <div class="card-body text-center">
+                        <div class="category">
+                            {{ $product->categories->first()->name ?? 'Item' }}
+                        </div>
+                        <h5 class="card-title">{{ $product->name }}</h5>
+                        <p class="price-row">
+                            <span class="label">From:</span>
+                            <span class="price">Rs {{ $product->final_price ?? $product->product_price }}</span>
+                        </p>
                     </div>
-                    <h5 class="card-title">{{ $product->name }}</h5>
-                    <p class="price-row">
-                        <span class="label">From:</span>
-                        <span class="price">Rs {{ $product->final_price ?? $product->product_price }}</span>
-                    </p>
                 </div>
-
-            </div>
+            </a>
         </div>
     @empty
         <p class="text-center">No products found in this category.</p>
     @endforelse
-</div>
-<div class="d-flex justify-content-center mt-3">
-    {{ $products->links('pagination::bootstrap-5') }}
 </div>
 
 <style>
