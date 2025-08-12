@@ -13,9 +13,11 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\MealsController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\BillerController;
 use App\Http\Controllers\TablesController;
 use Stancl\Tenancy\Database\Models\Domain;
 use App\Http\Controllers\BookingController;
@@ -23,6 +25,7 @@ use App\Http\Controllers\KitchenController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\SetMenuController;
+use App\Http\Controllers\ShopNowController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CustomerController;
@@ -44,8 +47,6 @@ use App\Http\Controllers\RoomFacilityController;
 use App\Http\Controllers\OtherPurchaseController;
 use App\Http\Controllers\CheckinCheckoutController;
 use App\Http\Controllers\AdditionalPaymentController;
-use App\Http\Controllers\BillerController;
-use App\Http\Controllers\BrandController;
 use App\Http\Controllers\TableArrangementsController;
 use App\Http\Controllers\EmployeeDesignationsController;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
@@ -152,11 +153,7 @@ Route::middleware([
 
 
 
-// Route::get('/store', function () {
-//     $branch = tenant()->id; // e.g., 'galle', 'kandy'
-//     $products = \App\Models\Product::all(); // Loaded from tenant DB
-//     return view('Landing-page.dynamic', compact('products', 'branch'));
-// })->name('tenant.store');
+    Route::get('/shop-now', [ShopNowController::class, 'product'])->name('shopnow.product');
 
     Route::middleware(['guest'])->group(function () {
         Route::get('/', function () {
@@ -234,7 +231,7 @@ Route::middleware([
 
         Route::get('/get-variants/{product}', [ProductController::class, 'getVariants']);
 
-        
+
         //user profile
         Route::get('/profile', [UserController::class, 'profile'])->name('profile');
         Route::post('/profile', [UserController::class, 'profileUpdate'])->name('profile.update');

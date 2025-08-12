@@ -9,20 +9,20 @@
                         <span class="logo-sm">
                             <img src="{{ URL::asset('build/images/logo-sm.png') }}" alt="" height="22">
                         </span>
-                        <span class="logo-lg">
+                        {{-- <span class="logo-lg">
                             <img src="{{ URL::asset('app/public/storage/' . $settings->logo_dark) }}" alt=""
                                 height="47">
-                        </span>
+                        </span> --}}
                     </a>
 
                     <a href="{{ route('home') }}" class="logo logo-light">
                         <span class="logo-sm">
                             <img src="{{ URL::asset('build/images/logo-sm.png') }}" alt="" height="22">
                         </span>
-                        <span class="logo-lg">
+                        {{-- <span class="logo-lg">
                             <img src="{{ URL::asset('public/storage/' . $settings->logo_light) }}" alt=""
                                 height="47">
-                        </span>
+                        </span> --}}
                     </a>
                 </div>
 
@@ -63,8 +63,8 @@
                 <!-- Notification Icon -->
                 <div class="dropdown ms-2 d-none d-sm-flex">
                     <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle"
-                        style=" color: #6f42c1;  border: none;" id="notificationDropdown"
-                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        style=" color: #6f42c1;  border: none;" id="notificationDropdown" data-bs-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
                         <i class="ri-notification-3-line fs-22"></i>
                         <span
                             class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
@@ -107,7 +107,7 @@
                     <button type="button" class="btn" id="page-header-user-dropdown" data-bs-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="false">
                         <span class="d-flex align-items-center">
-                            <img class="rounded-circle header-profile-user" 
+                            <img class="rounded-circle header-profile-user"
                                 src="@if (Auth::user()->avatar != '') {{ URL::asset('public/storage/' . Auth::user()->avatar) }}@else{{ URL::asset('build/images/users/user-dummy-img.jpg') }} @endif"
                                 alt="Header Avatar">
                             <span class="text-start ms-xl-2">

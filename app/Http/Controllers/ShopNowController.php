@@ -48,15 +48,9 @@ class ShopNowController extends Controller
 
 
 
-    public function product()
+    public function product(Request $request)
     {
         $tenant = tenancy()->tenant;
-
-        Log::info('ShopNowController@product called', [
-            'tenant' => $tenant ? $tenant->id : null,
-            'domain' => request()->getHost(),
-            'url' => request()->fullUrl(),
-        ]);
 
         if (!$tenant) {
             Log::error('No tenant resolved inside product() method', [
@@ -66,18 +60,28 @@ class ShopNowController extends Controller
         }
 
         // Get all categories for sidebar
-        $categories = Category::withCount('products')->get();
+        $categories = Category::withCount('products')->paginate(15);
 
-        // Get all products with their variants
-        $products = Product::with('variants')->get();
+        // Base query
+        $query = Product::with('variants', 'categories');
 
-        // Get recently viewed products (you might want to implement this properly later)
+        // If category_id is passed, filter products
+        if ($request->has('category_id')) {
+            $query->whereHas('categories', function ($query) use ($request) {
+                $query->where('categories.id', $request->category_id);
+            });
+        }
+
+        // Paginate results
+        $products = $query->paginate(15);
+
+        // For AJAX requests, return the product grid with pagination links
+        if ($request->ajax()) {
+            return view('Landing-Page.partials.product-grid', compact('products'))->render();
+        }
+
+        // For initial page load
         $recentlyViewed = Product::latest()->take(2)->get();
-
-        return view('Landing-Page.dynamic', [
-            'categories' => $categories,
-            'products' => $products,
-            'recentlyViewed' => $recentlyViewed
-        ]);
+        return view('Landing-Page.dynamic', compact('categories', 'products', 'recentlyViewed'));
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use Stancl\Tenancy\Facades\Tenancy;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BarController;
@@ -12,11 +13,13 @@ use App\Http\Controllers\MealsController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\TablesController;
+use Stancl\Tenancy\Database\Models\Tenant;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\KitchenController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\SetMenuController;
+use App\Http\Controllers\ShopNowController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CustomerController;
@@ -40,8 +43,6 @@ use App\Http\Controllers\CheckinCheckoutController;
 use App\Http\Controllers\AdditionalPaymentController;
 use App\Http\Controllers\TableArrangementsController;
 use App\Http\Controllers\EmployeeDesignationsController;
-use Stancl\Tenancy\Facades\Tenancy;
-use Stancl\Tenancy\Database\Models\Tenant;
 
 foreach (config('tenancy.central_domains') as $domain) {
     Route::domain($domain)->group(function () {
@@ -50,11 +51,11 @@ foreach (config('tenancy.central_domains') as $domain) {
             return view('admin.branches.index');
         });
 
-       
 
 
 
-// tenet
+
+        // tenet
         // Route::get('/select-branch/{branch}', function ($branch) {
         //     $tenant = Tenant::find($branch); // or `where('id', $branch)->first()`
 
@@ -67,6 +68,7 @@ foreach (config('tenancy.central_domains') as $domain) {
         //     return redirect()->away("http://{$domain}/store");
         // })->name('select.branch');
 
+        Route::get('/select-branch/{branch}', [ShopNowController::class, 'index'])->name('select.branch');
 
         Route::get('/branches', [BranchController::class, 'index']);
 

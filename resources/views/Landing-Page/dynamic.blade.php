@@ -90,17 +90,22 @@
             margin-bottom: 0;
         }
 
-        /* Sidebar */
         .sidebar-widget {
-            margin-bottom: 30px;
+            font-family: 'Poppins', sans-serif;
             background: white;
             padding: 20px;
+            margin-bottom: 30px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
 
         .sidebar-widget h4 {
-            font-size: 18px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
             font-weight: 600;
+            color: #333333;
+
+            text-transform: uppercase;
+            /* ensure uppercase */
             margin-bottom: 20px;
             padding-bottom: 10px;
             border-bottom: 1px solid #eee;
@@ -118,37 +123,32 @@
         }
 
         .sidebar-widget ul li a {
+            font-family: 'Poppins', sans-serif;
             color: #333;
             text-decoration: none;
-            transition: all 0.3s ease;
             display: block;
             padding: 5px 0;
+            transition: all 0.3s ease;
         }
 
-        .sidebar-widget ul li a:hover {
-            color: #d9232d;
-            padding-left: 5px;
-        }
-
-        /* Price Filter */
         .price-slider {
             width: 100%;
-            -webkit-appearance: none;
             height: 5px;
             background: #ddd;
             outline: none;
             margin-top: 15px;
+            -webkit-appearance: none;
         }
 
         .price-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
-            appearance: none;
             width: 15px;
             height: 15px;
             background: #d9232d;
-            cursor: pointer;
             border-radius: 50%;
+            cursor: pointer;
         }
+
 
         .price-range {
             display: flex;
@@ -285,6 +285,8 @@
         }
     </style>
 
+
+
     <!-- Hero Banner -->
     <div class="hero-banner d-none">
         <div class="container">
@@ -297,38 +299,38 @@
         <div class="container mb-5 " style="margin-top: 120px;">
 
             <!-- Breadcrumb -->
-            <nav aria-label="breadcrumb">
+            {{-- <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="#">Home</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Shop</li>
                 </ol>
-            </nav>
+            </nav> --}}
 
             <div class="row mt-4">
                 <div class="container">
-                    <h2 class="mb-4 text-capitalize">{{ $branch }} Branch Store</h2>
 
-                
+
                 </div>
 
                 <!-- Sidebar -->
-                <div class="col-lg-3">
+                <div class="col-lg-3 py-0">
                     <!-- Categories Widget -->
-                    <div class="sidebar-widget" style="color: blue">
+                    <div class="sidebar-widget px-0 " style="color: blue">
                         <h4>BROWSE</h4>
-                        <ul style="color: blue">
-                            <li style="color: blue"><a href="#">Crab</a></li>
-                            <li><a href="#">Dumplings</a></li>
-                            <li><a href="#">Fish</a></li>
-                            <li><a href="#">Imported Seafood</a></li>
-                            <li><a href="#">Prawn Bites</a></li>
-                            <li><a href="#">Prawns/Shrimps</a></li>
-                            <li><a href="#">Squid</a></li>
+                        <ul id="category-list">
+                            @foreach ($categories as $category)
+                                <li>
+                                    <a href="#" data-id="{{ $category->id }}">{{ $category->name }}
+
+                                    </a>
+                                </li>
+                            @endforeach
                         </ul>
+
                     </div>
 
                     <!-- Price Filter Widget -->
-                    <div class="sidebar-widget">
+                    <div class="sidebar-widget px-0">
                         <h4>Filter by price</h4>
                         <input type="range" class="price-slider" min="0" max="5115" value="5115">
                         <div class="price-range">
@@ -339,7 +341,7 @@
                     </div>
 
                     <!-- Recently Viewed Widget -->
-                    <div class="sidebar-widget">
+                    <div class="sidebar-widget px-0">
                         <h4>Recently Viewed</h4>
                         <div class="footer-product">
                             <img src="https://images.pexels.com/photos/128408/pexels-photo-128408.jpeg?auto=compress&cs=tinysrgb&w=800"
@@ -369,9 +371,15 @@
                 <!-- Products -->
                 <div class="col-lg-9">
                     <!-- Sorting Options -->
-                    <div class="sorting-options">
-                        <p class="mb-0">Showing all 45 results</p>
-                        <select class="form-select">
+                    <div class="sorting-options d-flex justify-content-between align-items-center">
+                        <p class="mb-0">
+                            Showing
+                            {{ ($products->currentPage() - 1) * $products->perPage() + 1 }}&ndash;{{ min($products->currentPage() * $products->perPage(), $products->total()) }}
+                            of {{ $products->total() }} results
+                        </p>
+
+
+                        <select class="form-select w-auto">
                             <option>Default sorting</option>
                             <option>Sort by popularity</option>
                             <option>Sort by average rating</option>
@@ -382,203 +390,34 @@
                     </div>
 
                     <!-- Product Grid -->
-                    <div class="row">
-                        <!-- Product 1 -->
-                        <!-- Product 1 - Prawns/Shrimps -->
-                        <div class="col-md-3 col-sm-4">
-                            <div class="card product-card"
-                                style="border: 1px solid #ddd; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); position: relative; overflow: hidden;">
-                                <div style="position: relative;">
-                                    <img src="https://images.pexels.com/photos/128420/pexels-photo-128420.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                        class="card-img-top" alt="Prawns/Shrimps" style="width: 100%; height: auto;">
-                                    <div
-                                        style="position: absolute; bottom: 0px; left: 50%; transform: translateX(-50%); background-color: transparent; padding: 5px 1px; border-radius: 5px;">
-                                        <img src="{{ asset('build/images/landing/flogo.png') }}" width="70"
-                                            alt="Logo">
+                    {{-- <div class="row">
+                        @forelse($products as $product)
+                            <div class="col-md-3 col-sm-4">
+                                <div class="card product-card">
+                                    <div style="position: relative;">
+                                        <img src="{{ $product->image_url }}" class="card-img-top"
+                                            alt="{{ $product->name }}">
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <div style="color: gray; font-size: 0.9rem;">
+                                            {{ $product->categories->first()->name ?? 'Item' }}</div>
+                                        <h5 class="card-title" style="color: #007bff;">{{ $product->name }}</h5>
+                                        <p style="font-size: 0.9rem;">
+                                            <span style="color: gray;">From:</span>
+                                            <span style="color: black;">Rs
+                                                {{ $product->final_price ?? $product->product_price }}</span>
+                                        </p>
                                     </div>
                                 </div>
-                                <div class="card-body" style="text-align: center;">
-                                    <div style="color: gray; font-size: 0.9rem;">Seafood Item</div>
-                                    <h5 class="card-title" style="color: #007bff; margin: 5px 0;">Prawns/Shrimps</h5>
-                                    <p style="font-size: 0.9rem;">
-                                        <span style="color: gray;">From:</span> <span style="color: black;">Rs 2,000</span>
-                                    </p>
-
-                                </div>
                             </div>
-                        </div>
-
-
-
-                        <div class="col-md-3 col-sm-4">
-                            <div class="card product-card"
-                                style="border: 1px solid #ddd; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); position: relative; overflow: hidden;">
-                                <div style="position: relative;">
-                                    <img src="https://images.pexels.com/photos/128420/pexels-photo-128420.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                        class="card-img-top" alt="Prawns/Shrimps" style="width: 100%; height: auto;">
-                                    <div
-                                        style="position: absolute; bottom: 0px; left: 50%; transform: translateX(-50%); background-color: transparent; padding: 5px 1px; border-radius: 5px;">
-                                        <img src="{{ asset('build/images/landing/flogo.png') }}" width="70"
-                                            alt="Logo">
-                                    </div>
-                                </div>
-                                <div class="card-body" style="text-align: center;">
-                                    <div style="color: gray; font-size: 0.9rem;">Seafood Item</div>
-                                    <h5 class="card-title" style="color: #007bff; margin: 5px 0;">Prawns/Shrimps</h5>
-                                    <p style="font-size: 0.9rem;">
-                                        <span style="color: gray;">From:</span> <span style="color: black;">Rs 2,000</span>
-                                    </p>
-
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3 col-sm-4">
-                            <div class="card product-card"
-                                style="border: 1px solid #ddd; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); position: relative; overflow: hidden;">
-                                <div style="position: relative;">
-                                    <img src="https://images.pexels.com/photos/128420/pexels-photo-128420.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                        class="card-img-top" alt="Prawns/Shrimps" style="width: 100%; height: auto;">
-                                    <div
-                                        style="position: absolute; bottom: 0px; left: 50%; transform: translateX(-50%); background-color: transparent; padding: 5px 1px; border-radius: 5px;">
-                                        <img src="{{ asset('build/images/landing/flogo.png') }}" width="70"
-                                            alt="Logo">
-                                    </div>
-                                </div>
-                                <div class="card-body" style="text-align: center;">
-                                    <div style="color: gray; font-size: 0.9rem;">Seafood Item</div>
-                                    <h5 class="card-title" style="color: #007bff; margin: 5px 0;">Prawns/Shrimps</h5>
-                                    <p style="font-size: 0.9rem;">
-                                        <span style="color: gray;">From:</span> <span style="color: black;">Rs
-                                            2,000</span>
-                                    </p>
-
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3 col-sm-4">
-                            <div class="card product-card"
-                                style="border: 1px solid #ddd; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); position: relative; overflow: hidden;">
-                                <div style="position: relative;">
-                                    <img src="https://images.pexels.com/photos/128420/pexels-photo-128420.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                        class="card-img-top" alt="Prawns/Shrimps" style="width: 100%; height: auto;">
-                                    <div
-                                        style="position: absolute; bottom: 0px; left: 50%; transform: translateX(-50%); background-color: transparent; padding: 5px 1px; border-radius: 5px;">
-                                        <img src="{{ asset('build/images/landing/flogo.png') }}" width="70"
-                                            alt="Logo">
-                                    </div>
-                                </div>
-                                <div class="card-body" style="text-align: center;">
-                                    <div style="color: gray; font-size: 0.9rem;">Seafood Item</div>
-                                    <h5 class="card-title" style="color: #007bff; margin: 5px 0;">Prawns/Shrimps</h5>
-                                    <p style="font-size: 0.9rem;">
-                                        <span style="color: gray;">From:</span> <span style="color: black;">Rs
-                                            2,000</span>
-                                    </p>
-
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3 col-sm-4">
-                            <div class="card product-card"
-                                style="border: 1px solid #ddd; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); position: relative; overflow: hidden;">
-                                <div style="position: relative;">
-                                    <img src="https://images.pexels.com/photos/128420/pexels-photo-128420.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                        class="card-img-top" alt="Prawns/Shrimps" style="width: 100%; height: auto;">
-                                    <div
-                                        style="position: absolute; bottom: 0px; left: 50%; transform: translateX(-50%); background-color: transparent; padding: 5px 1px; border-radius: 5px;">
-                                        <img src="{{ asset('build/images/landing/flogo.png') }}" width="70"
-                                            alt="Logo">
-                                    </div>
-                                </div>
-                                <div class="card-body" style="text-align: center;">
-                                    <div style="color: gray; font-size: 0.9rem;">Seafood Item</div>
-                                    <h5 class="card-title" style="color: #007bff; margin: 5px 0;">Prawns/Shrimps</h5>
-                                    <p style="font-size: 0.9rem;">
-                                        <span style="color: gray;">From:</span> <span style="color: black;">Rs
-                                            2,000</span>
-                                    </p>
-
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3 col-sm-4">
-                            <div class="card product-card"
-                                style="border: 1px solid #ddd; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); position: relative; overflow: hidden;">
-                                <div style="position: relative;">
-                                    <img src="https://images.pexels.com/photos/128420/pexels-photo-128420.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                        class="card-img-top" alt="Prawns/Shrimps" style="width: 100%; height: auto;">
-                                    <div
-                                        style="position: absolute; bottom: 0px; left: 50%; transform: translateX(-50%); background-color: transparent; padding: 5px 1px; border-radius: 5px;">
-                                        <img src="{{ asset('build/images/landing/flogo.png') }}" width="70"
-                                            alt="Logo">
-                                    </div>
-                                </div>
-                                <div class="card-body" style="text-align: center;">
-                                    <div style="color: gray; font-size: 0.9rem;">Seafood Item</div>
-                                    <h5 class="card-title" style="color: #007bff; margin: 5px 0;">Prawns/Shrimps</h5>
-                                    <p style="font-size: 0.9rem;">
-                                        <span style="color: gray;">From:</span> <span style="color: black;">Rs
-                                            2,000</span>
-                                    </p>
-
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3 col-sm-4">
-                            <div class="card product-card"
-                                style="border: 1px solid #ddd; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); position: relative; overflow: hidden;">
-                                <div style="position: relative;">
-                                    <img src="https://images.pexels.com/photos/128420/pexels-photo-128420.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                        class="card-img-top" alt="Prawns/Shrimps" style="width: 100%; height: auto;">
-                                    <div
-                                        style="position: absolute; bottom: 0px; left: 50%; transform: translateX(-50%); background-color: transparent; padding: 5px 1px; border-radius: 5px;">
-                                        <img src="{{ asset('build/images/landing/flogo.png') }}" width="70"
-                                            alt="Logo">
-                                    </div>
-                                </div>
-                                <div class="card-body" style="text-align: center;">
-                                    <div style="color: gray; font-size: 0.9rem;">Seafood Item</div>
-                                    <h5 class="card-title" style="color: #007bff; margin: 5px 0;">Prawns/Shrimps</h5>
-                                    <p style="font-size: 0.9rem;">
-                                        <span style="color: gray;">From:</span> <span style="color: black;">Rs
-                                            2,000</span>
-                                    </p>
-
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3 col-sm-4">
-                            <div class="card product-card"
-                                style="border: 1px solid #ddd; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); position: relative; overflow: hidden;">
-                                <div style="position: relative;">
-                                    <img src="https://images.pexels.com/photos/128420/pexels-photo-128420.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                        class="card-img-top" alt="Prawns/Shrimps" style="width: 100%; height: auto;">
-                                    <div
-                                        style="position: absolute; bottom: 0px; left: 50%; transform: translateX(-50%); background-color: transparent; padding: 5px 1px; border-radius: 5px;">
-                                        <img src="{{ asset('build/images/landing/flogo.png') }}" width="70"
-                                            alt="Logo">
-                                    </div>
-                                </div>
-                                <div class="card-body" style="text-align: center;">
-                                    <div style="color: gray; font-size: 0.9rem;">Seafood Item</div>
-                                    <h5 class="card-title" style="color: #007bff; margin: 5px 0;">Prawns/Shrimps</h5>
-                                    <p style="font-size: 0.9rem;">
-                                        <span style="color: gray;">From:</span> <span style="color: black;">Rs
-                                            2,000</span>
-                                    </p>
-
-                                </div>
-                            </div>
-                        </div>
-
-
+                        @empty
+                            <p class="text-center">No products found in this category.</p>
+                        @endforelse
+                    </div> --}}
+                    <div id="product-grid">
+                        @include('Landing-Page.partials.product-grid', ['products' => $products])
                     </div>
+
                 </div>
             </div>
         </div>
@@ -712,4 +551,42 @@
             </div>
         </div>
     </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle category clicks
+            document.querySelectorAll('#category-list a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    let categoryId = this.getAttribute('data-id');
+                    loadProducts(`{{ route('shopnow.product') }}?category_id=${categoryId}`);
+                });
+            });
+
+            // Handle pagination clicks (event delegation)
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.pagination a')) {
+                    e.preventDefault();
+                    let url = e.target.closest('a').href;
+                    loadProducts(url);
+                }
+            });
+
+            function loadProducts(url) {
+                fetch(url, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.text())
+                    .then(html => {
+                        document.querySelector('#product-grid').innerHTML = html;
+                        // Scroll to products section for better UX
+                        document.querySelector('#product-grid').scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+        });
+    </script>
 @endsection

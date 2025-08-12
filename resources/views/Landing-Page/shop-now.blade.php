@@ -11,7 +11,7 @@
             <p>Please choose your nearest outlet for a better service.</p>
         </div>
 
-        {{-- <div class="row justify-content-center text-center">
+        <div class="row justify-content-center text-center">
             <div class="col-md-3 col-10 mb-4">
                 <a href="{{ route('select.branch', 'galle') }}" style="text-decoration: none;">
                     <img src="{{ asset('build/images/colombo-store.png') }}" alt="Colombo 3 Store" class="img-fluid mb-2">
@@ -31,6 +31,6 @@
                 </a>
             </div>
 
-        </div> --}}
+        </div>
     </div>
 @endsection
