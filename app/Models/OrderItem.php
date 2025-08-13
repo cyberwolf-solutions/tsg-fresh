@@ -33,10 +33,7 @@ class OrderItem extends Model
     {
         return $this->hasOne(Product::class, 'id', 'itemable_id');
     }
-    public function setmenu()
-    {
-        return $this->hasOne(SetMenu::class, 'id', 'itemable_id');
-    }
+   
 
     // public function product()
     // {

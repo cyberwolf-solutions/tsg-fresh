@@ -974,7 +974,6 @@
                     return;
                 }
 
-
                 $('.meal-item').each(function() {
                     var itemMealType = $(this).data('mealtype');
                     var itemType = $(this).data('type');
