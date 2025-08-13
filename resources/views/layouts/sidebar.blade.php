@@ -11,7 +11,7 @@ border-right: none !important;">
                 <img src="{{ URL::asset('build/images/logo-sm.png') }}" alt="" height="22">
             </span>
             <span class="logo-lg">
-                <img src="{{ URL::asset('storage/' . $settings->logo_dark) }}" alt="" height="17">
+                {{-- <img src="{{ URL::asset('storage/' . $settings->logo_dark) }}" alt="" height="17"> --}}
             </span>
         </a>
         <!-- Light Logo-->
@@ -20,7 +20,7 @@ border-right: none !important;">
                 <img src="{{ URL::asset('build/images/logo-sm.png') }}" alt="" height="22">
             </span>
             <span class="logo-lg">
-                <img src="{{ URL::asset('storage/' . $settings->logo_dark) }}" alt="" height="17">
+                {{-- <img src="{{ URL::asset('storage/' . $settings->logo_dark) }}" alt="" height="17"> --}}
             </span>
         </a>
         <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover"
@@ -43,13 +43,7 @@ border-right: none !important;">
                 </li> <!-- end Dashboard Menu -->
 
                 {{-- product --}}
-                @canany([
-                    
-                    'manage products',
-                    'manage
-                    categories',
-                  
-                    ])
+                @canany(['manage products', 'manage categories', 'manage brands'])
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#foods" data-bs-toggle="collapse" role="button"
                             aria-expanded="false" aria-controls="foods">
@@ -67,12 +61,16 @@ border-right: none !important;">
                                         <a href="{{ route('products.index') }}" class="nav-link">Products</a>
                                     </li>
                                 @endcan
-                                 @can('manage categories')
+                                @can('manage categories')
                                     <li class="nav-item">
                                         <a href="{{ route('categories.index') }}" class="nav-link">Categories</a>
                                     </li>
                                 @endcan
-                             
+                                @can('manage brands')
+                                    <li class="nav-item">
+                                        <a href="{{ route('brand.index') }}" class="nav-link">Brand</a>
+                                    </li>
+                                @endcan
 
                             </ul>
                         </div>
@@ -89,11 +87,11 @@ border-right: none !important;">
                         <div class="collapse menu-dropdown" id="purchase">
                             <ul class="nav nav-sm flex-column">
 
-                                @can('manage purchases')
+                                {{-- @can('manage purchases')
                                     <li class="nav-item">
                                         <a href="{{ route('purchases.index') }}" class="nav-link">Ingredients Purchases</a>
                                     </li>
-                                @endcan
+                                @endcan --}}
                                 @can('manage purchases')
                                     <li class="nav-item">
                                         <a href="{{ route('opurchases.index') }}" class="nav-link">Inventory Purchases</a>
@@ -113,11 +111,11 @@ border-right: none !important;">
                         </a>
                         <div class="collapse menu-dropdown" id="inventory">
                             <ul class="nav nav-sm flex-column">
-                                @can('manage Inventory')
+                                {{-- @can('manage Inventory')
                                     <li class="nav-item">
                                         <a href="{{ route('inventory.index') }}" class="nav-link">Item</a>
                                     </li>
-                                @endcan
+                                @endcan --}}
                                 @can('manage Inventory')
                                     <li class="nav-item">
                                         <a href="{{ route('inventory.stock') }}" class="nav-link">Stock</a>
@@ -129,17 +127,42 @@ border-right: none !important;">
                     </li>
                 @endcanany
 
+                {{-- order --}}
+                @canany(['manage orders'])
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="#order" data-bs-toggle="collapse" role="button"
+                            aria-expanded="false" aria-controls="order">
+                            <i class="mdi mdi-food-outline" style="color: purple"></i> <span>Orders</span>
+                        </a>
+                        <div class="collapse menu-dropdown" id="order">
+                            <ul class="nav nav-sm flex-column">
+                                @can('manage orders')
+                                    <li class="nav-item">
+                                        <a href="{{ route('orders.index') }}" class="nav-link">Orders</a>
+                                    </li>
+                                @endcan
+                                {{-- @can('manage orders')
+                                    <li class="nav-item">
+                                        <a href="{{ route('inventory.stock') }}" class="nav-link">Stock</a>
+                                    </li>
+                                @endcan --}}
+
+                            </ul>
+                        </div>
+                    </li>
+                @endcanany
+
                 {{-- Expenses --}}
                 @canany(['manage orders', 'manage kitchen', 'manage bar', 'manage tables', 'manage table-arrangements'])
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#exp" data-bs-toggle="collapse" role="button"
                             aria-expanded="false" aria-controls="exp">
-                           <i class="ri-wallet-3-line" style="color: purple;"></i> <span>Expenses</span>
+                            <i class="ri-wallet-3-line" style="color: purple;"></i> <span>Expenses</span>
                         </a>
                         <div class="collapse menu-dropdown" id="exp">
                             <ul class="nav nav-sm flex-column">
-                                
-                              
+
+
                             </ul>
                         </div>
                     </li>
@@ -154,7 +177,7 @@ border-right: none !important;">
                         </a>
                         <div class="collapse menu-dropdown" id="qua">
                             <ul class="nav nav-sm flex-column">
-                                
+
                             </ul>
                         </div>
                     </li>
@@ -165,11 +188,11 @@ border-right: none !important;">
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#transfer" data-bs-toggle="collapse" role="button"
                             aria-expanded="false" aria-controls="transfer">
-                           <i class="ri-exchange-line" style="color: purple;"></i> <span>Transfer</span>
+                            <i class="ri-exchange-line" style="color: purple;"></i> <span>Transfer</span>
                         </a>
                         <div class="collapse menu-dropdown" id="transfer">
                             <ul class="nav nav-sm flex-column">
-                              
+
                             </ul>
                         </div>
                     </li>
@@ -180,11 +203,11 @@ border-right: none !important;">
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#return" data-bs-toggle="collapse" role="button"
                             aria-expanded="false" aria-controls="return">
-                          <i class="ri-arrow-go-back-line" style="color: purple;"></i> <span>Return</span>
+                            <i class="ri-arrow-go-back-line" style="color: purple;"></i> <span>Return</span>
                         </a>
                         <div class="collapse menu-dropdown" id="return">
                             <ul class="nav nav-sm flex-column">
-                            
+
                             </ul>
                         </div>
                     </li>
@@ -195,22 +218,22 @@ border-right: none !important;">
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#accounting" data-bs-toggle="collapse" role="button"
                             aria-expanded="false" aria-controls="accounting">
-                         <i class="ri-bar-chart-line" style="color: purple;"></i> <span>Accounting</span>
+                            <i class="ri-bar-chart-line" style="color: purple;"></i> <span>Accounting</span>
                         </a>
                         <div class="collapse menu-dropdown" id="accounting">
                             <ul class="nav nav-sm flex-column">
-                           
+
                             </ul>
                         </div>
                     </li>
                 @endcanany
 
                 {{-- HRM --}}
-                @canany(['manage orders','manage employees'])
+                @canany(['manage orders', 'manage employees'])
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#hrm" data-bs-toggle="collapse" role="button"
                             aria-expanded="false" aria-controls="hrm">
-                       <i class="ri-user-settings-line" style="color: purple;"></i> <span>HRM</span>
+                            <i class="ri-user-settings-line" style="color: purple;"></i> <span>HRM</span>
                         </a>
                         <div class="collapse menu-dropdown" id="hrm">
                             <ul class="nav nav-sm flex-column">
@@ -219,8 +242,8 @@ border-right: none !important;">
                                         <a href="{{ route('orders.index') }}" class="nav-link">Orders</a>
                                     </li>
                                 @endcan --}}
-                              
-                                   @can('manage employees')
+
+                                @can('manage employees')
                                     <li class="nav-item">
                                         <a href="{{ route('employee-designations.index') }}" class="nav-link">Employee
                                             Designations</a>
@@ -243,7 +266,7 @@ border-right: none !important;">
                 @endcanany
 
                 {{-- peaple --}}
-                @canany(['manage users',   'manage customers', 'manage suppliers'])
+                @canany(['manage users', 'manage customers', 'manage suppliers'])
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#user" data-bs-toggle="collapse" role="button"
                             aria-expanded="false" aria-controls="user">
@@ -256,7 +279,7 @@ border-right: none !important;">
                                         <a href="{{ route('users.index') }}" class="nav-link">Users</a>
                                     </li>
                                 @endcan
-                                 @can('manage customers')
+                                @can('manage customers')
                                     <li class="nav-item">
                                         <a href="{{ route('customers.index') }}" class="nav-link">Customers</a>
                                     </li>
@@ -266,12 +289,12 @@ border-right: none !important;">
                                         <a href="{{ route('suppliers.index') }}" class="nav-link">Suppliers</a>
                                     </li>
                                 @endcan
-                                  @can('manage suppliers')
+                                @can('manage suppliers')
                                     <li class="nav-item">
                                         {{-- <a href="{{ route('biller.index') }}" class="nav-link">Biller</a> --}}
                                     </li>
                                 @endcan
-                        
+
                             </ul>
                         </div>
                     </li>
@@ -335,8 +358,8 @@ border-right: none !important;">
                                         <a href="{{ route('product.ReportsIndex') }}" class="nav-link">Product Reports</a>
                                     </li>
                                 @endcan
-                               
-                             
+
+
 
 
 
@@ -346,7 +369,7 @@ border-right: none !important;">
                 @endcanany
 
                 {{-- SETTINGS --}}
-                 @canany(['manage settings', 'manage modifiers', 'manage categories', 'manage units','manage roles'])
+                @canany(['manage settings', 'manage modifiers', 'manage units', 'manage roles'])
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#settings" data-bs-toggle="collapse" role="button"
                             aria-expanded="false" aria-controls="settings">
@@ -366,9 +389,9 @@ border-right: none !important;">
                                         <a href="{{ route('roles.index') }}" class="nav-link">Roles</a>
                                     </li>
                                 @endcan
-                           
 
-                              
+
+
                                 @can('manage units')
                                     <li class="nav-item">
                                         <a href="{{ route('units.index') }}" class="nav-link">Units</a>

@@ -50,7 +50,6 @@ class CategoryController extends Controller {
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255|unique:categories,name',
-            'type' => 'required',
             'description' => 'nullable',
             'image' => 'nullable|max:5000'
         ]);
@@ -77,7 +76,6 @@ class CategoryController extends Controller {
         try {
             $data = [
                 'name' => $request->name,
-                'type' => $request->type,
                 'description' => $request->description,
                 'image_url' => $image_url,
                 'created_by' => Auth::user()->id,
@@ -127,10 +125,6 @@ class CategoryController extends Controller {
         $html .= '<td>' . $data->name . '</td>';
         $html .= '</tr>';
         $html .= '<tr>';
-        $html .= '<td>Type :</td>';
-        $html .= '<td>' . $data->type . '</td>';
-        $html .= '</tr>';
-        $html .= '<tr>';
         $html .= '<td>Description :</td>';
         $html .= '<td>' . $data->description . '</td>';
         $html .= '</tr>';
@@ -171,7 +165,6 @@ class CategoryController extends Controller {
     public function update(Request $request, string $id) {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:15|unique:categories,name,' . $id,
-            'type' => 'required',
             'description' => 'nullable',
             'image' => 'nullable|max:5000'
         ]);
@@ -196,7 +189,6 @@ class CategoryController extends Controller {
         try {
             $data = [
                 'name' => $request->name,
-                'type' => $request->type,
                 'description' => $request->description,
                 'updated_by' => Auth::user()->id,
             ];

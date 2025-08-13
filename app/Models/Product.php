@@ -13,32 +13,46 @@ class Product extends Model
     protected $table = 'products';
     protected $fillable = [
         'name',
-        'category_id',
-        'unit_price_lkr',
-        'unit_price_usd',
-        'unit_price_eu',
         'image_url',
         'description',
-        'type',
-        'created_by',
+        'product_code',
+        'barcode',
+        'brand_id',
+        'product_unit',
+        'cost',
+        'product_price',
+        'qty',
+        'tax',
+        'tax_method',
+        'tax_status',
+        'tax_class',
+        'product_type',
+        'status',
+        'final_price'
+,        'created_by',
         'updated_by',
         'deleted_by'
     ];
 
 
-    public function category()
+   
+
+public function categories()
+{
+    return $this->belongsToMany(Category::class, 'category_products')
+        ->using(CategoryProduct::class);
+}
+
+
+
+    public function brand()
     {
-        return $this->hasOne(Category::class, 'id', 'category_id');
+        return $this->hasOne(Brand::class, 'id', 'brand_id');
     }
 
-    public function ingredients()
+    public function variants()
     {
-        return $this->belongsToMany(Ingredient::class, 'products_ingredients', 'product_id', 'ingredient_id');
-    }
-
-    public function meals()
-    {
-        return $this->belongsToMany(Meal::class, 'meals_products', 'product_id', 'meal_id');
+        return $this->hasMany(ProductVariant::class);
     }
 
     public function createdBy()
@@ -54,13 +68,5 @@ class Product extends Model
     public function deletedBy()
     {
         return $this->hasOne(User::class, 'id', 'deleted_by');
-    }
-    public function productingredients()
-    {
-        return $this->hasMany(ProductsIngredients::class, 'product_id');
-    }
-    public function orderItem()
-    {
-        return $this->morphOne(OrderItem::class, 'itemable');
     }
 }

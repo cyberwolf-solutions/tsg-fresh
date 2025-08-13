@@ -8,17 +8,35 @@ return new class extends Migration {
     /**
      * Run the migrations.
      */
-    public function up(): void {
+    public function up(): void
+    {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
+
             $table->string('name');
-            $table->integer('category_id');
-            $table->float('unit_price_lkr')->default(0);
-            $table->float('unit_price_usd')->default(0);
-            $table->float('unit_price_eu')->default(0);
             $table->string('image_url')->nullable();
-            $table->string('description')->nullable();
-            $table->enum('type', ['KOT', 'BOT'])->default('KOT');
+            $table->text('description')->nullable();
+
+            $table->string('product_code')->unique();
+            $table->string('barcode')->nullable();
+
+            $table->unsignedBigInteger('brand_id')->nullable();
+            $table->unsignedBigInteger('product_unit')->nullable();
+
+            $table->float('cost')->default(0);
+            $table->float('product_price')->default(0);
+            $table->float('qty')->default(0);
+
+            $table->float('tax')->nullable();
+            $table->string('tax_method')->nullable();
+            $table->string('tax_status')->nullable();
+            $table->string('tax_class')->nullable();
+
+            $table->enum('product_type', ['simple', 'grouped', 'variable'])->default('simple');
+
+            $table->enum('status', ['public', 'private'])->default('public');
+            $table->float('final_price')->default(0);
+
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->unsignedBigInteger('deleted_by')->nullable();
@@ -30,7 +48,8 @@ return new class extends Migration {
     /**
      * Reverse the migrations.
      */
-    public function down(): void {
+    public function down(): void
+    {
         Schema::dropIfExists('products');
     }
 };

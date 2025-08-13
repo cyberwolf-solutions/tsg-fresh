@@ -13,12 +13,16 @@ return new class extends Migration
     {
         Schema::create('inventory', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->unsignedBigInteger('product_id');
+            $table->unsignedBigInteger('variant_id')->nullable();
+            $table->string('name'); // product name + variant name (if any)
             $table->float('unit_price')->default(0);
-            $table->string('quantity');
-            $table->string('min_quantity');
-            $table->integer('unit_id');
+            $table->float('quantity')->default(0);
+            $table->float('min_quantity')->default(0);
+            $table->string('unit')->nullable();
             $table->string('description')->nullable();
+            $table->date('manufacture_date')->nullable();
+            $table->date('expiry_date')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->unsignedBigInteger('deleted_by')->nullable();

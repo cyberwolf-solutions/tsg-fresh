@@ -14,7 +14,6 @@ class Category extends Model
     protected $fillable = [
         'name',
         'description',
-        'type',
         'image_url',
         'created_by',
         'updated_by',
@@ -25,6 +24,13 @@ class Category extends Model
     {
         return $this->belongsToMany(Modifier::class, 'modifiers_categories', 'category_id', 'modifier_id');
     }
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'category_products')
+            ->using(CategoryProduct::class);
+    }
+
 
     public function createdBy()
     {

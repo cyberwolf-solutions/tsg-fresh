@@ -13,9 +13,11 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\MealsController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\BillerController;
 use App\Http\Controllers\TablesController;
 use Stancl\Tenancy\Database\Models\Domain;
 use App\Http\Controllers\BookingController;
@@ -23,6 +25,7 @@ use App\Http\Controllers\KitchenController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\SetMenuController;
+use App\Http\Controllers\ShopNowController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CustomerController;
@@ -42,9 +45,9 @@ use App\Http\Controllers\SetMenuMealController;
 use App\Http\Controllers\HouseKeepingCOntroller;
 use App\Http\Controllers\RoomFacilityController;
 use App\Http\Controllers\OtherPurchaseController;
+use App\Http\Controllers\SingelProductController;
 use App\Http\Controllers\CheckinCheckoutController;
 use App\Http\Controllers\AdditionalPaymentController;
-use App\Http\Controllers\BillerController;
 use App\Http\Controllers\TableArrangementsController;
 use App\Http\Controllers\EmployeeDesignationsController;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
@@ -149,11 +152,17 @@ Route::middleware([
         return "Tenant not found";
     });
 
+
+
+    Route::get('/shop-now', [ShopNowController::class, 'product'])->name('shopnow.product');
+    Route::get('/single/{product}', [SingelProductController::class, 'index'])->name('single.index');
+
+
+
     Route::middleware(['guest'])->group(function () {
         Route::get('/', function () {
 
-         return view('auth.login');
-
+            return view('auth.login');
         })->name('login');
     });
     Auth::routes();
@@ -191,6 +200,7 @@ Route::middleware([
         Route::post('/purchase-payment', [PurchaseController::class, 'addPayment'])->name('purchases.payment.add');
         Route::get('/purchase-payments/view/{id}', [PurchaseController::class, 'viewPayments'])->name('purchases.payments.view');
         Route::resource('categories', CategoryController::class)->middleware('can:manage categories');
+        Route::resource('brand', BrandController::class)->middleware('can:manage categories');
         Route::resource('units', UnitController::class)->middleware('can:manage units');
         Route::resource('ingredients', IngredientsController::class)->middleware('can:manage ingredients');
         Route::resource('products', ProductController::class)->middleware('can:manage products');
@@ -222,6 +232,9 @@ Route::middleware([
 
         Route::get('/inventory/stock', [InventoryController::class, 'stock'])->name('inventory.stock');
         Route::resource('inventory', InventoryController::class)->middleware('can:manage Inventory');
+
+        Route::get('/get-variants/{product}', [ProductController::class, 'getVariants']);
+
 
         //user profile
         Route::get('/profile', [UserController::class, 'profile'])->name('profile');

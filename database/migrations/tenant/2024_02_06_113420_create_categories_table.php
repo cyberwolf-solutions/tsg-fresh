@@ -12,7 +12,6 @@ return new class extends Migration {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->enum('type', ['Restaurant', 'Hotel']);
             $table->string('description')->nullable();
             $table->string('image_url')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();

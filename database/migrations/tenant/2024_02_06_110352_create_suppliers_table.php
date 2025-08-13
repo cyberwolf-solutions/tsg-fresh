@@ -12,11 +12,16 @@ return new class extends Migration {
         Schema::create('suppliers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('contact_primary');
-            $table->string('contact_secondary')->nullable();
+            $table->string('contact');
             $table->string('email')->nullable();
             $table->string('address');
-            $table->float('balance')->default(0);
+            $table->string('company_name');
+            $table->string('vat');
+            $table->string('city');
+            $table->string('state');
+            $table->string('postalcode');
+            $table->string('country');
+            $table->string('image_url')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->unsignedBigInteger('deleted_by')->nullable();

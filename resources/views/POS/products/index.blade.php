@@ -6,7 +6,7 @@
     <!-- start page title -->
     <div class="row">
         <div class="col-12">
-{{-- btns --}}
+            {{-- btns --}}
 
             <div class="page-title-box">
                 <div>
@@ -29,26 +29,22 @@
                 <div class="row mt-3">
                     <!-- Left Buttons -->
                     <div class="col d-flex gap-2">
-                        <a href="{{ route('products.create') }}" class="btn btn-sm btn-purple"
-                            style="  color: white;">
+                        <a href="{{ route('products.create') }}" class="btn btn-sm btn-purple" style="  color: white;">
                             <i class="ri-add-line me-1"></i> Add Product
                         </a>
 
-                        <a href="" class="btn btn-sm"
-                            style="background-color: #00cfc8; color: white;">
+                        <a href="" class="btn btn-sm" style="background-color: #00cfc8; color: white;">
                             <i class="ri-upload-cloud-line me-1"></i> Import
                         </a>
                     </div>
 
                     <!-- Right Buttons -->
                     <div class="col text-end d-flex justify-content-end gap-2">
-                        <a href="" class="btn btn-sm"
-                            style="background-color: #3e3e3e; color: white;">
+                        <a href="" class="btn btn-sm" style="background-color: #3e3e3e; color: white;">
                             <i class="ri-file-pdf-line me-1"></i> PDF
                         </a>
 
-                        <a href="" class="btn btn-sm"
-                            style="background-color: #fb9746; color: white;">
+                        <a href="" class="btn btn-sm" style="background-color: #fb9746; color: white;">
                             <i class="ri-file-line me-1"></i> CSV
                         </a>
 
@@ -65,7 +61,7 @@
                 </div>
             </div>
 
-{{-- btns --}}
+            {{-- btns --}}
         </div>
     </div>
 
@@ -77,13 +73,13 @@
                         <thead class="table-light">
                             <th>#</th>
                             <th>&nbsp;</th>
+                            <th>Code</th>
                             <th>Name</th>
                             <th>Category</th>
-                            <th>Price lkr</th>
-                            <th>Price usd</th>
-                            <th>Price eu</th>
-                            <th>Description</th>
+                            <th>Brand</th>
+                            <th>Price</th>
                             <th>Type</th>
+                            <th>Status</th>
                             <th>Action</th>
                         </thead>
                         <tbody>
@@ -103,24 +99,20 @@
                                                 height="40">
                                         </div>
                                     </td>
+                                    <td>{{ $item->product_code }}</td>
                                     <td>{{ $item->name }}</td>
-                                    <td>{{ $item->category->name }}</td>
-                                    <td>LKR.{{ number_format($item->unit_price_lkr, 2) }}</td>
-                                    <td>USD.{{ number_format($item->unit_price_usd, 2) }}</td>
-                                    <td>EURO.{{ number_format($item->unit_price_eu, 2) }}</td>
-                                    <td>{{ $item->description }}</td>
-                                    <td>{{ $item->type }}</td>
                                     <td>
-                                        @if (isset($item->ingredients))
-                                            @can('manage ingredients')
-                                                <a data-url="{{ route('get-product-ingredients') }}"
-                                                    data-id="{{ $item->id }}"
-                                                    class="btn btn-info btn-sm small btn-icon text-dark show-ingredients">
-                                                    <i class="mdi mdi-food" data-bs-toggle="tooltip"
-                                                        title="Show Ingredients"></i>
-                                                </a>
-                                            @endcan
-                                        @endif
+                                        @foreach ($item->categories as $category)
+                                            <span class="badge  me-1" style="background-color: #525252">{{ $category->name }}</span>
+                                        @endforeach
+                                    </td>
+
+                                    <td>{{ $item->brand->name }}</td>
+                                    <td>Rs {{ number_format($item->final_price, 2) }}</td>
+                                    <td>{{ $item->product_type }}</td>
+                                    <td>{{ $item->status }}</td>
+                                    <td>
+
                                         @can('view products')
                                             <a data-url="{{ route('products.show', [$item->id]) }}"
                                                 class="btn btn-light btn-sm small btn-icon text-dark show-more">

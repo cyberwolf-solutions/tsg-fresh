@@ -6,37 +6,72 @@
     <!-- start page title -->
     <div class="row">
         <div class="col-12">
-            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                <div>
-                    <h3 class="mb-sm-0">{{ $title }}</h3>
 
-                    <ol class="breadcrumb m-0 mt-2">
-                        <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
 
-                        @foreach ($breadcrumbs as $breadcrumb)
-                            <li class="breadcrumb-item {{ $breadcrumb['active'] ? 'active' : '' }}">
-                                @if (!$breadcrumb['active'])
-                                    <a href="{{ $breadcrumb['url'] }}">{{ $breadcrumb['label'] }}</a>
-                                @else
-                                    {{ $breadcrumb['label'] }}
-                                @endif
-                            </li>
-                        @endforeach
-                    </ol>
-                </div>
+            <div class="page-title-right">
+                {{-- Add Buttons Here --}}
+                @can('create purchases')
+                    {{-- btns --}}
 
-                <div class="page-title-right">
-                    {{-- Add Buttons Here --}}
-                    @can('create purchases')
-                        <a href="{{ route('opurchases.create') }}" class="btn btn-primary btn-icon" data-bs-toggle="tooltip"
-                            title="Create">
-                            <i class="ri-add-line"></i>
-                        </a>
-                    @endcan
-                    {{-- <a href="{{route('purchase.Reports')}}" >
-                        <button  class="btn btn-border btn-danger">Reports</button>
-                    </a> --}}
-                </div>
+                    <div class="page-title-box">
+                        <div>
+                            <h3 class="mb-sm-0">{{ $title }}</h3>
+                            <ol class="breadcrumb m-0 mt-2">
+                                <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
+                                @foreach ($breadcrumbs as $breadcrumb)
+                                    <li class="breadcrumb-item {{ $breadcrumb['active'] ? 'active' : '' }}">
+                                        @if (!$breadcrumb['active'])
+                                            <a href="{{ $breadcrumb['url'] }}">{{ $breadcrumb['label'] }}</a>
+                                        @else
+                                            {{ $breadcrumb['label'] }}
+                                        @endif
+                                    </li>
+                                @endforeach
+                            </ol>
+                        </div>
+
+                        <!-- Action Buttons Row -->
+                        <div class="row mt-3">
+                            <!-- Left Buttons -->
+                            <div class="col d-flex gap-2">
+                                <a href="{{ route('opurchases.create') }}" class="btn btn-sm btn-purple"
+                                    style="  color: white;">
+                                    <i class="ri-add-line me-1"></i> Add Purchase
+                                </a>
+
+                                <a href="" class="btn btn-sm" style="background-color: #00cfc8; color: white;">
+                                    <i class="ri-upload-cloud-line me-1"></i> Import
+                                </a>
+                            </div>
+
+                            <!-- Right Buttons -->
+                            <div class="col text-end d-flex justify-content-end gap-2">
+                                <a href="" class="btn btn-sm" style="background-color: #3e3e3e; color: white;">
+                                    <i class="ri-file-pdf-line me-1"></i> PDF
+                                </a>
+
+                                <a href="" class="btn btn-sm" style="background-color: #fb9746; color: white;">
+                                    <i class="ri-file-line me-1"></i> CSV
+                                </a>
+
+                                <button onclick="window.print()" class="btn btn-sm"
+                                    style="background-color: #2d9cd4; color: white;">
+                                    <i class="ri-printer-line me-1"></i> Print
+                                </button>
+
+                                <button onclick="deleteSelected()" class="btn btn-sm"
+                                    style="background-color: #ef4444; color: white;">
+                                    <i class="ri-delete-bin-line me-1"></i> Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- btns --}}
+                @endcan
+
+
+
             </div>
         </div>
     </div>
@@ -90,7 +125,8 @@
                                             </a>
                                         @endcan
                                         @can('view-payments purchases')
-                                            <a href="javascript:void(0)" data-url="{{ route('opurchases.payments.view',[$item->id]) }}"
+                                            <a href="javascript:void(0)"
+                                                data-url="{{ route('opurchases.payments.view', [$item->id]) }}"
                                                 data-title="Purchase Payments" data-size="lg" data-location="centered"
                                                 data-ajax-popup="true" data-bs-toggle="tooltip" title="View Payments"
                                                 class="btn btn-sm btn-soft-warning"><i class="mdi mdi-cash-multiple"></i>

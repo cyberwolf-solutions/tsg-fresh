@@ -34,14 +34,7 @@ class Order extends Model
     {
         return $this->hasOne(User::class, 'id', 'created_by');
     }
-    public function table()
-    {
-        return $this->hasOne(Table::class, 'id', 'table_id');
-    }
-    public function room()
-    {
-        return $this->hasOne(Room::class, 'id', 'room_id');
-    }
+  
     public function payment()
     {
         return $this->hasOne(OrderPayment::class, 'order_id', 'id');

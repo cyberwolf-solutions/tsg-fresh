@@ -25,15 +25,15 @@
                     </ol>
                 </div>
 
-                <div class="page-title-right">
-                    {{-- Add Buttons Here --}}
+                {{-- <div class="page-title-right">
+                
                     @can('create ingredients')
                         <a href="{{ route('inventory.create') }}" class="btn btn-primary btn-icon" data-bs-toggle="tooltip"
                             title="Create">
                             <i class="ri-add-line"></i>
                         </a>
                     @endcan
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>
@@ -45,24 +45,41 @@
                     <table class="table align-middle" id="example">
                         <thead class="table-light">
                             <th>#</th>
+                            <th>Id</th>
                             <th>Name</th>
-                            <th>Description</th>
+                            <th>Product</th>
+                            <th>Variable name</th>
                             <th>Unit Price</th>
                             <th>Stock</th>
-                            <th>Alert Stock</th>
+                            {{-- <th>Min Stock</th> --}}
                             <th>Unit</th>
+                            <th>MFD</th>
+                            <th>EXD</th>
                             {{-- <th>Action</th> --}}
                         </thead>
                         <tbody>
                             @foreach ($data as $key => $item)
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
-                                    <td>{{ $item->name }}</td>
-                                    <td>{{ $item->description }}</td>
+                                    <td>{{ $item->id }}</td>
+
+                                    <td>
+                                        {{ $item->product->name ?? 'Unknown Product' }}
+                                        @if ($item->variant)
+                                            - {{ $item->variant->variant_name }}
+                                        @endif
+                                    </td>
+                                    <td>{{ $item->product ? $item->product->name : 'N/A' }}</td>
+                                    <td>{{ $item->variant ? $item->variant->variant_name : '—' }}</td>
                                     <td>{{ $settings->currency }} {{ number_format($item->unit_price, 2) }}</td>
                                     <td>{{ $item->quantity }}</td>
-                                    <td>{{ $item->min_quantity }}</td>
-                                    <td>{{ $item->unit->name }}</td>
+                                    {{-- <td>{{ $item->min_quantity }}</td> --}}
+                                    <td>{{ $item->unit }}</td>
+                                    <td>{{ $item->manufacture_date ? date('Y-m-d', strtotime($item->manufacture_date)) : 'N/A' }}
+                                    </td>
+                                    <td>{{ $item->expiry_date ? date('Y-m-d', strtotime($item->expiry_date)) : 'N/A' }}
+                                    </td>
+
                                     {{-- <td>
                                         @can('view ingredients')
                                             <a data-url="{{ route('inventory.show', [$item->id]) }}"

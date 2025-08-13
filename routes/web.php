@@ -1,5 +1,6 @@
 <?php
 
+use Stancl\Tenancy\Facades\Tenancy;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BarController;
@@ -12,11 +13,15 @@ use App\Http\Controllers\MealsController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\TablesController;
+use Stancl\Tenancy\Database\Models\Tenant;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\KitchenController;
+use App\Http\Controllers\LandingController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\SetMenuController;
+use App\Http\Controllers\ShopNowController;
+use App\Http\Controllers\web\WebController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CustomerController;
@@ -36,30 +41,66 @@ use App\Http\Controllers\SetMenuMealController;
 use App\Http\Controllers\HouseKeepingCOntroller;
 use App\Http\Controllers\RoomFacilityController;
 use App\Http\Controllers\OtherPurchaseController;
+use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\CheckinCheckoutController;
 use App\Http\Controllers\AdditionalPaymentController;
 use App\Http\Controllers\TableArrangementsController;
 use App\Http\Controllers\EmployeeDesignationsController;
 
-
 foreach (config('tenancy.central_domains') as $domain) {
     Route::domain($domain)->group(function () {
         Route::get('/', function () {
 
-         return view('admin.branches.index');
-
+            return view('admin.login');
         });
+
+        // Public routes (no auth required)
+        Route::prefix('admin')->group(function () {
+            Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
+            Route::post('/login', [AdminAuthController::class, 'login'])->name('admin.login.submit');
+        });
+
+
+        Route::prefix('admin')->middleware(['admin.auth'])->group(function () {
+            Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
+            Route::get('/branches', [BranchController::class, 'index'])
+                ->name('admin.branches.index');
+
+            Route::get('/dashboard', [AdminAuthController::class, 'dashboard'])->name('admin.dashboard');
+            Route::get('/branches', [BranchController::class, 'index'])->name('admin.branches.index');
+            Route::get('/web/settings', [WebController::class, 'settings'])->name('admin.web.settings');
+            Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
+
+            Route::post('/items', [WebController::class, 'storeItem'])->name('store-item');
+            Route::put('/items/{item}', [WebController::class, 'updateItem'])->name('update-item');
+            Route::delete('/items/{item}', [WebController::class, 'deleteItem'])->name('delete-item');
+        });
+
+        // tenet
+        // Route::get('/select-branch/{branch}', function ($branch) {
+        //     $tenant = Tenant::find($branch); // or `where('id', $branch)->first()`
+
+        //     if (! $tenant) {
+        //         abort(404, 'Branch not found');
+        //     }
+
+        //     $domain = $tenant->domains()->first()->domain;
+
+        //     return redirect()->away("http://{$domain}/store");
+        // })->name('select.branch');
+
+        Route::get('/select-branch/{branch}', [ShopNowController::class, 'index'])->name('select.branch');
 
         Route::get('/branches', [BranchController::class, 'index']);
 
         Route::post('/branches/store', [BranchController::class, 'store'])->name('branches.store');
 
 
-        Route::get('/landing', function () {
+        Route::get('/landing', [LandingController::class, 'index']);
+        // Route::get('/landing', function () {
 
-         return view('landing-page.home');
-
-        });
+        //     return view('landing-page.home');
+        // });
         // Route::get('/abountus', [App\Http\Controllers\LandingPageController::class, 'aboutus'])->name('landing.about');
 
         Route::get('/about', function () {
@@ -74,15 +115,22 @@ foreach (config('tenancy.central_domains') as $domain) {
             return view('Landing-page.dynamic');
         });
 
-        Route::get('/contact', function () {
-            return view('Landing-page.contact');
+        // Route::get('/single', function () {
+        //     return view('Landing-page.singleView');
+        // });
 
-         return view('Landing-page.about');
+
+        Route::get('/cart', function () {
+            return view('Landing-page.cart');
+        });
+
+
+        Route::get('/checkout', function () {
+            return view('Landing-page.checkout');
         });
 
         Route::get('/contact', function () {
-         return view('Landing-page.contact');
-
+            return view('Landing-page.contact');
         });
     });
 }

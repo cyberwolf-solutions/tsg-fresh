@@ -52,7 +52,7 @@
                             <input type="text" name="name" id="" class="form-control"
                                 value="{{ $is_edit ? $data->name : '' }}" placeholder="Enter Name" required />
                         </div>
-                        <div class="col-md-6 mb-3 required">
+                        {{-- <div class="col-md-6 mb-3 required">
                             <label for="" class="form-label">Parent category</label>
                             <select name="type" class="form-control js-example-basic-single" id="" required>
                                 <option value="">Select...</option>
@@ -65,7 +65,7 @@
                                         {{ $item }}</option>
                                 @endforeach
                             </select>
-                        </div>
+                        </div> --}}
                     </div>
 
                     <div class="row">

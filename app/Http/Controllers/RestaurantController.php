@@ -8,6 +8,7 @@ use App\Models\BookingsRooms;
 use App\Models\Category;
 use App\Models\Currency;
 use App\Models\Customer;
+use App\Models\Inventory;
 use App\Models\Meal;
 use App\Models\Modifier;
 use App\Models\ModifiersCategories;
@@ -33,32 +34,112 @@ class RestaurantController extends Controller
     /**
      * Display a listing of the resource.
      */
+    // public function index()
+    // {
+    //     $title = 'POS';
+
+    //     $breadcrumbs = [
+    //         // ['label' => 'First Level', 'url' => '', 'active' => false],
+    //         ['label' => $title, 'url' => '', 'active' => true],
+    //     ];
+
+    //     $categories = Category::all()->where('type', 'Restaurant');
+    //     $meals = Meal::all();
+    //     $products = Product::all();
+
+
+    //     // $items = $products->merge($setmenu);
+    //     $items = $products->map(function($item) {
+    //         $item->item_type = get_class($item);
+    //         return $item;
+    //     });
+
+    //  return view('pos.restaurant.index', compact('title', 'breadcrumbs', 'categories', 'meals', 'products', 'items'));
+    // }
+
+   
+
+    // public function index()
+    // {
+    //     $title = 'POS';
+
+    //     $breadcrumbs = [
+    //         ['label' => $title, 'url' => '', 'active' => true],
+    //     ];
+
+    //     $categories = Category::all();  // or filter if you want
+
+    //     // Load inventory items with product & variant eager loaded, only with quantity > 0
+    //     $items = Inventory::with(['product.categories', 'variant'])
+    //         ->where('quantity', '>', 0)
+    //         ->get()
+    //         ->map(function ($item) {
+    //             $obj = (object) $item->toArray();  // convert to stdClass to add dynamic props
+
+    //             $name = $item->product ? $item->product->name : 'Unknown Product';
+    //             if ($item->variant) {
+    //                 $name .= ' - ' . $item->variant->variant_name;
+    //             }
+    //             $obj->full_name = $name;
+
+    //             $obj->categories = $item->product ? $item->product->categories : collect();
+
+    //             return $obj;
+    //         });
+
+
+
+    //     return view('pos.restaurant.index', compact(
+    //         'title',
+    //         'breadcrumbs',
+    //         'categories',
+    //         'items'
+    //     ));
+    // }
+
+
     public function index()
-    {
-        $title = 'POS';
+{
+    $title = 'POS';
 
-        $breadcrumbs = [
-            // ['label' => 'First Level', 'url' => '', 'active' => false],
-            ['label' => $title, 'url' => '', 'active' => true],
-        ];
+    $breadcrumbs = [
+        ['label' => $title, 'url' => '', 'active' => true],
+    ];
 
-        $categories = Category::all()->where('type', 'Restaurant');
-        $meals = Meal::all();
-        $products = Product::all();
-        $setmenu = SetMenu::all();
+    $categories = Category::all();  // Or filter if needed
 
+    // Load inventory items with product & variant eager loaded, only with quantity > 0
+    $items = Inventory::with(['product.categories', 'variant'])
+        ->where('quantity', '>', 0)
+        ->get()
+        ->map(function ($item) {
+            $obj = (object) $item->toArray();  // convert to stdClass to add dynamic props
 
-        $type = SetMenuType::all();
-        $type_meal = SetMenuMealType::all();
+            // Compose full name with variant if exists
+            $name = $item->product ? $item->product->name : 'Unknown Product';
+            if ($item->variant) {
+                $name .= ' - ' . $item->variant->variant_name;
+            }
+            $obj->full_name = $name;
 
-        // $items = $products->merge($setmenu);
-        $items = $products->merge($setmenu)->map(function($item) {
-            $item->item_type = get_class($item);
-            return $item;
+            // Categories from product relation
+            $obj->categories = $item->product ? $item->product->categories : collect();
+
+            // Add product image url, fallback to default if none
+            $obj->product_image_url = $item->product && $item->product->image_url
+                ? 'uploads/products/' . $item->product->image_url
+                : 'uploads/cutlery.png';
+
+            return $obj;
         });
 
-     return view('pos.restaurant.index', compact('title', 'breadcrumbs', 'categories', 'meals', 'products', 'setmenu', 'items', 'type', 'type_meal'));
-    }
+    return view('pos.restaurant.index', compact(
+        'title',
+        'breadcrumbs',
+        'categories',
+        'items'
+    ));
+}
 
     /**
      * Show the form for creating a new resource.
@@ -110,56 +191,46 @@ class RestaurantController extends Controller
 
     public function note()
     {
-     return view('pos.restaurant.notes');
+        return view('pos.restaurant.notes');
     }
     public function process()
     {
         $inProgress = Order::where('status', 'Pending')->get();
         $ready = Order::where('status', 'InProgress')->get();
-     return view('pos.restaurant.in-process', compact('inProgress', 'ready'));
+        return view('pos.restaurant.in-process', compact('inProgress', 'ready'));
     }
-    public function tables(Request $request)
-    {
-        $table = $request->table;
-        $tables = Table::all()->where('availability', 'Available');
-     return view('pos.restaurant.tables-modal', compact('tables', 'table'));
-    }
-    public function rooms(Request $request)
-    {
-        $room = $request->room;
-        $rooms = BookingsRooms::all();
-     return view('pos.restaurant.rooms-modal', compact('rooms', 'room'));
-    }
+
+
     public function customer(Request $request)
     {
         $customer = $request->customer;
         $customers = Customer::all();
         $currencies = Currency::all();
 
-     return view('pos.restaurant.customer-modal', compact('customers', 'customer', 'currencies'));
+        return view('pos.restaurant.customer-modal', compact('customers', 'customer', 'currencies'));
     }
     public function customerAdd()
     {
-     return view('pos.restaurant.customer-add-modal');
+        return view('pos.restaurant.customer-add-modal');
     }
     public function discount(Request $request)
     {
         $discount = $request->discount;
         $discount_method = $request->discount_method;
-     return view('pos.restaurant.discount-modal', compact('discount', 'discount_method'));
+        return view('pos.restaurant.discount-modal', compact('discount', 'discount_method'));
     }
     public function vat(Request $request)
     {
         $vat = $request->vat;
         $vat_method = $request->vat_method;
-     return view('pos.restaurant.vat-modal', compact('vat', 'vat_method'));
+        return view('pos.restaurant.vat-modal', compact('vat', 'vat_method'));
     }
     public function modifiers(Request $request)
     {
         $id = $request->id;
         $category = Product::find($id)->category_id;
         $modifiers = ModifiersCategories::where('category_id', $category)->get();
-     return view('pos.restaurant.modifiers-modal', compact('modifiers', 'id'));
+        return view('pos.restaurant.modifiers-modal', compact('modifiers', 'id'));
     }
 
     // public function checkout(Request $request) {
@@ -396,19 +467,13 @@ class RestaurantController extends Controller
                             }
                         }
                     } else {
-                        $setmenu = SetMenu::where('id', $value['id'])
-                            ->where('name', $value['name'])
-                            ->first();
 
 
-                        if ($setmenu->type == 'KOT') {
-                            $isKOT = true;
-                        } elseif ($setmenu->type == 'BOT') {
-                            $isBOT = true;
-                        }
+
+
 
                         $data = [
-                            'itemable_type' => 'App\Models\SetMenu',
+
                             'itemable_id' => $value['id'],
                             'order_id' => $order->id,
                             'price' => $value['price'],
@@ -425,7 +490,7 @@ class RestaurantController extends Controller
 
                     // Process set menu item
 
-                } 
+                }
                 // else {
 
 
@@ -481,11 +546,7 @@ class RestaurantController extends Controller
             OrderPayment::create($data);
 
             // Reserve the table if selected
-            if ($request->table != 0) {
-                $table = Table::find($request->table);
-                $table->availability = 'Order Taken';
-                $table->save();
-            }
+
 
             if ($isKOT) {
                 event(new notifyKot('New KOT'));
@@ -672,13 +733,6 @@ class RestaurantController extends Controller
 
             if ($totalItems == $totalCompletedItems) {
                 $order->status = 'InProgress';
-
-                //Order Complete the table if selected
-                if ($order->table_id != 0) {
-                    $table = Table::find($order->table_id);
-                    $table->availability = 'Order Complete';
-                    $table->save();
-                }
             }
 
             $order->save();
@@ -713,12 +767,7 @@ class RestaurantController extends Controller
             $order->status = 'Complete';
             $order->save();
 
-            //Make the table available
-            if ($order->table_id != 0) {
-                $table = Table::find($order->table_id);
-                $table->availability = 'Available';
-                $table->save();
-            }
+
 
             return response()->json(['success' => true, 'message' => 'Order completed!']);
         } catch (\Throwable $th) {
@@ -731,17 +780,5 @@ class RestaurantController extends Controller
     {
         $setmenuTypeId = $request->input('setmenu_type_id');
         $setmenuMealTypeId = $request->input('setmenu_meal_type_id');
-
-        $filteredSetmenus = SetMenu::where('setmenu_type', $setmenuTypeId)
-            ->where('setmenu_meal_type', $setmenuMealTypeId)
-            ->get();
-
-
-
-        // dd($filteredSetmenus);
-
-
-
-        return response()->json(['setmenus' => $filteredSetmenus]);
     }
 }

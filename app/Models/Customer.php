@@ -16,22 +16,20 @@ class Customer extends Model
         'contact',
         'email',
         'address',
-        'type',
-        'passport_no',
-        'next_destination',
-        'nationality',
-        'image_url',
+        'company_name',
+        'vat',
+        'city',
+        'state',
+        'postalcode',
+        'country',
+        'group',
         'created_by',
         'updated_by',
         'deleted_by',
-        'currency_id',
-        'signature',
+
     ];
 
-    public function bookings()
-    {
-        return $this->hasMany(Booking::class);
-    }
+
 
     public function createdBy()
     {

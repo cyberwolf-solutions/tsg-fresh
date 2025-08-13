@@ -12,9 +12,13 @@ use App\Models\InventoryPurchasePayment;
 use App\Models\PurchaseItem;
 use Illuminate\Http\Request;
 use App\Models\OtherPurchase;
+use App\Models\Product;
 use App\Models\PurchasePayment;
+use App\Models\Unit;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class OtherPurchaseController extends Controller
 {
@@ -28,7 +32,7 @@ class OtherPurchaseController extends Controller
             ['label' => $title, 'url' => '', 'active' => true],
         ];
         $data = OtherPurchase::all();
-     return view('pos.purchases.Other_index', compact('title', 'breadcrumbs', 'data'));
+        return view('pos.purchases.Other_index', compact('title', 'breadcrumbs', 'data'));
     }
 
     public function create()
@@ -44,7 +48,8 @@ class OtherPurchaseController extends Controller
         $is_edit = false;
 
         $suppliers = Supplier::all();
-        $products = Inventory::all();
+        $products = Product::all();
+        $unit = Unit::all();
 
         $latest = OtherPurchase::latest()->first();
 
@@ -56,98 +61,229 @@ class OtherPurchaseController extends Controller
 
         $latest++;
 
-     return view('pos.purchases.Other_create-edit', compact('title', 'breadcrumbs', 'is_edit', 'suppliers', 'products', 'latest'));
+        return view('pos.purchases.Other_create-edit', compact('title', 'breadcrumbs', 'unit', 'is_edit', 'suppliers', 'products', 'latest'));
     }
+
+    // public function store(Request $request)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'date' => 'required',
+    //         'supplier' => 'required',
+    //         'note' => 'nullable',
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         $all_errors = null;
+
+    //         foreach ($validator->errors()->messages() as $errors) {
+    //             foreach ($errors as $error) {
+    //                 $all_errors .= $error . "<br>";
+    //             }
+    //         }
+
+    //         return response()->json(['success' => false, 'message' => $all_errors]);
+    //     }
+
+    //     // Retrieve products from the request
+    //     $products = json_decode($request->input('products'), true);
+
+    //     if (empty($products)) {
+    //         return response()->json(['success' => false, 'message' => 'Select at least one item']);
+    //     }
+
+    //     try {
+
+    //         // Calculate subtotal
+    //         $subtotal = 0;
+    //         foreach ($products as $product) {
+    //             $subtotal += $product['price'] * $product['quantity'];
+    //         }
+
+    //         // Retrieve other form data
+    //         $date = $request->input('date');
+    //         $supplierId = $request->input('supplier');
+    //         $note = $request->input('note');
+    //         $discount = $request->input('discount');
+    //         $vatPercentage = $request->input('vat_percentage');
+
+    //         // Calculate total after discount and VAT
+    //         $subtotalAfterDiscount = $subtotal - $discount;
+    //         $vatAmount = ($subtotalAfterDiscount * $vatPercentage) / 100;
+    //         $total = $subtotalAfterDiscount + $vatAmount;
+
+    //         $data = [
+    //             'date' => $date,
+    //             'supplier_id' => $supplierId,
+    //             'note' => $note,
+    //             'sub_total' => $subtotal,
+    //             'discount' => $discount,
+    //             'vat' => $vatPercentage,
+    //             'vat_amount' => $vatAmount,
+    //             'total' => $total,
+    //             'created_by' => Auth::user()->id,
+    //         ];
+
+    //         $purchase = OtherPurchase::create($data);
+
+    //         foreach ($products as $product) {
+    //             $data = [
+    //                 'purchase_id' => $purchase->id,
+    //                 'product_id' => $product['id'],
+    //                 'price' => $product['price'],
+    //                 'quantity' => $product['quantity'],
+    //                 'total' => $product['price'] * $product['quantity'],
+    //             ];
+    //             InventoryPurchaseItem::create($data);
+    //         }
+
+    //         Supplier::where('id', $supplierId)->increment('balance', $total);
+
+    //         return json_encode(['success' => true, 'message' => 'Purchase created', 'url' => route('opurchases.index')]);
+    //     } catch (\Throwable $th) {
+    //         //throw $th;
+    //         return json_encode(['success' => false, 'message' => 'Something went wrong!' . $th]);
+    //     }
+    // }
+
+
+
+
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'date' => 'required',
-            'supplier' => 'required',
-            'note' => 'nullable',
+
+        //  dd($request->all()); 
+
+        // // Convert JSON string to array
+        // if ($request->filled('products')) {
+        //     $request->merge([
+        //         'products' => json_decode($request->products, true)
+        //     ]);
+        // }
+        // // // Validate request data
+        // // $validated = $request->validate([
+        // //     'date' => 'required|date',
+        // //     // 'supplier' => 'required|exists:suppliers,id',
+        // //     'supplier' => 'required|exists:tenant.suppliers,id',
+        // //     'note' => 'nullable|string',
+        // //     // 'sub_total' => 'required|numeric|min:0',
+        // //     'vat_percentage' => 'required|numeric|min:0',
+        // //     // 'vat_amount' => 'required|numeric|min:0',
+        // //     'discount' => 'required|numeric|min:0',
+        // //     'total' => 'required|numeric|min:0',
+        // //     // 'payment_status' => 'required|string',
+        // //     'products' => 'required|array|min:1',
+        // //     'products.*.product_id' => 'required|exists:products,id',
+        // //     'products.*.variant_id' => 'nullable|exists:product_variants,id',
+        // //     'products.*.buying_price' => 'required|numeric|min:0',
+        // //     'products.*.quantity' => 'required|integer|min:1',
+        // //     'products.*.unit' => 'required|string|max:50',
+        // //     'products.*.total' => 'required|numeric|min:0',
+        // //     'products.*.manufacture_date' => 'nullable|date|before_or_equal:today',
+        // //     'products.*.expiry_date' => 'nullable|date|after_or_equal:today',
+        // // ]);
+
+
+        // $validated = $request->validate([
+        //     'date' => 'required|date',
+        //     'supplier' => 'required|exists:tenant.suppliers,id',
+        //     'note' => 'nullable|string',
+        //     'vat_percentage' => 'required|numeric|min:0',
+        //     'discount' => 'required|numeric|min:0',
+        //     'total' => 'required|numeric|min:0',
+        //     'products' => 'required|array|min:1',
+        //     'products.*.product_id' => 'required|exists:products,id',
+        //     'products.*.variant_id' => 'nullable|exists:product_variants,id',
+        //     'products.*.buying_price' => 'required|numeric|min:0',
+        //     'products.*.quantity' => 'required|integer|min:1',
+        //     'products.*.unit' => 'required|string|max:50',
+        //     'products.*.total' => 'required|numeric|min:0',
+        //     'products.*.manufacture_date' => 'nullable|date|before_or_equal:today',
+        //     'products.*.expiry_date' => 'nullable|date|after_or_equal:today',
+        // ]);
+
+        if ($request->filled('products')) {
+            $productsArray = json_decode($request->products, true);
+
+            // Map your frontend keys to match validation rules
+            $productsArray = array_map(function ($item) {
+                return [
+                    'product_id'       => $item['id'],
+                    'variant_id'       => $item['variant_id'] ?? null,
+                    'buying_price'     => $item['price'],
+                    'quantity'         => $item['quantity'],
+                    'unit'             => $item['unit'],
+                    'total'            => $item['price'] * $item['quantity'],
+                    'manufacture_date' => $item['mfd'] ?? null,
+                    'expiry_date'      => $item['exp'] ?? null,
+                ];
+            }, $productsArray);
+
+            $request->merge(['products' => $productsArray]);
+        }
+
+        $validated = $request->validate([
+            'date' => 'required|date',
+            'supplier' => 'required|exists:tenant.suppliers,id',
+            'products' => 'required|array|min:1',
+            'discount' => 'required|numeric|min:0',
+            'total' => 'required|numeric|min:0',
+            'subtotal' => 'required|numeric|min:0',
+            'products.*.product_id' => 'required|exists:tenant.products,id',
+            'products.*.variant_id' => 'nullable|exists:tenant.product_variants,id',
+            'products.*.buying_price' => 'required|numeric|min:0',
+            'products.*.quantity' => 'required|integer|min:1',
+            'products.*.unit' => 'required|string|max:50',
+            'products.*.total' => 'required|numeric|min:0',
+            'products.*.manufacture_date' => 'nullable|date|before_or_equal:today',
+            'products.*.expiry_date' => 'nullable|date|after_or_equal:today',
         ]);
-
-        if ($validator->fails()) {
-            $all_errors = null;
-
-            foreach ($validator->errors()->messages() as $errors) {
-                foreach ($errors as $error) {
-                    $all_errors .= $error . "<br>";
-                }
-            }
-
-            return response()->json(['success' => false, 'message' => $all_errors]);
-        }
-
-        // Retrieve products from the request
-        $products = json_decode($request->input('products'), true);
-
-        if (empty($products)) {
-            return response()->json(['success' => false, 'message' => 'Select at least one item']);
-        }
+        // Use DB transaction to ensure data integrity
+        DB::beginTransaction();
 
         try {
+            $purchase = OtherPurchase::create([
+                'date' => $validated['date'],
+                'supplier_id' => $validated['supplier'],
+                'note' => $validated['note'] ?? null,
+                'sub_total' => $request->subtotal ?? 0,
+                'vat' => $request->vat ?? 0,
+                'vat_amount' => $request->vat_amount ?? 0,
+                'discount' => $validated['discount'],
+                'total' => $validated['total'],
+                'payment_status' => $request->payment_status ?? 'Unpaid',
+                'created_by' => Auth::id(),
+            ]);
 
-            // Calculate subtotal
-            $subtotal = 0;
-            foreach ($products as $product) {
-                $subtotal += $product['price'] * $product['quantity'];
+            foreach ($validated['products'] as $itemData) {
+                $purchase->items()->create([
+                    'product_id' => $itemData['product_id'],
+                    'variant_id' => $itemData['variant_id'] ?? null,
+                    'buying_price' => $itemData['buying_price'],
+                    'quantity' => $itemData['quantity'],
+                    'unit' => $itemData['unit'],
+                    'total' => $itemData['total'],
+                    'manufacture_date' => $itemData['manufacture_date'] ?? null,
+                    'expiry_date' => $itemData['expiry_date'] ?? null,
+                    'created_by' => Auth::id(),
+                ]);
             }
 
-            // Retrieve other form data
-            $date = $request->input('date');
-            $supplierId = $request->input('supplier');
-            $note = $request->input('note');
-            $discount = $request->input('discount');
-            $vatPercentage = $request->input('vat_percentage');
+            DB::commit();
 
-            // Calculate total after discount and VAT
-            $subtotalAfterDiscount = $subtotal - $discount;
-            $vatAmount = ($subtotalAfterDiscount * $vatPercentage) / 100;
-            $total = $subtotalAfterDiscount + $vatAmount;
+            return redirect()->back()->with('success', 'Purchase saved successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
 
-            $data = [
-                'date' => $date,
-                'supplier_id' => $supplierId,
-                'note' => $note,
-                'sub_total' => $subtotal,
-                'discount' => $discount,
-                'vat' => $vatPercentage,
-                'vat_amount' => $vatAmount,
-                'total' => $total,
-                'created_by' => Auth::user()->id,
-            ];
+            // Optional: log the full error for debugging
+            Log::error('Purchase store error: ' . $e->getMessage());
 
-            $purchase = OtherPurchase::create($data);
-
-            foreach ($products as $product) {
-                $data = [
-                    'purchase_id' => $purchase->id,
-                    'product_id' => $product['id'],
-                    'price' => $product['price'],
-                    'quantity' => $product['quantity'],
-                    'total' => $product['price'] * $product['quantity'],
-                ];
-                InventoryPurchaseItem::create($data);
-            }
-
-            Supplier::where('id', $supplierId)->increment('balance', $total);
-
-            return json_encode(['success' => true, 'message' => 'Purchase created', 'url' => route('opurchases.index')]);
-        } catch (\Throwable $th) {
-            //throw $th;
-            return json_encode(['success' => false, 'message' => 'Something went wrong!' . $th]);
+            // Redirect back with error and old input
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Failed to save purchase: ' . $e->getMessage());
         }
     }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -165,7 +301,7 @@ class OtherPurchaseController extends Controller
         ];
 
 
-     return view('pos.purchases.Other_show', compact('title', 'breadcrumbs', 'data'));
+        return view('pos.purchases.Other_show', compact('title', 'breadcrumbs', 'data'));
     }
 
     /**
@@ -188,7 +324,7 @@ class OtherPurchaseController extends Controller
 
         $data = OtherPurchase::find($id);
 
-     return view('pos.purchases.Other_create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data', 'suppliers', 'products'));
+        return view('pos.purchases.Other_create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data', 'suppliers', 'products'));
     }
 
     /**
@@ -287,32 +423,9 @@ class OtherPurchaseController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    // public function destroy(string $id)
-    // {
-    //     try {
 
-    //         $purchase = OtherPurchase::find($id);
-    //         $purchase->update(['deleted_by' => Auth::user()->id]);
 
-    //         $items = InventoryPurchaseItem::where('purchase_id', $purchase->id)->delete();
 
-    //         $supplier = Supplier::find($purchase->supplier_id);
-    //         $balance = $supplier->balance - $purchase->total;
-    //         $supplier->update(['balance' => $balance]);
-
-    //         $purchase->delete();
-
-    //         return json_encode(['success' => true, 'message' => 'Purchase deleted', 'url' => route('purchases.index')]);
-    //     } catch (\Throwable $th) {
-    //         //throw $th;
-    //         return json_encode(['success' => false, 'message' => 'Something went wrong!']);
-    //     }
-    // }
-
-    
     public function destroy(string $id)
     {
         try {
@@ -345,42 +458,122 @@ class OtherPurchaseController extends Controller
     }
 
 
+    // public function addPayment(Request $request)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'date' => 'required',
+    //         'amount' => 'required',
+    //     ]);
+    //     if ($validator->fails()) {
+    //         $all_errors = null;
+
+    //         foreach ($validator->errors()->messages() as $errors) {
+    //             foreach ($errors as $error) {
+    //                 $all_errors .= $error . "<br>";
+    //             }
+    //         }
+
+    //         return response()->json(['success' => false, 'message' => $all_errors]);
+    //     }
+    //     try {
+
+    //         $id = decrypt($request->id);
+
+    //         $purchaseOrder = OtherPurchase::find($id);
+
+    //         $purchaseOrder = OtherPurchase::find($id);
+
+
+    //         $total = $purchaseOrder->total;
+
+    //         // Retrieve all payments for the purchase-order
+    //         $payments = InventoryPurchasePayment::where('purchase_id', $purchaseOrder->id)->get();
+
+    //         // Calculate the total amount paid, including the current payment
+    //         $totalAmountPaid = $payments->sum('amount') + $request->amount;
+
+
+    //         // Determine the payment status
+    //         if ($totalAmountPaid >= $total) {
+    //             $status = 'Paid';
+    //         } elseif ($totalAmountPaid > 0) {
+    //             $status = 'Partially Paid';
+    //         } else {
+    //             $status = 'Unpaid';
+    //         }
+
+    //         // Update the payment status in the database
+    //         $purchaseOrder->update(['payment_status' => $status]);
+
+    //         $data = [
+    //             'purchase_id' => $purchaseOrder->id,
+    //             'date' => $request->date,
+    //             'amount' => $request->amount,
+    //             'reference' => $request->reference,
+    //             'description' => $request->description,
+    //             'created_by' => Auth::user()->id,
+    //         ];
+
+    //         // Handle file upload for receipt
+    //         if ($request->hasFile('receipt')) {
+    //             $file = $request->file('receipt');
+
+    //             // Generate a unique filename based on date and other details
+    //             $fileName = sprintf(
+    //                 'purchase_payment_%s_%s.%s', // Add placeholders for the purchase order ID and file extension
+    //                 $purchaseOrder->id,
+    //                 now()->format('YmdHis'), // Use the current date and time for uniqueness
+    //                 $file->getClientOriginalExtension() // Get the original file extension
+    //             );
+
+
+    //             // Store the file with the custom name
+    //             $filePath = $file->storeAs('receipts', $fileName, 'public');
+
+    //             // Add the file path to the $data array
+    //             $data['receipt'] = $filePath;
+    //         }
+
+    //         $payment = InventoryPurchasePayment::create($data);
+
+    //         $supplier = Supplier::find($purchaseOrder->supplier_id);
+    //         $balance = $supplier->balance - $request->amount;
+    //         $supplier->update(['balance' => $balance]);
+
+    //         return json_encode(['success' => true, 'message' => 'Payment Added', 'url' => route('opurchases.index')]);
+    //     } catch (\Throwable $th) {
+    //         //throw $th;
+    //         return json_encode(['success' => false, 'message' => 'Something went wrong!']);
+    //     }
+    // }
+
+
+
+
     public function addPayment(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'date' => 'required',
-            'amount' => 'required',
+            'date' => 'required|date',
+            'amount' => 'required|numeric|min:0',
         ]);
+
         if ($validator->fails()) {
-            $all_errors = null;
-
-            foreach ($validator->errors()->messages() as $errors) {
-                foreach ($errors as $error) {
-                    $all_errors .= $error . "<br>";
-                }
-            }
-
+            $all_errors = implode('<br>', array_merge(...array_values($validator->errors()->messages())));
             return response()->json(['success' => false, 'message' => $all_errors]);
         }
+
+        DB::beginTransaction();
         try {
-
             $id = decrypt($request->id);
-
-            $purchaseOrder = OtherPurchase::find($id);
-
-            $purchaseOrder = OtherPurchase::find($id);
-
+            $purchaseOrder = OtherPurchase::findOrFail($id);
 
             $total = $purchaseOrder->total;
 
-            // Retrieve all payments for the purchase-order
+            // Payments so far
             $payments = InventoryPurchasePayment::where('purchase_id', $purchaseOrder->id)->get();
-
-            // Calculate the total amount paid, including the current payment
             $totalAmountPaid = $payments->sum('amount') + $request->amount;
 
-
-            // Determine the payment status
+            // Determine payment status
             if ($totalAmountPaid >= $total) {
                 $status = 'Paid';
             } elseif ($totalAmountPaid > 0) {
@@ -389,48 +582,94 @@ class OtherPurchaseController extends Controller
                 $status = 'Unpaid';
             }
 
-            // Update the payment status in the database
             $purchaseOrder->update(['payment_status' => $status]);
 
+            // Save payment
             $data = [
                 'purchase_id' => $purchaseOrder->id,
                 'date' => $request->date,
                 'amount' => $request->amount,
                 'reference' => $request->reference,
                 'description' => $request->description,
-                'created_by' => Auth::user()->id,
+                'created_by' => Auth::id(),
             ];
 
-            // Handle file upload for receipt
             if ($request->hasFile('receipt')) {
                 $file = $request->file('receipt');
-
-                // Generate a unique filename based on date and other details
                 $fileName = sprintf(
-                    'purchase_payment_%s_%s.%s', // Add placeholders for the purchase order ID and file extension
+                    'purchase_payment_%s_%s.%s',
                     $purchaseOrder->id,
-                    now()->format('YmdHis'), // Use the current date and time for uniqueness
-                    $file->getClientOriginalExtension() // Get the original file extension
+                    now()->format('YmdHis'),
+                    $file->getClientOriginalExtension()
                 );
-
-
-                // Store the file with the custom name
                 $filePath = $file->storeAs('receipts', $fileName, 'public');
-
-                // Add the file path to the $data array
                 $data['receipt'] = $filePath;
             }
 
-            $payment = InventoryPurchasePayment::create($data);
+            InventoryPurchasePayment::create($data);
 
+            // Update supplier balance
             $supplier = Supplier::find($purchaseOrder->supplier_id);
-            $balance = $supplier->balance - $request->amount;
-            $supplier->update(['balance' => $balance]);
+            $supplier->update([
+                'balance' => $supplier->balance - $request->amount
+            ]);
 
-            return json_encode(['success' => true, 'message' => 'Payment Added', 'url' => route('opurchases.index')]);
-        } catch (\Throwable $th) {
-            //throw $th;
-            return json_encode(['success' => false, 'message' => 'Something went wrong!']);
+            // ✅ If paid in full, update inventory
+            if ($status === 'Paid') {
+                $purchaseItems = PurchaseItem::with(['product', 'productvarient'])
+                    ->where('purchase_id', $purchaseOrder->id)
+                    ->get();
+
+                foreach ($purchaseItems as $item) {
+                    $productName = $item->product->name ?? 'Unknown Product';
+                    $variantName = $item->variant_id && $item->productvarient
+                        ? ' ' . $item->productvarient->variant_name
+                        : '';
+
+                    $fullName = trim($productName . $variantName);
+
+                    $inventoryItem = Inventory::where('product_id', $item->product_id)
+                        ->where('variant_id', $item->variant_id)
+                        ->where('manufacture_date', $item->manufacture_date)
+                        ->where('expiry_date', $item->expiry_date)
+                        ->first();
+
+                    if ($inventoryItem) {
+                        // Update quantity
+                        $inventoryItem->update([
+                            'quantity' => $inventoryItem->quantity + $item->quantity,
+                            'updated_by' => Auth::id()
+                        ]);
+                    } else {
+                        // Create new batch
+                        Inventory::create([
+                            'product_id' => $item->product_id,
+                            'variant_id' => $item->variant_id,
+                            'name' => $fullName,
+                            'unit_price' => $item->buying_price,
+                            'quantity' => $item->quantity,
+                            'min_quantity' => 0,
+                            'unit' => $item->unit,
+                            'description' => '',
+                            'manufacture_date' => $item->manufacture_date,
+                            'expiry_date' => $item->expiry_date,
+                            'created_by' => Auth::id()
+                        ]);
+                    }
+                }
+            }
+
+
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Payment Added', 'url' => route('opurchases.index')]);
+        } catch (\Throwable $e) {
+            Log::error('Inventory update failed', [
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw $e; // rethrow so transaction rolls back
         }
     }
 
@@ -442,7 +681,7 @@ class OtherPurchaseController extends Controller
 
         $is_edit = false;
 
-     return view('pos.purchases.Other_payment', compact('data', 'is_edit', 'due'));
+        return view('pos.purchases.Other_payment', compact('data', 'is_edit', 'due'));
     }
 
     public function viewPayments(string $id)
@@ -450,12 +689,8 @@ class OtherPurchaseController extends Controller
         // Assuming you want to fetch all payments related to a specific purchase
         $data = InventoryPurchasePayment::where('purchase_id', $id)->get();
 
-     return view('pos.purchases.other_payments-modal', compact('data'));
+        return view('pos.purchases.other_payments-modal', compact('data'));
     }
-
-
-
-
     public function purchaseReport()
     {
         $title = 'Purchase Report';
@@ -466,6 +701,6 @@ class OtherPurchaseController extends Controller
         ];
         // $data = Purchases::all();
         $data = Purchases::with(['supplier', 'items.product', 'payments'])->get();
-     return view('pos.reports.purchaseReports', compact('data'));
+        return view('pos.reports.purchaseReports', compact('data'));
     }
 }
