@@ -10,21 +10,22 @@ return new class extends Migration {
      */
     public function up(): void {
         Schema::create('orders', function (Blueprint $table) {
+
             $table->id();
-            $table->unsignedBigInteger('customer_id');
-            $table->unsignedBigInteger('room_id');
-            $table->unsignedBigInteger('table_id');
-            $table->morphs('orderable');
-            $table->string('order_date');
-            $table->text('note')->nullable();
-            $table->enum('type', ['Dining', 'TakeAway', 'RoomDelivery'])->default('Dining');
-            $table->string('progress')->nullable();
+            $table->unsignedBigInteger('customer_id')->nullable();
+            $table->dateTime('order_date');
             $table->enum('status', ['Pending', 'InProgress', 'Complete'])->default('Pending');
+            $table->foreign('customer_id')->references('id')->on('customers');
+           $table->decimal('discount', 10, 2)->default(0);
+            $table->decimal('vat', 10, 2)->default(0);
+            $table->decimal('total', 10, 2);
+            $table->decimal('subtotal', 10, 2);
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->unsignedBigInteger('deleted_by')->nullable();
             $table->softDeletes();
             $table->timestamps();
+
         });
     }
 

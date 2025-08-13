@@ -844,7 +844,7 @@
             });
         </script>
 
-        <script>
+        {{-- <script>
             function checkout() {
                 beep();
                 $('#loader').removeClass('d-none');
@@ -902,6 +902,70 @@
                     error: function(xhr) {
                         $('#loader').addClass('d-none');
                         var errorMessage = xhr.status + ': ' + xhr.statusText;
+                        display_error(errorMessage);
+                    }
+                });
+            }
+        </script> --}}
+
+        <script>
+            function checkout() {
+                beep(); // optional sound
+                $('#loader').removeClass('d-none');
+
+                if (cart.length === 0) {
+                    display_error('Add one or more items to the cart');
+                    $('#loader').addClass('d-none');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('customer', customer);
+                formData.append('sub', sub);
+                formData.append('discount', discount);
+                formData.append('vat', vat);
+                formData.append('total', total);
+                formData.append('payment_note', payment_note);
+                formData.append('type', $('#type').val());
+
+                // Prepare cart items for backend
+                const stockCart = cart.map(item => ({
+                    product_id: item.product_id,
+                    variant_id: item.variant_id || null,
+                    inventory_id: item.inventory_id,
+                    price: item.price,
+                    quantity: item.quantity,
+                    vat: item.vat || 0
+                }));
+
+                formData.append('cart', JSON.stringify(stockCart));
+
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ route('restaurant.checkout') }}",
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    dataType: "JSON",
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    data: formData,
+                    success: function(response) {
+                        $('#loader').addClass('d-none');
+                        if (response.success) {
+                            display_success(response.message);
+                            if (response.url) {
+                                window.open(response.url, '_blank');
+                            }
+                            setTimeout(() => window.location.reload(), 1500);
+                        } else {
+                            display_error(response.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        $('#loader').addClass('d-none');
+                        const errorMessage = xhr.status + ': ' + xhr.statusText;
                         display_error(errorMessage);
                     }
                 });
