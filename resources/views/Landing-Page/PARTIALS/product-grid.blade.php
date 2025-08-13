@@ -4,6 +4,7 @@
             <a href="{{ route('single.index', ['product' => $product->id]) }}" class="text-decoration-none text-dark">
 
 
+
                 <div class="card product-card mb-0">
                     <div class="image-wrapper" style="position: relative; display: inline-block;">
                         <img src="{{ asset('uploads/products/' . $product->image_url) }}" class="card-img-top"
@@ -37,15 +38,13 @@
                             </span>
                         </p>
                     </div>
+
                 </div>
             </a>
         </div>
     @empty
         <p class="text-center">No products found in this category.</p>
     @endforelse
-</div>
-<div class="d-flex justify-content-center mt-3">
-    {{ $products->links('pagination::bootstrap-5') }}
 </div>
 
 <style>

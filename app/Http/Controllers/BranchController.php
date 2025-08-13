@@ -14,62 +14,12 @@ class BranchController extends Controller
 {
     public function index()
     {
-        $branches = Tenant::all();
-        return view('admin.branches.index', compact('branches'));
+        // Fetch all tenants with their domains
+        $tenants = Tenant::with('domains')->latest()->get();
+
+        return view('admin.branches.index', compact('tenants'));
     }
-    // public function store(Request $request)
-    // {
 
-    //     Log::info('Creating tenant database for tenant: ' . $request->id);
-    //     $request->validate([
-    //         'id' => 'required|unique:tenants,id',
-    //         'domain' => 'required|unique:domains,domain',
-    //     ]);
-
-    //     // Step 1: Create the tenant and domain
-    //     $tenant = Tenant::create(['id' => $request->id]);
-    //     $tenant->domains()->create(['domain' => $request->domain]);
-
-    //     Log::info('Creating tenant database for tenant: ' . $tenant->id);
-
-    //     // Step 2: Create the tenant database
-    //     CreateDatabase::dispatchSync($tenant);
-
-    //     // ✅ Step 3: Set the database connection for the tenant manually
-    //     config(['database.connections.tenant.database' => $tenant->getDatabaseName()]);
-
-    //     // Step 4: Initialize tenancy
-    //     tenancy()->initialize($tenant);
-
-    //     // Step 5: Confirm database name
-    //     $tenantDb = DB::connection('tenant')->getDatabaseName();
-    //     Log::info('Tenant database after initialization: ' . $tenantDb);
-
-    //     // Step 6: Run migrations
-    //     Artisan::call('migrate', [
-    //         '--database' => 'tenant',
-    //         '--path' => '/database/migrations/tenant',
-    //         '--force' => true,
-    //     ]);
-
-
-
-    //     // Step 7: Log that we're in the tenant DB
-    //     $tenant->run(function () {
-    //         Log::info('Inside tenant DB: ' . tenant('id') . ', Database: ' . DB::connection()->getDatabaseName());
-    //     });
-
-    //     // Log::info('Running seeders for tenant: ' . $tenant->id . ' on database: ' . $tenantDb);
-    //     // Artisan::call('tenants:seed', [
-    //     //     '--tenants' => [$tenant->id],
-    //     //     '--force' => true,
-    //     // ]);
-
-    //     // Step 8: End tenancy
-    //     tenancy()->end();
-
-    //     return redirect()->back()->with('success', 'Branch created and database initialized!');
-    // }
 
 
     public function store(Request $request)

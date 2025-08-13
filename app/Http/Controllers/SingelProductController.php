@@ -6,11 +6,15 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+
 use App\Models\Category;
+
+
 use Stancl\Tenancy\Database\Models\Tenant;
 
 class SingelProductController extends Controller
 {
+
 
 
     // public function index($productId)
@@ -98,3 +102,4 @@ $cat= Category::all();
 }
 
 }
+
