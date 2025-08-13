@@ -155,7 +155,7 @@ Route::middleware([
 
 
     Route::get('/shop-now', [ShopNowController::class, 'product'])->name('shopnow.product');
-    Route::get('/cart/{product}', [SingelProductController::class, 'index'])->name('cart.index');
+    Route::get('/single/{product}', [SingelProductController::class, 'index'])->name('single.index');
 
 
 

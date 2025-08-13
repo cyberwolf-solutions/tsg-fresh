@@ -14,7 +14,7 @@ class SingelProductController extends Controller
 
     public function index($productId)
     {
-        $tenant = tenant(); // current tenant
+        $tenant = tenant();
 
         if (!$tenant) {
             Log::error('Tenant not found');
@@ -43,7 +43,7 @@ class SingelProductController extends Controller
             'product_id' => $productId,
         ]);
 
-        return view('Landing-page.cart', [
+        return view('Landing-page.singleView', [
             'tenant' => $tenant,
             'branch' => $branch,
             'domain' => $domain,

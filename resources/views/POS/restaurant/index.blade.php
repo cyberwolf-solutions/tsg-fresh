@@ -538,7 +538,7 @@
                     var id = $(this).data('id');
                     var mealName = $(this).find('.meal-name').text();
                     var image = $(this).data('image');
-                    var price = $(this).data('price');
+                    var price = $(this).data('price-lkr');
                     var quantity = 1;
 
                     if (cart.find(e => e.id == id)) {
@@ -678,166 +678,125 @@
                 sub = 0;
                 total = 0;
                 $('#loader').removeClass('d-none');
-                beep()
+                beep();
 
-                var symbol = "lkr";
-
+                var symbol = "LKR";
 
                 $('#emptyCart').hide();
-                // Assuming cart is an array of objects with 'name' and 'price' properties
                 var cartItemHtml = '';
+
                 cart.forEach((element, key) => {
-
+                    // Ensure price is a valid number
                     var price = Number(element.price) || 0;
-                    var priceFormatted =
-                        `${symbol} ${price.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`;
+                    var priceFormatted = `${symbol} ${price.toLocaleString('en-US', { 
+            maximumFractionDigits: 2, 
+            minimumFractionDigits: 2 
+        })}`;
 
-
-                    // var priceFormatted =
-                    //     `${symbol} ${Number(element.price).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`;
-
-                    sub += element.price * element.quantity;
+                    sub += price * element.quantity;
 
                     // Add price for each modifier
                     if (element.modifiers && element.modifiers.length > 0) {
                         element.modifiers.forEach(modifier => {
-
-                            sub += modifier.price * element.quantity;
-
-                            // if (currencySymbol === 'USD') {
-                            //     sub += modifier.price * element.quantity;
-
-                            // } else if (currencySymbol === 'EURO') {
-                            //     sub += modifier.price * element.quantity;
-                            // } else {
-                            //     sub += modifier.price * element.quantity;
-                            // }
-
-
+                            sub += Number(modifier.price) * element.quantity;
                         });
                     }
-                    // alert(typeof priceFormatted);
 
-                    // Create the HTML structure for each cart item
                     cartItemHtml += `
-                            <div class="row p-2 align-items-center">
-                                <div class="col-md-4 text-center">
-                                    <div class="row align-items-center">
-                                        <div class="col-12">
-                                            <img loading="lazy" src="${element.image}" alt="Image of ${element.name}"
-                                                class="img-fluid rounded-3 card-img w-50">
-                                        </div>
-                                        <div class="col-12 mt-2">
-                                            <div class="row justify-content-center">
-                                                <div class="col-md-11">
-                                                    <div class="input-group input-group-sm">
-                                                        <button class="btn btn-dark btn-sm decrementBtn" type="button" id="decrementBtn" data-id="${key}">-</button>
-                                                        <input type="text" class="form-control form-control-sm text-center p-1 spinnerInput_${key}"
-                                                            id="spinnerInput" value="${element.quantity}" readonly>
-                                                        <button class="btn btn-dark btn-sm incrementBtn" type="button" id="incrementBtn"  data-id="${key}">+</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-7 mt-2 mt-md-0">
-                                    <div class="row align-items-center">
-                                        <div class="col-12 text-start">
-                                            <h5 class="card-title">${element.name}</h5>
-                                            <div class="border-bottom pb-1 mb-1">
-                                             <span class="price_${key}" data-price="${element.price}">
-                                             ${symbol} ${element.price.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}
-                                            
-                                            </span>
-                                           <span class="quantity_${key}">x ${element.quantity}</span>
-                                           </div>
-                                            <div class="d-flex justify-content-between align-items-center mt-2">
-                                                <h4 class="total_${key}">${symbol} ${(element.price * element.quantity).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}</h4>
-                                                <div class="d-flex gap-2 justify-content-end align-items-center">
-                                                    <a href="javascript:void(0)" class="link-info fs-5" data-ajax-popup="true"
-                                                                data-title="Add Modifiers" data-binding="?id=${element.id}"
-                                                                data-url="{{ route('restaurant.modifiers') }}"><i class="bi bi-node-plus"
-                                                            data-bs-toggle="tooltip" title="Modify"></i></a>
-                                                    <a href="javascript:void(0)"  class="link-danger deleteBtn" data-key="${key}"><i class="bi bi-trash3" data-bs-toggle="tooltip"
-                                                            title="Delete"></i></a>
-                                                </div>
-                                            </div>
-                                        </div>
+            <div class="row p-2 align-items-center">
+                <div class="col-md-4 text-center">
+                    <div class="row align-items-center">
+                        <div class="col-12">
+                            <img loading="lazy" src="${element.image}" alt="Image of ${element.name}"
+                                class="img-fluid rounded-3 card-img w-50">
+                        </div>
+                        <div class="col-12 mt-2">
+                            <div class="row justify-content-center">
+                                <div class="col-md-11">
+                                    <div class="input-group input-group-sm">
+                                        <button class="btn btn-dark btn-sm decrementBtn" type="button" id="decrementBtn" data-id="${key}">-</button>
+                                        <input type="text" class="form-control form-control-sm text-center p-1 spinnerInput_${key}"
+                                            id="spinnerInput" value="${element.quantity}" readonly>
+                                        <button class="btn btn-dark btn-sm incrementBtn" type="button" id="incrementBtn"  data-id="${key}">+</button>
                                     </div>
                                 </div>
                             </div>
-                        `;
-                    // Append the HTML for the cart item to the cartBody element
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-7 mt-2 mt-md-0">
+                    <div class="row align-items-center">
+                        <div class="col-12 text-start">
+                            <h5 class="card-title">${element.name}</h5>
+                            <div class="border-bottom pb-1 mb-1">
+                                <span class="price_${key}" data-price="${price}">
+                                    ${priceFormatted}
+                                </span>
+                                <span class="quantity_${key}">x ${element.quantity}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <h4 class="total_${key}">${symbol} ${(price * element.quantity).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}</h4>
+                                <div class="d-flex gap-2 justify-content-end align-items-center">
+                                    <a href="javascript:void(0)" class="link-info fs-5" data-ajax-popup="true"
+                                        data-title="Add Modifiers" data-binding="?id=${element.id}"
+                                        data-url="{{ route('restaurant.modifiers') }}"><i class="bi bi-node-plus"
+                                        data-bs-toggle="tooltip" title="Modify"></i></a>
+                                    <a href="javascript:void(0)" class="link-danger deleteBtn" data-key="${key}"><i class="bi bi-trash3" data-bs-toggle="tooltip"
+                                        title="Delete"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
                 });
+
                 $('#cartBody').html(cartItemHtml);
 
                 if (cartItemHtml == '') {
                     $('#emptyCart').show();
                 }
 
+                // Format all currency values
                 $('#sub').html(
-                    ` ${sub.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`
-                );
+                    `${symbol} ${sub.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`);
+                $('#sub').val(sub);
 
-                $('#sub').val(sub)
-
-                //discount
+                // Calculate discount
                 if (discount_method == 'precentage') {
                     $('#discount_method_html').html(`${discount_val}%`);
                     discount = sub * discount_val / 100;
                 } else {
-                    discount = parseFloat(discount_val);
-                    $('#discount_method_html').html(
-                        `LKR ${discount_val}`
-                    );
+                    discount = parseFloat(discount_val) || 0;
+                    $('#discount_method_html').html(`${symbol} ${discount_val}`);
                 }
 
-                // // Update the data-url attribute with the discount variable and the method
-                var binding = "?discount=" + discount_val + "&discount_method=" + discount_method;
-                $('#discount-edit').attr('data-binding', binding); // Update the HTML attribute
-
                 $('#discount_html').html(
-                    ` ${discount.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`
-                );
+                    `${symbol} ${discount.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`);
 
-
-                //vat
+                // Calculate VAT
                 if (vat_method == 'precentage') {
                     $('#vat_method_html').html(`${vat_val}%`);
                     vat = sub * vat_val / 100;
                 } else {
-                    vat = parseFloat(vat_val);
-                    $('#vat_method_html').html(
-                        `LKR ${vat_val}`
-                    );
+                    vat = parseFloat(vat_val) || 0;
+                    $('#vat_method_html').html(`${symbol} ${vat_val}`);
                 }
-
-                // // Update the data-url attribute with the vat variable and the method
-                var binding = "?vat=" + vat_val + "&vat_method=" + vat_method;
-                $('#vat-edit').attr('data-binding', binding); // Update the HTML attribute
 
                 $('#vat_html').html(
-                    ` ${vat.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`
-                );
+                    `${symbol} ${vat.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`);
 
-                if (sub > 0) {
-                    total = sub - discount + vat;
-                } else {
-                    total = 0;
-                }
+                // Calculate total
+                total = Math.max(0, sub - discount + vat);
+                $('#total_html').html(
+                    `${symbol} ${total.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`);
+                $('#total').val(total);
 
-                $('#total').html(
-                    ` ${total.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`
-                );
-                $('#total').val(total)
+                // Initialize tooltips
+                const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+                const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 
-
-                const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-                const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(
-                    tooltipTriggerEl))
                 $('#loader').addClass('d-none');
-
             }
             $(document).ready(function() {
 

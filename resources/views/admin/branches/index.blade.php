@@ -1,55 +1,94 @@
 @extends('layouts.adminMaster')
 
+@section('title', 'Branches Management')
+
 @section('content')
-    <form id="createBranchForm">
-        @csrf
-        <input type="text" name="id" placeholder="Branch ID" required>
-        <input type="text" name="domain" placeholder="Domain" required>
-        <button type="submit">Create Branch</button>
-    </form>
+    <div class="page-header mb-4">
+        <h1 class="fw-bold">Branches Management</h1>
+        <p class="text-muted">Create and manage tenant branches</p>
+    </div>
 
-    <div id="responseMessage"></div>
+    <!-- Display success/error messages -->
+    @if (session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+    @if (session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Create Branch Form -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <i class="fas fa-plus-circle me-2"></i> Create New Branch
+        </div>
+        <div class="card-body">
+            <form id="createBranchForm" method="POST" action="{{ route('branches.store') }}">
+                @csrf
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label for="id" class="form-label">Branch ID</label>
+                        <input type="text" class="form-control" name="id" placeholder="e.g. branch001" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="domain" class="form-label">Domain</label>
+                        <input type="text" class="form-control" name="domain" placeholder="e.g. branch1.example.com"
+                            required>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-save me-1"></i> Create
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Branches Table -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <i class="fas fa-table me-2"></i> Existing Branches
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="branchesTable" class="table table-striped table-bordered align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Domain</th>
+                            <th>Created At</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($tenants as $tenant)
+                            <tr>
+                                <td>{{ $tenant->id }}</td>
+                                <td>{{ $tenant->domains->first()->domain ?? 'N/A' }}</td>
+                                <td>{{ $tenant->created_at->format('M d, Y') }}</td>
+                                <td>
+                                    <span class="badge bg-success">Active</span>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">No branches found</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@section('scripts')
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
     <script>
         $(document).ready(function() {
-            // Set up CSRF token for all AJAX requests
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-
-            $('#createBranchForm').submit(function(e) {
-                e.preventDefault();
-
-                $.ajax({
-                    url: "{{ route('branches.store') }}",
-                    type: "POST",
-                    data: {
-                        'id': $('input[name="id"]').val(),
-                        'domain': $('input[name="domain"]').val()
-                    },
-                    success: function(response) {
-                        $('#responseMessage').html('<div class="alert alert-success">' +
-                            response.message + '</div>');
-                        $('#createBranchForm')[0].reset();
-                    },
-                    error: function(xhr) {
-                        let errorMessage = 'An error occurred.';
-                        if (xhr.responseJSON && xhr.responseJSON.message) {
-                            errorMessage = xhr.responseJSON.message;
-                        } else if (xhr.responseJSON && xhr.responseJSON.errors) {
-                            errorMessage = '';
-                            $.each(xhr.responseJSON.errors, function(key, value) {
-                                errorMessage += value[0] + '<br>';
-                            });
-                        }
-                        $('#responseMessage').html('<div class="alert alert-danger">' +
-                            errorMessage + '</div>');
-                    }
-                });
-            });
+            $('#branchesTable').DataTable();
         });
     </script>
 @endsection

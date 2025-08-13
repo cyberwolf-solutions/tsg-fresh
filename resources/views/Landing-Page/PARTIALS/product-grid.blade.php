@@ -1,7 +1,7 @@
 <div class="row">
     @forelse ($products as $product)
         <div class="col-md-3 col-sm-4 mb-4">
-            <a href="{{ route('cart.index', ['product' => $product->id]) }}" class="text-decoration-none text-dark">
+            <a href="{{ route('single.index', ['product' => $product->id]) }}" class="text-decoration-none text-dark">
                 <div class="card product-card mb-0">
                     <img src="{{ asset('uploads/products/' . $product->image_url) }}" class="card-img-top"
                         alt="{{ $product->name }}">
