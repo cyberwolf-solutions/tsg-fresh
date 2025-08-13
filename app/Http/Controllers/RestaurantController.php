@@ -379,17 +379,17 @@ class RestaurantController extends Controller
         // dd($request);
         $validator = Validator::make($request->all(), [
             'customer' => 'required',
-            'room' => 'required',
-            'table' => 'required',
+            // 'room' => 'required',
+            // 'table' => 'required',
             'sub' => 'required',
             'discount' => 'required',
             'vat' => 'required',
             'total' => 'required',
-            'kitchen_note' => 'required',
-            'bar_note' => 'required',
-            'staff_note' => 'required',
+            // 'kitchen_note' => 'required',
+            // 'bar_note' => 'required',
+            // 'staff_note' => 'required',
             'payment_note' => 'required',
-            'type' => 'required',
+            // 'type' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -407,8 +407,8 @@ class RestaurantController extends Controller
         try {
             $data = [
                 'customer_id' => $request->customer,
-                'room_id' => $request->room,
-                'table_id' => $request->table,
+                // 'room_id' => $request->room,
+                // 'table_id' => $request->table,
                 'orderable_type' => 'App\Models\OrderItem',
                 'orderable_id' => '0',
                 'order_date' => date('d-m-Y'),
@@ -436,11 +436,11 @@ class RestaurantController extends Controller
 
                     if ($product) {
                         // dd($product);
-                        if ($product->type == 'KOT') {
-                            $isKOT = true;
-                        } elseif ($product->type == 'BOT') {
-                            $isBOT = true;
-                        }
+                        // if ($product->type == 'KOT') {
+                        //     $isKOT = true;
+                        // } elseif ($product->type == 'BOT') {
+                        //     $isBOT = true;
+                        // }
 
                         $data = [
                             'itemable_type' => 'App\Models\Product',
