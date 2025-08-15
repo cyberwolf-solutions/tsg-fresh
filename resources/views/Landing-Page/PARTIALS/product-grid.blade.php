@@ -8,7 +8,8 @@
                 <div class="card product-card mb-0">
                     <div class="image-wrapper" style="position: relative; display: inline-block;">
                         <img src="{{ asset('uploads/products/' . $product->image_url) }}" class="card-img-top"
-                            alt="{{ $product->name }}">
+                            alt="{{ $product->name }}" style="height: 215px; object-fit: cover;">
+
 
                         <!-- Logo overlay -->
                         <img src="{{ asset('build/images/landing/flogo.png') }}" alt="Logo"
@@ -24,17 +25,19 @@
                     </div>
 
                     <div class="card-body text-center">
-                        <div class="category" style="margin-bottom:-1px;font-size: 10px">
+                        <div class="category text-uppercase" style="margin-bottom:-1px;font-size: 12px">
                             {{ $product->categories->pluck('name')->join('/') ?? 'Item' }}
                         </div>
 
-                        <h5 class="card-title" style="font-weight: 100;margin-bottom:-1px">
+                        <h5 class="card-title text-uppercase text-secondary"
+                            style="font-weight: 100; margin-bottom: -1px;">
                             {{ $product->name }}
                         </h5>
+
                         <p class="price-row">
-                            <span class="label" style="font-size: 12px">From:</span>
-                            <span class="price" style="font-size: 12px">Rs
-                                {{ $product->final_price ?? $product->product_price }}
+                            <span class="label" style="font-size: 15px">From:</span>
+                            <span class="price" style="font-size: 15px">
+                                රු {{ $product->final_price ?? $product->product_price }}
                             </span>
                         </p>
                     </div>

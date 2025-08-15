@@ -43,9 +43,33 @@ use App\Http\Controllers\RoomFacilityController;
 use App\Http\Controllers\OtherPurchaseController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\CheckinCheckoutController;
+use App\Http\Controllers\WebCustomerAuthController;
+use App\Http\Controllers\customer\AccountController;
 use App\Http\Controllers\AdditionalPaymentController;
 use App\Http\Controllers\TableArrangementsController;
 use App\Http\Controllers\EmployeeDesignationsController;
+
+Route::group(['middleware' => ['web']], function () {
+    Route::post('webcustomer/register', [WebCustomerAuthController::class, 'register'])
+        ->name('customer.register.post');
+    Route::post('webcustomer/login', [WebCustomerAuthController::class, 'login'])
+        ->name('customer.login.post');
+
+    Route::get('webcustomer/dashboard', [\App\Http\Controllers\customer\CustomerController::class, 'index'])
+        ->name('customer.dashboard');
+    Route::get('webcustomer/account', [\App\Http\Controllers\customer\AccountController::class, 'index'])
+        ->name('customer.account');
+    Route::get('webcustomer/address', [\App\Http\Controllers\customer\AccountController::class, 'address'])
+        ->name('customer.address');
+    Route::get('webcustomer/address-create', [\App\Http\Controllers\customer\AccountController::class, 'create'])
+        ->name('customer.address.create');
+
+
+    Route::put('/account', [AccountController::class, 'update'])->name('customer.account.update');
+    Route::post('/address', [AccountController::class, 'storeAddress'])->name('customer.address.store');
+
+    Route::post('/web-logout', [WebCustomerAuthController::class, 'logout'])->name('customer.logout');
+});
 
 foreach (config('tenancy.central_domains') as $domain) {
     Route::domain($domain)->group(function () {
@@ -75,6 +99,9 @@ foreach (config('tenancy.central_domains') as $domain) {
             Route::put('/items/{item}', [WebController::class, 'updateItem'])->name('update-item');
             Route::delete('/items/{item}', [WebController::class, 'deleteItem'])->name('delete-item');
         });
+
+        // Route::post('webcustomer/register', [WebCustomerAuthController::class, 'register'])->name('customer.register.post');
+
 
         // tenet
         // Route::get('/select-branch/{branch}', function ($branch) {
@@ -109,7 +136,7 @@ foreach (config('tenancy.central_domains') as $domain) {
         });
         Route::get('/shop-now', function () {
             return view('Landing-page.shop-now');
-        });
+        })->name('Landing-page.shop-now');
 
         Route::get('/dynamic-page', function () {
             return view('Landing-page.dynamic');
