@@ -25,21 +25,58 @@
             margin-bottom: 20px;
         }
 
-        /* Breadcrumb */
-        .breadcrumb {
-            background-color: transparent;
+        .breadcrumb-custom {
+            display: flex;
+            flex-wrap: wrap;
             padding: 0;
-            font-size: 14px;
             margin-bottom: 30px;
+            list-style: none;
+            background-color: transparent;
+            border-radius: 0;
+            font-family: 'Poppins', sans-serif;
         }
 
-        .breadcrumb-item a {
-            color: #666;
+        .breadcrumb-custom .breadcrumb-item {
+            position: relative;
+            margin-right: 30px;
+            color: #777;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        /* Remove the slash and only keep ">" */
+        .breadcrumb-custom .breadcrumb-item:not(:last-child)::after {
+            content: ">";
+            position: absolute;
+            right: -20px;
+            /* Adjust spacing */
+            color: #777;
+        }
+
+        /* Link style */
+        .breadcrumb-custom .breadcrumb-item a {
+            color: #777;
             text-decoration: none;
+            transition: color 0.3s ease, font-weight 0.3s ease;
         }
 
-        .breadcrumb-item.active {
-            color: #333;
+        /* Active style */
+        .breadcrumb-custom .breadcrumb-item.active {
+            color: #000;
+            font-weight: 700;
+        }
+
+        /* Hover effect for all items */
+        .breadcrumb-custom .breadcrumb-item:hover {
+            color: black;
+            ;
+            font-weight: 700;
+            /* Same as active */
+            cursor: pointer;
+        }
+
+        .breadcrumb-item+.breadcrumb-item::before {
+            content: none;
         }
 
         /* Product Grid */
@@ -191,7 +228,7 @@
 
         /* Footer */
         .footer {
-            background-color: #f8f9fa;
+            background-color: #ffffff;
             padding: 60px 0 30px;
             margin-top: 50px;
         }
@@ -305,13 +342,12 @@
 
 
         .custom-outline-blue {
-            border: 1px solid #007bff;
-            /* Bootstrap blue */
-            color: #000;
-            /* Black text */
-            background-color: transparent;
-            transition: all 0.3s ease;
+            background-color: #0d6efd !important;
+            /* Bootstrap primary blue */
+            border-color: #0d6efd !important;
+            color: #fff !important;
         }
+
 
         .custom-outline-blue:hover {
             background-color: #007bff;
@@ -319,6 +355,75 @@
             color: #fff;
             /* White text */
             border-color: #007bff;
+        }
+
+        .coupon-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+            border: none;
+            /* No border when collapsed */
+            padding: 0;
+            /* No padding when collapsed */
+        }
+
+        .coupon-container.expanded {
+            max-height: 200px;
+            /* increase to fit content */
+            border: 2px dotted #0d6efd;
+            padding: 15px;
+            /* adds space around span + input */
+            border-radius: 8px;
+            /* optional for nicer look */
+        }
+
+
+
+        .coupon-input-group {
+            display: flex;
+            margin-top: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .coupon-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-right: none;
+            border-radius: 8px 0 0 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .coupon-input:focus {
+            border-color: #666;
+        }
+
+        .coupon-button {
+            padding: 12px 20px;
+            background-color: #2265e0;
+            color: white;
+            border: none;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        .coupon-button:hover {
+            background-color: #333;
+        }
+
+        .coupon-link {
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .coupon-link:hover {
+            color: #666 !important;
         }
     </style>
     <!-- Hero Banner -->
@@ -329,141 +434,264 @@
 
     <div class="container my-5" style="margin-top: 120px;">
         <!-- Breadcrumb -->
-        <nav aria-label="breadcrumb" style="margin-top: 120px;">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item">SHOPPING CART</li>
-                <li class="breadcrumb-item">CHECKOUT DETAILS</li>
-                <li class="breadcrumb-item active" aria-current="page">ORDER COMPLETE</li>
-            </ol>
-        </nav>
+        <div class="col-md-12 d-flex justify-content-center">
+            <nav aria-label="breadcrumb" style="margin-top: 110px">
+                <ol class="breadcrumb-custom">
 
-        <!-- Info Bar -->
-        <div class="text-center mb-3 text-muted" style="font-size: 14px;">
-            IF YOU EXPERIENCE ANY ISSUES DURING CHECKOUT PLEASE CALL HOTLINE +94774000010
+                    <li class="breadcrumb-item " style="font-size: 25px;"><a href="{{ route('cart.index') }}"
+                            class="text-decoration-none text-dark">
+                            SHOPPING CART
+                        </a></li>
+                    <li class="breadcrumb-item active" style="font-size: 25px;">
+                        <a href="{{ route('checkout.index') }}" class="text-decoration-none text-dark">
+                            CHECKOUT DETAILS
+                        </a>
+                    </li>
+
+                    <li class="breadcrumb-item" aria-current="page" style="font-size: 25px;">ORDER COMPLETE</li>
+                </ol>
+            </nav>
         </div>
+        <!-- Info Bar -->
+
 
         <!-- Login and Coupon -->
-        <div class="text-start mb-4">
-            <p>Returning customer? <a href="#">Click here to login</a></p>
-            <p>Have a coupon? <a href="#">Click here to enter your code</a></p>
+        <div class="text-start mb-1">
+            @if (!Auth::guard('customer')->check())
+                <p class="small text-secondary mb-1">
+                    Returning customer?
+                    <a href="#" class="text-dark text-decoration-none"> Click here to login</a>
+                </p>
+            @endif
+            <p class="small text-secondary mb-0">
+                Have a coupon?
+                <a href="#" class="text-dark text-decoration-none coupon-link" id="couponToggle">Click here to enter
+                    your code</a>
+            </p>
+            <div class="coupon-container mt-4 mb-0" id="couponContainer">
+                <span class=" text-secondary">If you have a coupon code, please apply it below.</span>
+                <div class="coupon-input-group ">
+
+                    <input type="text" class="coupon-input" placeholder="Enter coupon code">
+                    <button class="coupon-button">APPLY COUPON</button>
+                </div>
+            </div>
         </div>
 
-        <hr class="custom-grey-hr" style=" border-color: #ccc; width:60%;
-    opacity: 1; ">
+        <hr class="custom-grey-hr" style="border-color:#ccc; width:58%; opacity:1; margin-top:0;">
+
 
 
         <!-- Checkout Grid -->
-        <div class="row mt-5">
+        <div class="row mt-0">
             <!-- Billing & Shipping -->
-            <div class="col-md-7">
-                <h5>BILLING & SHIPPING</h5>
-                <form>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">First name *</label>
-                            <input type="text" class="form-control">
+            <div class="col-md-7 mt-2">
+                <h5 class="text-dark fw-semibold" style="font-size: 18px">BILLING & SHIPPING</h5>
+                @if (Auth::guard('customer')->check())
+                    <!-- Form for authenticated users -->
+                    <form>
+                        <!-- First + Last Name -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3 text-dark small fw-semibold">
+                                <label class="form-label">First name *</label>
+                                <input type="text" class="form-control" required>
+                            </div>
+                            <div class="col-md-6 mb-3 text-dark small fw-semibold">
+                                <label class="form-label">Last name (optional)</label>
+                                <input type="text" class="form-control">
+                            </div>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Last name (optional)</label>
-                            <input type="text" class="form-control">
+
+                        <!-- Street Address -->
+                        <div class="mb-3">
+                            <label class="form-label text-dark small fw-semibold">Street address *</label>
+                            <input type="text" class="form-control mb-3" placeholder="House number and street name"
+                                required>
+                            <input type="text" class="form-control"
+                                placeholder="Apartment, suite, unit, etc. (optional)">
                         </div>
-                    </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Street address *</label>
-                        <input type="text" class="form-control mb-2" placeholder="House number and street name">
-                        <input type="text" class="form-control" placeholder="Apartment, suite, unit, etc. (optional)">
-                    </div>
+                        <!-- Town / City -->
+                        <div class="mb-3">
+                            <label class="form-label text-dark small fw-semibold">Town / City *</label>
+                            <input type="text" class="form-control" value="Kandy" required>
+                        </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Town / City *</label>
-                        <select class="form-select">
-                            <option>Colombo 2</option>
-                            <option>Colombo 3</option>
-                            <option>Colombo 4</option>
-                        </select>
-                    </div>
+                        <!-- Phone -->
+                        <div class="mb-3">
+                            <label class="form-label text-dark small fw-semibold">Phone *</label>
+                            <input type="tel" class="form-control" required>
+                        </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Phone *</label>
-                        <input type="tel" class="form-control">
-                    </div>
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label class="form-label text-dark small fw-semibold">Email address *</label>
+                            <input type="email" class="form-control" required>
+                        </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Email address *</label>
-                        <input type="email" class="form-control">
-                    </div>
+                        <!-- Additional Info -->
+                        <div class="mb-3">
+                            <h5 class="text-dark fw-semibold text-uppercase" style="font-size: 18px">
+                                Additional information</h5>
+                            <label class="form-label small text-dark fw-semibold">Order notes
+                                (optional)</label>
+                            <textarea class="form-control" placeholder="Notes about your order, e.g. special notes for delivery."></textarea>
+                        </div>
+                    </form>
+                @else
+                    <!-- Form for non-authenticated users -->
+                    <form>
+                        <!-- First + Last Name -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3 text-dark small fw-semibold">
+                                <label class="form-label">First name *</label>
+                                <input type="text" class="form-control">
+                            </div>
+                            <div class="col-md-6 mb-3 text-dark small fw-semibold">
+                                <label class="form-label">Last name (optional)</label>
+                                <input type="text" class="form-control">
+                            </div>
+                        </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Create account password *</label>
-                        <input type="password" class="form-control">
-                    </div>
+                        <!-- Street Address -->
+                        <div class="mb-3">
+                            <label class="form-label text-dark small fw-semibold">Street address *</label>
+                            <input type="text" class="form-control mb-4" placeholder="House number and street name">
+                            <input type="text" class="form-control mt-4"
+                                placeholder="Apartment, suite, unit, etc. (optional)">
+                        </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Order notes (optional)</label>
-                        <textarea class="form-control" placeholder="Notes about your order, e.g. special notes for delivery."></textarea>
-                    </div>
-                </form>
+                        <!-- Town / City -->
+                        <div class="mb-3">
+                            <label class="form-label text-dark small fw-semibold">Town / City *</label>
+                            <select class="form-select">
+                                <option>Colombo 2</option>
+                                <option>Colombo 3</option>
+                                <option>Colombo 4</option>
+                            </select>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="mb-3">
+                            <label class="form-label text-dark small fw-semibold">Phone *</label>
+                            <input type="tel" class="form-control">
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label class="form-label text-dark small fw-semibold">Email address *</label>
+                            <input type="email" class="form-control">
+                        </div>
+
+                        <!-- Password -->
+                        <div class="mb-3">
+                            <label class="form-label text-dark small fw-semibold">Create account password *</label>
+                            <input type="password" class="form-control">
+                        </div>
+
+                        <!-- Additional Info -->
+                        <div class="mb-3">
+                            <h5 class="text-dark fw-semibold text-uppercase" style="font-size: 18px">
+                                Additional information</h5>
+                            <label class="form-label small text-dark fw-semibold">Order notes
+                                (optional)</label>
+                            <textarea class="form-control" placeholder="Notes about your order, e.g. special notes for delivery."></textarea>
+                        </div>
+                    </form>
+                @endif
             </div>
+
 
             <!-- Order Summary -->
             <div class="col-md-5">
                 <div class="card border-primary">
                     <div class="card-body">
-                        <h5 class="card-title">YOUR ORDER</h5>
+                        <h5 class="card-title mt-3 mb-2">YOUR ORDER</h5>
 
-                        <div class="d-flex justify-content-between">
+                        <div class="d-flex justify-content-between mt-2 text-secondary small">
                             <strong>PRODUCT</strong>
                             <strong>SUBTOTAL</strong>
                         </div>
-                        <hr>
-                        <div class="d-flex justify-content-between">
+                        <hr style="margin-top:5px; margin-bottom:8px;">
+
+                        <div class="d-flex justify-content-between text-secondary small">
                             <span>CLEAN PRAWNS 1KG × 1</span>
-                            <span>₨3,725.00</span>
+                            <br>
+                            <span class="text-dark fw-semibold">රු3,725.00</span>
                         </div>
                         <hr>
-                        <div class="d-flex justify-content-between">
+                        <div class="d-flex justify-content-between text-secondary small">
                             <span>Subtotal</span>
-                            <span>₨3,725.00</span>
+                            <span class="text-dark fw-semibold">රු3,725.00</span>
                         </div>
-                        <div class="d-flex justify-content-between">
-                            <span>Shipping</span>
-                            <span>₨750.00</span>
+                        <span class="small text-secondary">Shipping</span>
+                        <hr style="height:2px; margin-top:0; margin-bottom:0;" class="mb-3">
+                        <div class="form-check" style="margin-left: 10px; margin-right:10px;">
+                            <input class="form-check-input" type="radio" name="deliveryOption" id="delivery1" checked>
+                            <label class="form-check-label" for="delivery1" style="font-size:12px;">
+                                Free Delivery in Limited Area ( above Rs. 10000 order ) (Free)
+                            </label>
+                        </div>
+                        <div class="form-check mb-3" style="margin-left: 10px; margin-right:10px;">
+                            <input class="form-check-input" type="radio" name="deliveryOption" id="delivery2">
+                            <label class="form-check-label" for="delivery2" style="font-size:12px;">
+                                Store Pickup - #38, Charles Dr, Kollupitiya, Colombo 3
+                            </label>
                         </div>
                         <hr>
-                        <div class="d-flex justify-content-between fw-bold">
-                            <span>Total</span>
-                            <span>₨4,475.00</span>
+                        <div class="mt-3 fw-bold">
+                            <div class="mt-3 fw-bold">
+                                <div class="d-flex justify-content-between">
+                                    <span class="small text-secondary">Total</span>
+                                    <span class="small">රු4,475.00</span>
+                                </div>
+                                <div class="text-end">
+                                    <small class="text-muted" style="font-size: 12px">(includes රු568.22 VAT 18%)</small>
+                                </div>
+                            </div>
                         </div>
-                        <small class="text-muted">(includes ₨568.22 VAT 18%)</small>
 
                         <hr>
 
                         <!-- Delivery Date -->
                         <div class="mb-3">
-                            <label class="form-label">Delivery Date *</label>
-                            <input type="date" class="form-control" value="2025-07-30">
-                            <small class="text-muted">We will try our best to deliver your order on the specified
-                                date.</small>
+                            <label for="deliveryDate" class="form-label small fw-bold">Delivery Date *</label>
+                            <input type="text" class="form-control mb-3" style="width: 300px;" id="deliveryDate"
+                                placeholder="Choose a date">
+
+                            <span style="font-size: 10px; margin-bottom: 10px; " class="text-secondary">
+                                We will try our best to deliver your order on the specified date.
+                            </span>
                         </div>
 
                         <!-- Payment Methods -->
+                        <span class="small text-secondary">Payment</span>
+                        <hr style="height:2px; margin-top:0; margin-bottom:0;" class="mb-3">
+
                         <div class="mb-3">
-                            <div class="form-check">
-                                <input type="radio" class="form-check-input" name="payment" checked>
-                                <label class="form-check-label">Direct bank transfer</label>
-                                <small class="d-block text-muted ms-4">
+                            <div class="form-check" style="margin-left: 10px; margin-right:10px;">
+                                <input type="radio" class="form-check-input" name="payment" id="payment1" checked>
+                                <label class="form-check-label" for="payment1" style="font-size:12px;">
+                                    Direct bank transfer
+                                </label>
+                                <small class="d-block text-muted ms-4" style="font-size:12px;">
                                     Make your payment directly into our bank account. Please use your Order ID as the
                                     payment reference.
                                 </small>
                             </div>
-                            <div class="form-check mt-2">
-                                <input type="radio" class="form-check-input" name="payment">
-                                <label class="form-check-label">Cash on Delivery - COD</label>
+
+                            <div class="form-check mb-3" style="margin-left: 10px; margin-right:10px;">
+                                <input type="radio" class="form-check-input" name="payment" id="payment2">
+                                <label class="form-check-label" for="payment2" style="font-size:12px;">
+                                    Cash on Delivery - COD
+                                </label>
                             </div>
-                            <div class="form-check mt-2">
-                                <input type="radio" class="form-check-input" name="payment">
-                                <label class="form-check-label">Online Payment</label>
+
+                            <div class="form-check mb-3" style="margin-left: 10px; margin-right:10px;">
+                                <input type="radio" class="form-check-input" name="payment" id="payment3">
+                                <label class="form-check-label" for="payment3" style="font-size:12px;">
+                                    Online Payment
+                                </label>
                                 <div class="mt-2 ms-4">
                                     <img src="https://www.payhere.lk/downloads/images/payhere_long_banner.png"
                                         alt="PayHere" style="max-width: 100%;">
@@ -471,13 +699,11 @@
                             </div>
                         </div>
 
+
                         <!-- Place Order Button -->
                         <button class="btn custom-outline-blue w-100">PLACE ORDER</button>
 
-                        <p class="mt-3 text-muted small">
-                            Your personal data will be used to process your order, support your experience throughout this
-                            website, and for other purposes described in our <a href="#">privacy policy</a>.
-                        </p>
+
                     </div>
                 </div>
             </div>
@@ -486,6 +712,7 @@
 
     </div>
 
+    <hr>
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -615,4 +842,26 @@
             </div>
         </div>
     </footer>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        flatpickr("#deliveryDate", {
+            dateFormat: "d/m/Y"
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const couponToggle = document.getElementById('couponToggle');
+            if (couponToggle) {
+                couponToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const container = document.getElementById('couponContainer');
+                    if (container) {
+                        container.classList.toggle('expanded');
+                        this.textContent = container.classList.contains('expanded') ?
+                            'Hide coupon field' : 'Click here to enter your code';
+                    }
+                });
+            }
+        });
+    </script>
 @endsection

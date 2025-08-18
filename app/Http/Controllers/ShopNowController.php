@@ -52,25 +52,32 @@ class ShopNowController extends Controller
     {
         $tenant = tenancy()->tenant;
 
-        if (!$tenant) {
-            Log::error('No tenant resolved inside product() method', [
-                'domain' => request()->getHost(),
-                'url' => request()->fullUrl(),
-            ]);
-        }
-
-        // Get all categories for sidebar
-        $categories = Category::withCount('products')->paginate(15);
+        // Get all categories for sidebar (remove pagination for categories)
+        $categories = Category::withCount('products')->get(); // Use get() instead of paginate()
 
         // Base query
-        $query = Product::with('variants', 'categories');
+        $query = Product::with(['variants', 'categories']);
 
         // If category_id is passed, filter products
-        if ($request->has('category_id')) {
-            $query->whereHas('categories', function ($query) use ($request) {
-                $query->where('categories.id', $request->category_id);
+        if ($request->has('category_id') && !empty($request->category_id)) {
+            $categoryId = $request->input('category_id');
+            $query->whereHas('categories', function ($q) use ($categoryId) {
+                $q->where('categories.id', $categoryId);
             });
         }
+
+        // If search term is provided
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('name', 'like', "%{$searchTerm}%")
+                    ->orWhere('description', 'like', "%{$searchTerm}%")
+                    ->orWhereHas('categories', function ($q) use ($searchTerm) {
+                        $q->where('name', 'like', "%{$searchTerm}%");
+                    });
+            });
+        }
+
 
         // Paginate results
         $products = $query->paginate(15);

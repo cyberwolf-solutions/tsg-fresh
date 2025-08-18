@@ -619,16 +619,22 @@
             document.querySelectorAll('#category-list a').forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
-                    let categoryId = this.getAttribute('data-id');
-                    loadProducts(`{{ route('shopnow.product') }}?category_id=${categoryId}`);
+                    const categoryId = this.getAttribute('data-id');
+                    const url = `{{ route('shopnow.product') }}?category_id=${categoryId}`;
+                    loadProducts(url);
+                    // Highlight active category
+                    document.querySelectorAll('#category-list a').forEach(a => a.classList.remove(
+                        'active'));
+                    this.classList.add('active');
                 });
             });
 
             // Handle pagination clicks (event delegation)
             document.addEventListener('click', function(e) {
-                if (e.target.closest('.pagination a')) {
+                const paginationLink = e.target.closest('.pagination a');
+                if (paginationLink) {
                     e.preventDefault();
-                    let url = e.target.closest('a').href;
+                    const url = paginationLink.href;
                     loadProducts(url);
                 }
             });
@@ -639,16 +645,31 @@
                             'X-Requested-With': 'XMLHttpRequest'
                         }
                     })
-                    .then(response => response.text())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.text();
+                    })
                     .then(html => {
                         document.querySelector('#product-grid').innerHTML = html;
+                        // Update browser URL without reloading
+                        history.pushState(null, null, url);
                         // Scroll to products section for better UX
                         document.querySelector('#product-grid').scrollIntoView({
                             behavior: 'smooth'
                         });
                     })
-                    .catch(error => console.error('Error:', error));
+                    .catch(error => {
+                        console.error('Error loading products:', error);
+                        alert('Failed to load products. Please try again.');
+                    });
             }
+
+            // Handle browser back/forward navigation
+            window.addEventListener('popstate', function(event) {
+                loadProducts(window.location.href);
+            });
         });
         document.addEventListener('DOMContentLoaded', () => {
             const slider = document.querySelector('.price-slider');

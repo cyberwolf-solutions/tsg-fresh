@@ -34,12 +34,12 @@
         }
 
         .breadcrumb-item a {
-            color: #666;
+            color: #858282;
             text-decoration: none;
         }
 
         .breadcrumb-item.active {
-            color: #333;
+            color: #858282;
         }
 
         /* Product Grid */
@@ -191,7 +191,7 @@
 
         /* Footer */
         .footer {
-            background-color: #f8f9fa;
+            background-color: #ffffff;
             padding: 60px 0 30px;
             margin-top: 50px;
         }
@@ -269,15 +269,15 @@
         }
 
         .centered-wrapper {
-            margin: 0 auto;
+            margin-left: 130px;
             padding-left: 15px;
-            padding-right: 15px;
+            padding-right: 1px;
             max-width: 100%;
         }
 
         @media (min-width: 992px) {
             .centered-wrapper {
-                max-width: calc(100% - 400px);
+                max-width: calc(100% - 250px);
                 /* 200px left & right */
                 padding-left: 0;
                 padding-right: 0;
@@ -415,16 +415,84 @@
             /* zooms 10% */
         }
     </style>
+    <style>
+        .carousel {
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .carousel-container {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .carousel-slide {
+            display: flex;
+            overflow-x: hidden;
+            /* hide scrollbar */
+            scroll-behavior: smooth;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .carousel-item {
+            flex: 0 0 200px;
+            height: 250px;
+            position: relative;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        .carousel-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* ensures image fills nicely */
+            display: block;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgb(0, 0, 0);
+            font-size: 20px;
+            background: rgba(231, 226, 226, 0.863);
+            padding: 5px 10px;
+            border-radius: 4px;
+            white-space: nowrap;
+            width: 100%;
+            height: 50px
+        }
+
+        .carousel-btn {
+            background: #fffefe;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 50%;
+            z-index: 10;
+        }
+
+        .carousel-btn:hover {
+            background: #ffffff;
+        }
+    </style>
 
 
-    <div class="centered-wrapper">
+    <div class="centered-wrapper  col-12">
         <!-- Main Content -->
         <div class="container mb-5 " style="margin-top: 170px;">
 
             <!-- Breadcrumb -->
             <nav aria-label="breadcrumb mt-5">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item " style="font-size: large"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item text-secondary" style="font-size: large"><a href="#">Home</a></li>
                     <li class="breadcrumb-item active text-secondary" aria-current="page" style="font-size: large">Fish</li>
                 </ol>
             </nav>
@@ -436,11 +504,11 @@
                 <div class="col-lg-9">
                     <div class="row">
                         <!-- Left Column: Product Image -->
-                        <div class="col-md-8" style="text-align: center;">
+                        <div class="col-md-8" style="text-align: center; margin-right: 0px;">
 
                             @if ($product->image_url)
                                 <div class="product-image-wrapper"
-                                    style="overflow: hidden; width: 100%; max-width: 600px; height: 500px; border-radius: 0;">
+                                    style="overflow: hidden;  width: 500px; height: 500px; border-radius: 0;">
                                     <img src="{{ asset('uploads/products/' . $product->image_url) }}"
                                         alt="{{ $product->name }}" class="product-image"
                                         style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;">
@@ -454,17 +522,23 @@
                         </div>
 
                         <!-- Right Column: Product Details -->
-                        <div class="col-md-4" style="padding-top: 10px;">
+                        <div class="col-md-3" style="padding-top: 10px;">
                             <!-- Name -->
-                            <h3 class="mb-4" style="text-transform: uppercase; font-weight: bold; color: #000;">
+                            <h3 class="mb-3" style="text-transform: uppercase; font-weight: bold; color: #4e4d4d;">
                                 {{ $product->name }}</h3>
 
+                            <hr class="mt-2 mb-4 bold" style="width:30px">
+
                             <!-- Price -->
-                            <p class="mb-4" style="font-size: 1rem; margin-bottom: 10px;">
+                            <p class="mb-4" style="font-size: 1rem; margin-bottom: 10px; color: #4e4d4d;">
                                 <span style="color: #000; font-size: 20px;">රු</span>
                                 <span style="color: #000; font-size: 20px;" class="fw-bold">
                                     {{ number_format($product->final_price ?? $product->product_price, 2) }}</span>
                             </p>
+
+
+
+
 
                             <!-- Variant Selector -->
                             @if ($product->variants->count() > 0)
@@ -488,6 +562,7 @@
                                 </span>
                             </p>
 
+
                             <p>
                                 <strong></strong>
                                 <span id="productPrice" class="mt-3">
@@ -495,21 +570,38 @@
                                 </span>
                             </p>
 
+                            <div class="d-flex align-items-center mb-3 mt-4">
+                                <label for="typeSize" class="me-2 small text-dark"
+                                    style="white-space: nowrap;">Type-Size</label>
+                                <select class="form-select w-auto small text-secondary" id="typeSize"
+                                    aria-label="Choose an option" style="font-size: small;">
+                                    <option selected disabled>Choose an option</option>
+                                    <option value="small">Small</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="large">Large</option>
+                                </select>
+                            </div>
+
+
+
                             <!-- Quantity Selector -->
-                            <div class="mb-4 col-md-12 mt-5"
-                                style="display: flex; align-items: center; gap: 5px; margin-bottom: 15px;">
+                            <div class="d-flex align-items-center gap-2 mt-3 mb-4">
                                 <button type="button" onclick="changeQty(-1)"
                                     style="width: 30px; height: 30px; border: 1px solid #ccc; background: #fff; cursor: pointer; border-radius: 0;">-</button>
+
                                 <input id="quantity" type="text" value="1" readonly
                                     style="width: 40px; height: 30px; text-align: center; border: 1px solid #ccc; background: #fff; border-radius: 0;">
+
                                 <button type="button" onclick="changeQty(1)"
                                     style="width: 30px; height: 30px; border: 1px solid #ccc; background: #fff; cursor: pointer; border-radius: 0;">+</button>
+
                                 <button class="btn" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample"
                                     aria-controls="offcanvasExample"
-                                    style="background-color: #007bff; color: white; border: none; padding: 5px 15px; height: 30px; font-size: 14px; cursor: pointer; border-radius: 5px;">
+                                    style="background-color: #007bff; color: white; border: none; padding: 5px 15px; font-size: 14px; cursor: pointer; border-radius: 5px; white-space: nowrap;">
                                     ADD TO CART
                                 </button>
                             </div>
+
 
                             <!-- Add to Cart Button -->
 
@@ -540,8 +632,8 @@
                         <ul class="nav nav-tabs" id="productTab" role="tablist" style="border-bottom: 1px solid #ddd;">
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link active" id="additional-tab" data-bs-toggle="tab"
-                                    data-bs-target="#additional" type="button" role="tab" aria-controls="additional"
-                                    aria-selected="true" style="border: none;">
+                                    data-bs-target="#additional" type="button" role="tab"
+                                    aria-controls="additional" aria-selected="true" style="border: none;">
                                     ADDITIONAL INFORMATION
                                 </button>
                             </li>
@@ -565,7 +657,7 @@
                                         <td style="padding: 10px;">1 kg</td>
                                     </tr>
                                     <tr style="border-top: 1px solid #eee;">
-                                        <td style="font-weight: bold; color: #555; padding: 10px;">CLEAN PRAWNS</td>
+                                        <td style="font-weight: bold; color: #555; padding: 10px;">TYPE-PRICE</td>
                                         <td style="padding: 10px;">
                                             {!! nl2br(e($product->description)) !!}
                                         </td>
@@ -589,332 +681,310 @@
             </div>
         </div>
 
-        <div class="carousel col-md-12 ">
+        <div class="carousel col-md-12" style="border-top: 2px solid #eaecee;">
+
             <h4 style="color: #666;">RELATED PRODUCTS</h4>
-            <div class="carousel-container">
+            <div class="carousel-container mt-4">
                 <button class="carousel-btn prev">&lt;</button>
                 <div class="carousel-slide">
                     <div class="carousel-item">
                         <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                            alt="Out of Stock">
+                            alt="Giant Freshwater Shrimp">
+                        <div class="overlay">OUT OF STOCK</div>
+                        {{-- <p>Giant Freshwater Shrimp<br>₴2,500.00</p> --}}
                     </div>
                     <div class="carousel-item">
                         <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                            alt="Fresh Fish">
+                            alt="Prawn Bites">
+                        <div class="overlay">OUT OF STOCK</div>
+                        {{-- <p>Prawn Bites<br>₴1,639.70</p> --}}
                     </div>
                     <div class="carousel-item">
                         <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                            alt="Placeholder">
+                            alt="Kochi Prawn Bites">
+                        <div class="overlay">OUT OF STOCK</div>
+                        {{-- <p>Kochi Prawn Bites<br>₴861.32</p> --}}
                     </div>
                     <div class="carousel-item">
                         <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                            alt="Placeholder">
-                    </div>
-                    <div class="carousel-item">
-                        <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                            alt="Placeholder">
+                            alt="Whole Prawns Jumbo-Headless">
+                        {{-- <p>Whole Prawns Jumbo-Headless<br>₴3,900.00</p> --}}
                     </div>
                 </div>
                 <button class="carousel-btn next">&gt;</button>
             </div>
         </div>
 
-        {{-- OFFCNAVAS CART --}}
+    </div>
+    <footer class="footer ml-4 d-flex" style="border-top: 2px solid #eaecee;">
+        <div class="container d-flex">
+            <div class="row" style="margin-left: 60px; margin-right: 60px;">
+                <!-- Latest Products -->
+                <div class="col-md-4 ml-4">
+                    <div class="footer-widget">
+                        <h5 style="text-transform: uppercase; margin-bottom: 5px;" class="text-secondary">LATEST</h5>
+                        <hr style="border: 0.3px solid currentColor; opacity: 0.4; margin-top: 0; width: 30px;"
+                            class="mb-4">
 
-        <!-- Offcanvas -->
-        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample"
-            aria-labelledby="offcanvasExampleLabel">
-            <div class="offcanvas-header">
-                <h5 id="cartSidebarLabel" style="font-weight: 700; margin: 0 auto;">CART</h5>
-                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
-                    aria-label="Close"></button>
-            </div>
 
-            <div class="offcanvas-body d-flex flex-column justify-content-between p-3" style="padding-bottom: 0;">
-
-                <!-- Cart Items -->
-                <div>
-                    <div class="d-flex mb-3">
-                        <!-- Image -->
-                        <img src="{{ asset('build/images/landing/l1.png') }}" alt="Product"
-                            style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;">
-
-                        <!-- Product Info -->
-                        <div class="ms-3 flex-grow-1">
-                            <div style="font-weight: bold; color: #0056b3;">CLEAN PRAWNS 1KG -</div>
-                            <div style="color: #0056b3;">Clean Prawns Large 16/20</div>
-                            <div style="font-size: 14px; margin-top: 5px; color: gray;">
-                                2 × <span style="color: black; font-weight: 600;">Rs 4,150.00</span>
+                        <div class="footer-product mt-2"
+                            style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                            <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
+                                alt="Clean Jumbo Prawns"
+                                style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
+                            <div class="footer-product-info" style="flex: 1;">
+                                <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
+                                    Prawns
+                                    500g</h6>
+                                <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
                             </div>
                         </div>
-
-                        <!-- Remove Button -->
-                        <button class="btn  p-0 ms-2" style="color: gray;background:white">
-                            <i class="fas fa-times-circle" style="font-size: 20px;"></i>
-                        </button>
+                        <div class="footer-product mt-4"
+                            style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                            <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
+                                alt="Clean Jumbo Prawns"
+                                style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
+                            <div class="footer-product-info" style="flex: 1;">
+                                <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
+                                    Prawns
+                                    500g</h6>
+                                <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
+                            </div>
+                        </div>
+                        <div class="footer-product mt-4"
+                            style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                            <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
+                                alt="Clean Jumbo Prawns"
+                                style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
+                            <div class="footer-product-info" style="flex: 1;">
+                                <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
+                                    Prawns
+                                    500g</h6>
+                                <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
+                            </div>
+                        </div>
+                        <div class="footer-product mt-4"
+                            style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                            <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
+                                alt="Clean Jumbo Prawns"
+                                style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
+                            <div class="footer-product-info" style="flex: 1;">
+                                <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
+                                    Prawns
+                                    500g</h6>
+                                <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Footer -->
-                <div>
-                    <hr>
-                    <div class="d-flex justify-content-between mb-2" style="font-weight: 600;">
-                        <span style="color: gray;">Subtotal:</span>
-                        <span style="color: black;">Rs 8,300.00</span>
+                <!-- Best Selling -->
+                <div class="col-md-4 ml-4">
+                    <div class="footer-widget">
+                        <h5 style="text-transform: uppercase; margin-bottom: 5px;" class="text-secondary">BEST SELLING
+                        </h5>
+                        <hr style="border: 0.3px solid currentColor; opacity: 0.4; margin-top: 0; width: 30px;"
+                            class="mb-4">
+
+
+                        <div class="footer-product mt-2"
+                            style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                            <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
+                                alt="Clean Jumbo Prawns"
+                                style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
+                            <div class="footer-product-info" style="flex: 1;">
+                                <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
+                                    Prawns
+                                    500g</h6>
+                                <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
+                            </div>
+                        </div>
+                        <div class="footer-product mt-4"
+                            style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                            <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
+                                alt="Clean Jumbo Prawns"
+                                style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
+                            <div class="footer-product-info" style="flex: 1;">
+                                <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
+                                    Prawns
+                                    500g</h6>
+                                <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
+                            </div>
+                        </div>
+                        <div class="footer-product mt-4"
+                            style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                            <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
+                                alt="Clean Jumbo Prawns"
+                                style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
+                            <div class="footer-product-info" style="flex: 1;">
+                                <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
+                                    Prawns
+                                    500g</h6>
+                                <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
+                            </div>
+                        </div>
+                        <div class="footer-product mt-4"
+                            style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                            <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
+                                alt="Clean Jumbo Prawns"
+                                style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
+                            <div class="footer-product-info" style="flex: 1;">
+                                <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
+                                    Prawns
+                                    500g</h6>
+                                <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
+                            </div>
+                        </div>
                     </div>
+                </div>
 
-                    <button class="btn w-100"
-                        style="background-color: #1261a0; color: white; font-weight: 600; margin-bottom: 10px;">
-                        VIEW CART
-                    </button>
+                <!-- Top Rated -->
+                <div class="col-md-4 ml-4">
+                    <div class="footer-widget">
+                        <h5 style="text-transform: uppercase; margin-bottom: 5px;" class="text-secondary">TOP RATED
+                        </h5>
+                        <hr style="border: 0.3px solid currentColor; opacity: 0.4; margin-top: 0; width: 30px;"
+                            class="mb-4">
 
-                    <button class="btn w-100" style="background-color: #4ea7f8; color: white; font-weight: 600;">
-                        CHECKOUT
-                    </button>
+
+                        <div class="footer-product mt-2"
+                            style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                            <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
+                                alt="Clean Jumbo Prawns"
+                                style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
+                            <div class="footer-product-info" style="flex: 1;">
+                                <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
+                                    Prawns
+                                    500g</h6>
+                                <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
+                            </div>
+                        </div>
+                        <div class="footer-product mt-4"
+                            style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                            <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
+                                alt="Clean Jumbo Prawns"
+                                style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
+                            <div class="footer-product-info" style="flex: 1;">
+                                <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
+                                    Prawns
+                                    500g</h6>
+                                <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
+                            </div>
+                        </div>
+                        <div class="footer-product mt-4"
+                            style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                            <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
+                                alt="Clean Jumbo Prawns"
+                                style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
+                            <div class="footer-product-info" style="flex: 1;">
+                                <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
+                                    Prawns
+                                    500g</h6>
+                                <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
+                            </div>
+                        </div>
+                        <div class="footer-product mt-4"
+                            style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                            <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
+                                alt="Clean Jumbo Prawns"
+                                style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
+                            <div class="footer-product-info" style="flex: 1;">
+                                <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
+                                    Prawns
+                                    500g</h6>
+                                <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <!-- Footer -->
-        <footer class="footer ml-4">
-            <div class="container ">
-                <div class="row" style="margin-left: 60px; margin-right: 60px;">
-                    <!-- Latest Products -->
-                    <div class="col-md-4 ml-4">
-                        <div class="footer-widget">
-                            <h5 style="text-transform: uppercase; margin-bottom: 5px;" class="text-secondary">LATEST</h5>
-                            <hr style="border: 0.3px solid currentColor; opacity: 0.4; margin-top: 0; width: 30px;"
-                                class="mb-4">
+    </footer>
 
 
-                            <div class="footer-product mt-2"
-                                style="display: flex; align-items: flex-start; margin-bottom: 15px;">
-                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                    alt="Clean Jumbo Prawns"
-                                    style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
-                                <div class="footer-product-info" style="flex: 1;">
-                                    <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
-                                        Prawns
-                                        500g</h6>
-                                    <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
-                                </div>
-                            </div>
-                            <div class="footer-product mt-4"
-                                style="display: flex; align-items: flex-start; margin-bottom: 15px;">
-                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                    alt="Clean Jumbo Prawns"
-                                    style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
-                                <div class="footer-product-info" style="flex: 1;">
-                                    <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
-                                        Prawns
-                                        500g</h6>
-                                    <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
-                                </div>
-                            </div>
-                            <div class="footer-product mt-4"
-                                style="display: flex; align-items: flex-start; margin-bottom: 15px;">
-                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                    alt="Clean Jumbo Prawns"
-                                    style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
-                                <div class="footer-product-info" style="flex: 1;">
-                                    <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
-                                        Prawns
-                                        500g</h6>
-                                    <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
-                                </div>
-                            </div>
-                            <div class="footer-product mt-4"
-                                style="display: flex; align-items: flex-start; margin-bottom: 15px;">
-                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                    alt="Clean Jumbo Prawns"
-                                    style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
-                                <div class="footer-product-info" style="flex: 1;">
-                                    <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
-                                        Prawns
-                                        500g</h6>
-                                    <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    {{-- OFFCNAVAS CART --}}
 
-                    <!-- Best Selling -->
-                    <div class="col-md-4 ml-4">
-                        <div class="footer-widget">
-                            <h5 style="text-transform: uppercase; margin-bottom: 5px;" class="text-secondary">BEST SELLING
-                            </h5>
-                            <hr style="border: 0.3px solid currentColor; opacity: 0.4; margin-top: 0; width: 30px;"
-                                class="mb-4">
+    @include('landing-page.partials.cart')
 
+    <!-- Footer -->
 
-                            <div class="footer-product mt-2"
-                                style="display: flex; align-items: flex-start; margin-bottom: 15px;">
-                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                    alt="Clean Jumbo Prawns"
-                                    style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
-                                <div class="footer-product-info" style="flex: 1;">
-                                    <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
-                                        Prawns
-                                        500g</h6>
-                                    <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
-                                </div>
-                            </div>
-                            <div class="footer-product mt-4"
-                                style="display: flex; align-items: flex-start; margin-bottom: 15px;">
-                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                    alt="Clean Jumbo Prawns"
-                                    style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
-                                <div class="footer-product-info" style="flex: 1;">
-                                    <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
-                                        Prawns
-                                        500g</h6>
-                                    <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
-                                </div>
-                            </div>
-                            <div class="footer-product mt-4"
-                                style="display: flex; align-items: flex-start; margin-bottom: 15px;">
-                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                    alt="Clean Jumbo Prawns"
-                                    style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
-                                <div class="footer-product-info" style="flex: 1;">
-                                    <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
-                                        Prawns
-                                        500g</h6>
-                                    <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
-                                </div>
-                            </div>
-                            <div class="footer-product mt-4"
-                                style="display: flex; align-items: flex-start; margin-bottom: 15px;">
-                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                    alt="Clean Jumbo Prawns"
-                                    style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
-                                <div class="footer-product-info" style="flex: 1;">
-                                    <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
-                                        Prawns
-                                        500g</h6>
-                                    <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    <script>
+        const slide = document.querySelector('.carousel-slide');
+        const prevBtn = document.querySelector('.prev');
+        const nextBtn = document.querySelector('.next');
+        let scrollAmount = 0;
 
-                    <!-- Top Rated -->
-                    <div class="col-md-4 ml-4">
-                        <div class="footer-widget">
-                            <h5 style="text-transform: uppercase; margin-bottom: 5px;" class="text-secondary">TOP RATED
-                            </h5>
-                            <hr style="border: 0.3px solid currentColor; opacity: 0.4; margin-top: 0; width: 30px;"
-                                class="mb-4">
+        prevBtn.addEventListener('click', () => {
+            slide.scrollLeft -= 220;
+        });
+        nextBtn.addEventListener('click', () => {
+            slide.scrollLeft += 220;
+        });
 
-
-                            <div class="footer-product mt-2"
-                                style="display: flex; align-items: flex-start; margin-bottom: 15px;">
-                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                    alt="Clean Jumbo Prawns"
-                                    style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
-                                <div class="footer-product-info" style="flex: 1;">
-                                    <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
-                                        Prawns
-                                        500g</h6>
-                                    <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
-                                </div>
-                            </div>
-                            <div class="footer-product mt-4"
-                                style="display: flex; align-items: flex-start; margin-bottom: 15px;">
-                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                    alt="Clean Jumbo Prawns"
-                                    style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
-                                <div class="footer-product-info" style="flex: 1;">
-                                    <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
-                                        Prawns
-                                        500g</h6>
-                                    <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
-                                </div>
-                            </div>
-                            <div class="footer-product mt-4"
-                                style="display: flex; align-items: flex-start; margin-bottom: 15px;">
-                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                    alt="Clean Jumbo Prawns"
-                                    style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
-                                <div class="footer-product-info" style="flex: 1;">
-                                    <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
-                                        Prawns
-                                        500g</h6>
-                                    <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
-                                </div>
-                            </div>
-                            <div class="footer-product mt-4"
-                                style="display: flex; align-items: flex-start; margin-bottom: 15px;">
-                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                    alt="Clean Jumbo Prawns"
-                                    style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
-                                <div class="footer-product-info" style="flex: 1;">
-                                    <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
-                                        Prawns
-                                        500g</h6>
-                                    <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </footer>
-
-        <script>
-            function updatePrice() {
-                const select = document.getElementById("priceOption");
-                const selectedPrice = select.options[select.selectedIndex].value;
-                document.getElementById("priceDisplay").innerText = `Rs ${selectedPrice}`;
+        // Auto loop
+        setInterval(() => {
+            if (slide.scrollLeft + slide.clientWidth >= slide.scrollWidth) {
+                slide.scrollLeft = 0;
+            } else {
+                slide.scrollLeft += 220;
             }
+        }, 3000); // every 3 seconds
+    </script>
 
-            function changeQty(delta) {
-                const qtyInput = document.getElementById("quantity");
-                let current = parseInt(qtyInput.value);
-                if (current + delta >= 1) {
-                    qtyInput.value = current + delta;
-                }
+    <script>
+        function updatePrice() {
+            const select = document.getElementById("priceOption");
+            const selectedPrice = select.options[select.selectedIndex].value;
+            document.getElementById("priceDisplay").innerText = `Rs ${selectedPrice}`;
+        }
+
+        function changeQty(delta) {
+            const qtyInput = document.getElementById("quantity");
+            let current = parseInt(qtyInput.value);
+            if (current + delta >= 1) {
+                qtyInput.value = current + delta;
             }
-        </script>
-        <script>
-            function updatePrice() {
-                let selectedPrice = document.getElementById("priceOption").value;
-                let priceDisplay = document.getElementById("productPrice");
+        }
+    </script>
+    <script>
+        function updatePrice() {
+            let selectedPrice = document.getElementById("priceOption").value;
+            let priceDisplay = document.getElementById("productPrice");
 
-                if (priceDisplay) {
-                    priceDisplay.textContent = "Rs " + Number(selectedPrice).toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    });
-                }
+            if (priceDisplay) {
+                priceDisplay.textContent = "Rs " + Number(selectedPrice).toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
             }
-        </script>
-        <script>
-            const slide = document.querySelector('.carousel-slide');
-            const items = document.querySelectorAll('.carousel-item');
-            let currentIndex = 0;
-            const itemsPerPage = 4;
-            const itemWidth = 150; // Width of each item
-            const gap = 10; // Gap between items
+        }
+    </script>
+    <script>
+        const slide = document.querySelector('.carousel-slide');
+        const items = document.querySelectorAll('.carousel-item');
+        let currentIndex = 0;
+        const itemsPerPage = 4;
+        const itemWidth = 150; // Width of each item
+        const gap = 10; // Gap between items
 
-            function updateSlide() {
-                const offset = -(currentIndex * (itemWidth + gap * 2));
-                slide.style.transform = `translateX(${offset}px)`;
+        function updateSlide() {
+            const offset = -(currentIndex * (itemWidth + gap * 2));
+            slide.style.transform = `translateX(${offset}px)`;
+        }
+
+        document.querySelector('.next').addEventListener('click', () => {
+            if (currentIndex < items.length - itemsPerPage) {
+                currentIndex++;
+                updateSlide();
             }
+        });
 
-            document.querySelector('.next').addEventListener('click', () => {
-                if (currentIndex < items.length - itemsPerPage) {
-                    currentIndex++;
-                    updateSlide();
-                }
-            });
+        document.querySelector('.prev').addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateSlide();
+            }
+        });
+    </script>
 
-            document.querySelector('.prev').addEventListener('click', () => {
-                if (currentIndex > 0) {
-                    currentIndex--;
-                    updateSlide();
-                }
-            });
-        </script>
-
-    @endsection
+@endsection

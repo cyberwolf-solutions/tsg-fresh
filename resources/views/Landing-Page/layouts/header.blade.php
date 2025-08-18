@@ -1,5 +1,7 @@
 <header id="headerWrapper"
     style="position: fixed; top: 0; left: 0; width: 100%; z-index: 9999; transition: transform 0.3s ease-in-out;">
+
+    @include('Landing-Page.PARTIALS.auth-modals')
     <style>
         .account-dropdown {
             position: relative;
@@ -78,7 +80,7 @@
         </div>
 
         <!-- Right Icons -->
-        @if (request()->is('shop-now'))
+        @if (request()->is(['shop-now', 'single*', 'cart*']))
             <div style="display: flex; align-items: center; gap: 10px;">
                 <!-- Search Icon and Search Bar -->
                 <div style="display: flex; align-items: center;">
@@ -86,8 +88,11 @@
                         <i class="fas fa-search" style="font-size: 18px; color: #333;"></i>
                     </div>
                     <div id="searchBar" style="display: none; margin-left: 10px;">
-                        <input type="text" placeholder="Search..."
-                            style="padding: 5px 10px; border: 1px solid #ddd; border-radius: 4px; outline: none;">
+                        <form id="searchForm" action="{{ route('shopnow.product') }}" method="GET">
+                            <input type="text" name="search" id="searchInput" placeholder="Search..."
+                                style="padding: 5px 10px; border: 1px solid #ddd; border-radius: 4px; outline: none;">
+                            <button type="submit" style="display: none;"></button>
+                        </form>
                     </div>
                 </div>
 
@@ -162,7 +167,8 @@
 
                 <!-- Cart -->
                 <div id="cartButton"
-                    style="display: flex; align-items: center; gap: 5px; cursor: pointer; position: relative;">
+                    style="display: flex; align-items: center; gap: 5px; cursor: pointer; position: relative;"
+                    data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
                     <span style="font-size: 14px; font-weight: bold; color: #333;">CART / </span>
                     <span style="font-size: 14px; color: #333;">$0.00</span>
                     <i class="fas fa-shopping-cart" style="font-size: 18px; color: #333; margin-left: 5px;"></i>
@@ -174,7 +180,7 @@
     </nav>
 
     <!-- Full-screen Cart Overlay -->
-    <div id="cartOverlay"
+    {{-- <div id="cartOverlay"
         style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 9998; display: none;">
         <!-- Cart Sidebar -->
         <div id="cartSidebar"
@@ -193,12 +199,12 @@
                     TO SHOP</a>
             </div>
         </div>
-    </div>
-
+    </div> --}}
+    @include('landing-page.partials.cart')
     <!-- Login Modal -->
 
 
-    @include('Landing-Page.PARTIALS.auth-modals')
+
 
     <style>
         .nav-link {
@@ -218,87 +224,121 @@
     </style>
 </header>
 
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Cart functionality
+        // --- CART FUNCTIONALITY ---
         const cartButton = document.getElementById('cartButton');
         const cartOverlay = document.getElementById('cartOverlay');
         const cartSidebar = document.getElementById('cartSidebar');
         const closeCart = document.getElementById('closeCart');
 
-        // Login functionality
+        function closeCartFunction() {
+            if (cartSidebar) {
+                cartSidebar.style.right = '-400px';
+            }
+            if (cartOverlay) {
+                setTimeout(() => {
+                    cartOverlay.style.display = 'none';
+                }, 300);
+            }
+        }
+
+        if (cartButton && cartOverlay && cartSidebar) {
+            cartButton.addEventListener('click', function() {
+                cartOverlay.style.display = 'block';
+                setTimeout(() => {
+                    cartSidebar.style.right = '0';
+                }, 10);
+            });
+        }
+
+        if (closeCart) {
+            closeCart.addEventListener('click', closeCartFunction);
+        }
+
+        if (cartOverlay) {
+            cartOverlay.addEventListener('click', function(event) {
+                if (event.target === cartOverlay) {
+                    closeCartFunction();
+                }
+            });
+        }
+
+        // --- LOGIN FUNCTIONALITY ---
         const loginButton = document.getElementById('loginButton');
         const loginModal = document.getElementById('loginModal');
         const closeLogin = document.getElementById('closeLogin');
 
-        // Search functionality
-        const searchButton = document.getElementById('searchButton');
-        const searchBar = document.getElementById('searchBar');
+        if (loginButton && loginModal) {
+            loginButton.addEventListener('click', function() {
+                loginModal.style.display = 'flex';
+            });
 
-        // Open cart
-        cartButton.addEventListener('click', function() {
-            cartOverlay.style.display = 'block';
-            setTimeout(() => {
-                cartSidebar.style.right = '0';
-            }, 10);
-        });
-
-        // Close cart
-        function closeCartFunction() {
-            cartSidebar.style.right = '-400px';
-            setTimeout(() => {
-                cartOverlay.style.display = 'none';
-            }, 300);
+            // Close login modal when clicking outside
+            loginModal.addEventListener('click', function(event) {
+                if (event.target === loginModal) {
+                    loginModal.style.display = 'none';
+                }
+            });
         }
 
-        closeCart.addEventListener('click', closeCartFunction);
-
-        // Close cart when clicking on overlay
-        cartOverlay.addEventListener('click', function(event) {
-            if (event.target === cartOverlay) {
-                closeCartFunction();
-            }
-        });
-
-        // Open login modal
-        loginButton.addEventListener('click', function() {
-            loginModal.style.display = 'flex';
-        });
-
-        // Close login modal
-        // closeLogin.addEventListener('click', function() {
-        //     loginModal.style.display = 'none';
-        // });
-
-        // Close login when clicking outside
-        loginModal.addEventListener('click', function(event) {
-            if (event.target === loginModal) {
+        if (closeLogin && loginModal) {
+            closeLogin.addEventListener('click', function() {
                 loginModal.style.display = 'none';
-            }
-        });
+            });
+        }
 
-        // Toggle search bar
-        searchButton.addEventListener('click', function() {
-            if (searchBar.style.display === 'none' || !searchBar.style.display) {
-                searchBar.style.display = 'block';
-            } else {
-                searchBar.style.display = 'none';
-            }
-        });
-    });
-    document.addEventListener('DOMContentLoaded', function() {
+
+
+        // --- ACCOUNT DROPDOWN (for logged-in users) ---
         const accountDropdown = document.querySelector('.account-dropdown');
         if (accountDropdown) {
             accountDropdown.addEventListener('mouseenter', function() {
-                this.querySelector('.dropdown-content').style.display = 'block';
+                const dropdown = this.querySelector('.dropdown-content');
+                if (dropdown) dropdown.style.display = 'block';
             });
 
             accountDropdown.addEventListener('mouseleave', function() {
-                this.querySelector('.dropdown-content').style.display = 'none';
+                const dropdown = this.querySelector('.dropdown-content');
+                if (dropdown) dropdown.style.display = 'none';
             });
         }
 
-        // Add click functionality for login button if needed
 
+        // --- SEARCH FUNCTIONALITY ---
+        const searchButton = document.getElementById('searchButton');
+        const searchBar = document.getElementById('searchBar');
+        const searchInput = document.getElementById('searchInput');
+        const searchForm = document.getElementById('searchForm');
+
+        if (searchButton && searchBar) {
+            searchButton.addEventListener('click', function() {
+                if (searchBar.style.display === 'none' || !searchBar.style.display) {
+                    searchBar.style.display = 'block';
+                    searchInput.focus(); // Focus the input when shown
+                } else {
+                    searchBar.style.display = 'none';
+                }
+            });
+        }
+
+        // Handle search form submission
+        if (searchForm) {
+            searchForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const searchTerm = searchInput.value.trim();
+
+                if (searchTerm) {
+                    // Redirect to shop page with search parameter
+                    window.location.href =
+                        `{{ route('shopnow.product') }}?search=${encodeURIComponent(searchTerm)}`;
+
+                    // Close search bar after search
+                    searchBar.style.display = 'none';
+                    searchInput.value = '';
+                }
+            });
+        }
     });
 </script>
