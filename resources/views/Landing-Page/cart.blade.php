@@ -444,10 +444,6 @@
     </style>
     <!-- Hero Banner -->
 
-
-
-
-
     <div class="container my-5" style="margin-top: 120px;">
         <div class="col-md-12 d-flex justify-content-center">
             <nav aria-label="breadcrumb" style="margin-top: 110px">
@@ -540,7 +536,7 @@
                         <hr style="height:2px; margin-top:0; margin-bottom:0;" class="mb-3">
                         <div class="d-flex justify-content-between">
                             <span class="small text-secondary">Subtotal</span>
-                            <span>රු3,725.00</span>
+                            <span class="cart-subtotal">රු3,725.00</span>
                         </div>
 
                         <hr style="margin-top:0; margin-left:10px; margin-right:10px; border-top:1px solid #ccc;">
@@ -550,8 +546,9 @@
                             <span class="small text-secondary" style="font-size:12px; line-height:1.2;">
                                 5% off for <br> purchase above 12,500.00
                             </span>
-                            <span>රු3,725.00</span>
+                            <span id="discountValue">රු0.00</span>
                         </div>
+
                         <hr style="margin: 0 10px; border-top:1px solid #ccc;" class="mb-3">
 
                         <span class="small text-secondary">Shipping</span>
@@ -602,7 +599,7 @@
                         <div class="mt-3 fw-bold">
                             <div class="d-flex justify-content-between">
                                 <span class="small text-secondary">Total</span>
-                                <span class="small">රු4,475.00</span>
+                                <span id="orderTotal" class="small">රු4,475.00</span>
                             </div>
                             <div class="text-end">
                                 <small class="text-muted" style="font-size: 12px">(includes රු568.22 VAT 18%)</small>
@@ -610,8 +607,10 @@
                         </div>
 
                         <hr>
-
-                        <button class="btn btn-primary custom-outline-blue w-100 mt-3">PROCEED TO CHECKOUT</button>
+                        <button class="btn btn-primary custom-outline-blue w-100 mt-3"
+                            onclick="window.location='{{ route('checkout.index') }}'">
+                            PROCEED TO CHECKOUT
+                        </button>
 
 
                         <!-- Coupon -->
@@ -819,6 +818,44 @@
         });
     </script>
     <script>
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     loadCartPageItems();
+        // });
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch("{{ route('cart.sidebar1') }}")
+                .then(res => res.text())
+                .then(html => {
+                    document.querySelector('tbody').innerHTML = html;
+                    updateOrderSummary();
+                });
+        });
+
+        function loadCartPageItems() {
+            fetch("{{ route('cart.sidebar') }}")
+                .then(res => res.text())
+                .then(html => {
+                    // Inject cart table rows
+                    document.querySelector('tbody').innerHTML = html;
+
+                    // Update subtotal
+                    let subtotal = 0;
+                    document.querySelectorAll('tbody .cart-item').forEach(el => {
+                        let qty = parseInt(el.dataset.qty) || 0;
+                        let price = parseFloat(el.querySelector('td:nth-child(2)').innerText.replace(/[^0-9.]/g,
+                            '')) || 0;
+                        subtotal += qty * price;
+                    });
+                    document.querySelector('.card-body .d-flex .small:last-child').innerText = 'රු ' + subtotal.toFixed(
+                        2);
+
+                    // Update total (you can add shipping, discounts, etc.)
+                    let total = subtotal;
+                    document.querySelector('.card-body .mt-3 .d-flex .small:last-child').innerText = 'රු ' + total
+                        .toFixed(2);
+                })
+                .catch(err => console.error(err));
+        }
+
         document.querySelector('.change-address').addEventListener('click', function() {
             const form = document.querySelector('.address-form');
             if (form.style.height === '0px' || form.style.display === 'none') {
@@ -834,5 +871,93 @@
                 }, 300); // Match the transition duration
             }
         });
+
+        function updateQuantity(itemId, change = 0, manualValue = null) {
+            let row = document.querySelector(`.cart-item[data-id='${itemId}']`);
+            if (!row) return;
+
+            let input = row.querySelector('.qty-input');
+            let stock = parseInt(row.dataset.stock) || 0;
+            let currentQty = parseInt(input.value) || 0;
+
+            let newQty = manualValue !== null ? parseInt(manualValue) : currentQty + change;
+            if (newQty < 1) newQty = 1;
+            if (newQty > stock) {
+                alert(`⚠️ Only ${stock} items available in stock`);
+                newQty = stock;
+            }
+            input.value = newQty;
+
+            // Update subtotal for row immediately for UI
+            let price = parseFloat(row.querySelector('td:nth-child(2)').innerText.replace(/[^0-9.]/g, '')) || 0;
+            let rowSubtotal = price * newQty;
+            row.querySelector('.subtotal').innerText = 'රු ' + rowSubtotal.toFixed(2);
+
+            updateOrderSummary();
+
+            // Sync with DB
+            fetch(`/cart/update/${itemId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        quantity: newQty
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.success) {
+                        alert(data.message || 'Failed to update cart');
+                        input.value = currentQty; // revert if failed
+                        updateOrderSummary();
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    input.value = currentQty; // revert if error
+                    updateOrderSummary();
+                });
+        }
+
+        function updateOrderSummary() {
+            let subtotal = 0;
+            document.querySelectorAll('.cart-item').forEach(row => {
+                let price = parseFloat(row.querySelector('td:nth-child(2)').innerText.replace(/[^0-9.]/g, '')) || 0;
+                let qty = parseInt(row.querySelector('.qty-input').value) || 0;
+                subtotal += price * qty;
+            });
+
+            // Discount example: 5% off for orders above 12500
+            let discount = subtotal > 12500 ? subtotal * 0.05 : 0;
+            let total = subtotal - discount;
+
+            // Update summary in DOM
+            document.querySelector('.card-body .d-flex.justify-content-between span:last-child').innerText = 'රු ' +
+                subtotal.toFixed(2); // Subtotal
+            document.querySelector('.card-body .mt-3 .d-flex.justify-content-between span:last-child').innerText = 'රු ' +
+                total.toFixed(2); // Total
+            updateDiscount();
+
+        }
+
+        function updateDiscount() {
+            // Get subtotal text and remove non-numeric chars
+            let subtotalText = document.querySelector('.cart-subtotal').innerText;
+            let subtotal = parseFloat(subtotalText.replace(/[^\d.]/g, ''));
+
+            // Get total text and remove non-numeric chars
+            let totalText = document.getElementById('orderTotal').innerText;
+            let total = parseFloat(totalText.replace(/[^\d.]/g, ''));
+
+            // Calculate discount
+            let discount = subtotal - total;
+
+            // Update discount field
+            document.getElementById('discountValue').innerText = 'රු' + discount.toFixed(2);
+        }
+
+        // Call this whenever subtotal or total changes
     </script>
 @endsection

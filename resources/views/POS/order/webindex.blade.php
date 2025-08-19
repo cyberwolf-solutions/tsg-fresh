@@ -9,10 +9,8 @@
             <div class="page-title-box d-sm-flex align-items-center justify-content-between">
                 <div>
                     <h3 class="mb-sm-0">{{ $title }}</h3>
-
                     <ol class="breadcrumb m-0 mt-2">
                         <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-
                         @foreach ($breadcrumbs as $breadcrumb)
                             <li class="breadcrumb-item {{ $breadcrumb['active'] ? 'active' : '' }}">
                                 @if (!$breadcrumb['active'])
@@ -26,21 +24,19 @@
                 </div>
 
                 <div class="page-title-right">
-                    {{-- Add Buttons Here --}}
                     <form action="" id="form">
                         <div class="row">
                             <div class="col">
-                                <select class="form-select" name="status" id="" onchange="$('#form').submit()">
+                                <select class="form-select" name="status" onchange="$('#form').submit()">
                                     <option value="" {{ $status == '' ? 'selected' : '' }}>All</option>
-                                    <option value="Pending"{{ $status == 'Pending' ? 'selected' : '' }}>Pending</option>
-                                    <option value="InProgress"{{ $status == 'InProgress' ? 'selected' : '' }}>In Progress
+                                    <option value="Pending" {{ $status == 'Pending' ? 'selected' : '' }}>Pending</option>
+                                    <option value="InProgress" {{ $status == 'InProgress' ? 'selected' : '' }}>In Progress
                                     </option>
-                                    <option value="Complete"{{ $status == 'Complete' ? 'selected' : '' }}>Completed
+                                    <option value="Complete" {{ $status == 'Complete' ? 'selected' : '' }}>Completed
                                     </option>
                                 </select>
                             </div>
-
-                            <a href="{{ route('orders.index') }}" class="btn btn-primary btn-icon" data-bs-toggle="tooltip"
+                            <a href="{{ route('orders.web') }}" class="btn btn-primary btn-icon" data-bs-toggle="tooltip"
                                 title="Refresh">
                                 <i class="ri-restart-line"></i>
                             </a>
@@ -60,37 +56,28 @@
                             <th>#</th>
                             <th>Order ID</th>
                             {{-- <th>Guest Name</th> --}}
-                            <th>Guest</th>
+                            <th>Email</th>
                             {{-- <th>Phone</th> --}}
                             <th>Items</th>
                             <th>Subtotal</th>
                             <th>Discount</th>
                             <th>VAT</th>
                             <th>Total</th>
-                            {{-- <th>Delivery Method</th> --}}
+                            <th>Delivery Method</th>
                             <th>Payment Method</th>
-                            <th>Payment Status</th>
-                            <th>Order Status</th>
+                            <th>Payment status</th>
+                            <th>Order status</th>
+                            {{-- <th>change Order status</th> --}}
                             <th>Action</th>
                         </thead>
                         <tbody>
                             @foreach ($data as $key => $item)
                                 <tr>
-
-
                                     <td>{{ $loop->iteration }}</td>
-
                                     <td>#{{ $settings->invoice($item->id) }}</td>
-                                    @if ($item->customer_id == 0)
-                                        <td>Walking Customer</td>
-                                    @else
-                                        <td>{{ $item->customer->name }}</td>
-                                    @endif
-                                    {{-- <td>{{ \Carbon\Carbon::parse($item->order_date)->format($settings->date_format) }}</td> --}}
-                                    {{-- <td>{{ $settings->currency }}
-                                        {{ number_format($item->payment ? $item->payment->total : 0, 2) }}
-                                    </td> --}}
-
+                                    {{-- <td>{{ $item->webCustomer ? $item->webCustomer->first_name : 'Guest' }}</td> --}}
+                                    <td>{{ $item->webCustomer ? $item->webCustomer->email : '-' }}</td>
+                                    {{-- <td>{{ $item->webCustomer ? $item->webCustomer->phone : '-' }}</td> --}}
                                     <td>
                                         @foreach ($item->items as $i)
                                             {{ $i->product->name ?? '' }}
@@ -104,8 +91,10 @@
                                     <td>{{ number_format($item->discount, 2) }}</td>
                                     <td>{{ number_format($item->vat, 2) }}</td>
                                     <td>{{ number_format($item->total, 2) }}</td>
-                                    <td>{{ $item->status }}</td>
-
+                                    <td>{{ $item->delivery_method ?? '-' }}</td>
+                                    <td>{{ $item->payment_method ?? '-' }}</td>
+                                    <td>{{ $item->payment_status }}</td>
+                                    {{-- <td>{{ $item->status }}</td> --}}
                                     <td>
                                         <select class="form-select order-status" data-id="{{ $item->id }}" style="width:150px">
                                             @foreach ($item->nextStatuses() as $status)
@@ -116,7 +105,6 @@
                                             @endforeach
                                         </select>
                                     </td>
-                                    {{-- <td>{{ $item->table_id != 0 ? $item->table->availability : 'No Table' }}</td> --}}
                                     <td>
                                         @can('view orders')
                                             <a href="javascript:void(0)" data-url="{{ route('orders.show', [$item->id]) }}"
@@ -130,7 +118,6 @@
                                             title="Print">
                                             <i class="mdi mdi-printer"></i>
                                         </a>
-
                                     </td>
                                 </tr>
                             @endforeach
@@ -159,18 +146,20 @@
                                 status: newStatus
                             })
                         })
-                        .then(response => response.json())
+                        .then(res => res.json())
                         .then(data => {
                             if (data.success) {
-                                alert('Status updated successfully!');
+                                alert('Status updated to ' + data.status);
+                                location.reload(); // or update row in table
                             } else {
-                                alert('Failed to update status!');
+                                alert('Error: ' + data.message);
                             }
                         })
-                        .catch(error => {
-                            console.error('Error:', error);
+                        .catch(err => {
+                            console.error(err);
                             alert('Something went wrong!');
                         });
+
                 });
             });
         });

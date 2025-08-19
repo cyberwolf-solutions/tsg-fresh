@@ -12,6 +12,7 @@ class WebCustomer extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+     protected $connection = 'central';
     protected $table = 'web_customers';
 
     protected $fillable = [
@@ -19,6 +20,7 @@ class WebCustomer extends Authenticatable
         'last_name',
         'email',
         'password',
+        'loyalty',
         'remember_token'
     ];
 

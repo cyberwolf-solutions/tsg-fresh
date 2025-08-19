@@ -8,6 +8,11 @@
             color: #333;
         }
 
+        body.offcanvas-open {
+            overflow-y: auto !important;
+            padding-right: 0 !important;
+        }
+
         /* Hero Banner */
         .hero-banner {
             background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://tsg-fresh.com/wp-content/uploads/2023/06/Untitled-1-1.jpg');
@@ -535,51 +540,36 @@
                                 <span style="color: #000; font-size: 20px;" class="fw-bold">
                                     {{ number_format($product->final_price ?? $product->product_price, 2) }}</span>
                             </p>
-
-
-
-
-
-                            <!-- Variant Selector -->
-                            @if ($product->variants->count() > 0)
-                                <div class="mb-4" style="margin-bottom: 15px;">
-                                    <select id="priceOption" class="form-control" onchange="updatePrice()"
-                                        style="font-size: 0.95rem;">
-                                        @foreach ($product->variants as $variant)
-                                            <option value="{{ $variant->variant_price }}">
-                                                {{ $variant->variant_name }} - Rs
-                                                {{ number_format($variant->variant_price, 2) }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            @endif
-
                             <p>
                                 <strong></strong>
                                 <span id="productPrice">
                                     {{ $product->name }}
                                 </span>
                             </p>
-
-
                             <p>
                                 <strong></strong>
                                 <span id="productPrice" class="mt-3">
                                     {{ $product->name }} 1 KG
                                 </span>
                             </p>
-
                             <div class="d-flex align-items-center mb-3 mt-4">
                                 <label for="typeSize" class="me-2 small text-dark"
                                     style="white-space: nowrap;">Type-Size</label>
-                                <select class="form-select w-auto small text-secondary" id="typeSize"
-                                    aria-label="Choose an option" style="font-size: small;">
-                                    <option selected disabled>Choose an option</option>
-                                    <option value="small">Small</option>
-                                    <option value="medium">Medium</option>
-                                    <option value="large">Large</option>
-                                </select>
+                                <!-- Variant Selector -->
+                                @if ($product->variants->count() > 0)
+                                    {{-- <div class="mb-4" style="margin-bottom: 15px;"> --}}
+                                    <select id="priceOption" class="form-control" onchange="updatePrice()"
+                                        style="font-size: 0.95rem;">
+                                        @foreach ($product->variants as $variant)
+                                            <option value="{{ $variant->id }}">
+                                                {{ $variant->variant_name }} - Rs
+                                                {{ number_format($variant->variant_price, 2) }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+
+                                    {{-- </div> --}}
+                                @endif
                             </div>
 
 
@@ -595,11 +585,11 @@
                                 <button type="button" onclick="changeQty(1)"
                                     style="width: 30px; height: 30px; border: 1px solid #ccc; background: #fff; cursor: pointer; border-radius: 0;">+</button>
 
-                                <button class="btn" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample"
-                                    aria-controls="offcanvasExample"
+                                <button type="button" onclick="addToCart({{ $product->id }})"
                                     style="background-color: #007bff; color: white; border: none; padding: 5px 15px; font-size: 14px; cursor: pointer; border-radius: 5px; white-space: nowrap;">
                                     ADD TO CART
                                 </button>
+
                             </div>
 
 
@@ -632,8 +622,8 @@
                         <ul class="nav nav-tabs" id="productTab" role="tablist" style="border-bottom: 1px solid #ddd;">
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link active" id="additional-tab" data-bs-toggle="tab"
-                                    data-bs-target="#additional" type="button" role="tab"
-                                    aria-controls="additional" aria-selected="true" style="border: none;">
+                                    data-bs-target="#additional" type="button" role="tab" aria-controls="additional"
+                                    aria-selected="true" style="border: none;">
                                     ADDITIONAL INFORMATION
                                 </button>
                             </li>
@@ -907,6 +897,74 @@
     @include('landing-page.partials.cart')
 
     <!-- Footer -->
+
+    <script>
+        function changeQty(amount) {
+            let qtyInput = document.getElementById("quantity");
+            let qty = parseInt(qtyInput.value) + amount;
+            if (qty < 1) qty = 1;
+            qtyInput.value = qty;
+        }
+
+        function addToCart(productId) {
+            let qty = parseInt(document.getElementById("quantity").value);
+
+            let variantSelect = document.getElementById("priceOption");
+            let variantId = variantSelect ? variantSelect.value : null;
+
+            fetch("{{ route('cart.add') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                    },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        variant_id: variantId,
+                        quantity: qty
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        // ✅ Load cart items via AJAX
+                        loadCartItems();
+
+                        // ✅ Open offcanvas
+                        var offcanvasEl = document.getElementById('offcanvasCart');
+                        var bsOffcanvas = new bootstrap.Offcanvas(offcanvasEl);
+                        bsOffcanvas.show();
+                    } else {
+                        alert("⚠️ " + data.message);
+                    }
+                })
+                .catch(err => console.error(err));
+        }
+
+        function loadCartItems() {
+            fetch("{{ route('cart.sidebar') }}")
+                .then(res => {
+                    if (!res.ok) throw new Error("Failed to load cart sidebar");
+                    return res.text();
+                })
+                .then(html => {
+                    document.getElementById('cartItems').innerHTML = html;
+
+                    // ✅ Update subtotal after new HTML inserted
+                    let subtotalEl = document.getElementById("cartSubtotalValue");
+                    if (subtotalEl) {
+                        let subtotal = parseFloat(subtotalEl.dataset.subtotal || 0);
+                        document.getElementById('cartSubtotal').innerText =
+                            "Rs " + subtotal.toFixed(2);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    document.getElementById('cartItems').innerHTML = '<p>Failed to load cart.</p>';
+                });
+        }
+    </script>
+
 
     <script>
         const slide = document.querySelector('.carousel-slide');
