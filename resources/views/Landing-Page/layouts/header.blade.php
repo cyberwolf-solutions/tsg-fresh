@@ -167,14 +167,14 @@
 
                 <!-- Cart -->
                 <div id="cartButton"
-                    style="display: flex; align-items: center; gap: 5px; cursor: pointer; position: relative;"
-                    data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
+                    style="display: flex; align-items: center; gap: 5px; cursor: pointer; position: relative;">
                     <span style="font-size: 14px; font-weight: bold; color: #333;">CART / </span>
-                    <span style="font-size: 14px; color: #333;">$0.00</span>
+                    <span id="cartTotal" style="font-size: 14px; color: #333;">$0.00</span>
                     <i class="fas fa-shopping-cart" style="font-size: 18px; color: #333; margin-left: 5px;"></i>
                     <span id="cartCount"
                         style="position: absolute; top: -8px; right: -8px; background-color: #0078ce; color: white; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 10px;">0</span>
                 </div>
+
             </div>
         @endif
     </nav>
@@ -341,4 +341,34 @@
             });
         }
     });
+
+    // Open offcanvas and load cart items
+    function openHeaderCart() {
+        loadCartItems();
+
+        var offcanvasEl = document.getElementById('offcanvasCart'); // your offcanvas ID
+        var bsOffcanvas = new bootstrap.Offcanvas(offcanvasEl);
+        bsOffcanvas.show();
+    }
+
+    // Attach click event to header cart button
+    document.getElementById('cartButton').addEventListener('click', openHeaderCart);
+
+    // Load cart items dynamically
+function loadCartItems() {
+    fetch("{{ route('cart.sidebar') }}")
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById('cartItems').innerHTML = html;
+
+            let totalQty = parseInt(document.getElementById('cartTotalQty')?.innerText || 0);
+            document.getElementById('cartCount').innerText = totalQty;
+        })
+        .catch(err => {
+            console.error(err);
+            document.getElementById('cartItems').innerHTML = '<p>Failed to load cart.</p>';
+        });
+}
+
+
 </script>

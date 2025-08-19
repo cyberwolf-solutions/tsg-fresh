@@ -180,6 +180,18 @@ Route::middleware([
         })->name('login');
     });
     Auth::routes();
+    Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
+    Route::get('/cart/sidebar', [CartController::class, 'sidebar'])->name('cart.sidebar');
+    Route::get('/cart/page', [CartController::class, 'sidebar1'])->name('cart.sidebar1');
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::get('/weborder-view', [OrderController::class, 'web'])->name('orders.web');
+    Route::get('/instoreorder-view', [OrderController::class, 'instore'])->name('orders.instore');
+
+    Route::post('/checkout/place-order', [CheckoutController::class, 'placeOrder'])->name('web.checkout.place');
+
+    // Checkout success page
+    // Route::get('/checkout/success/{order}', [CheckoutController::class, 'checkoutSuccess'])->name('checkout.success');
+    Route::post('/cart/update/{item}', [CartController::class, 'updateQuantity'])->name('cart.update');
 
     Route::middleware(['auth'])->group(function () {
         Route::get('/customers/search', [App\Http\Controllers\CustomerController::class, 'search'])
@@ -243,6 +255,7 @@ Route::middleware([
         Route::post('/restaurant/checkout', [RestaurantController::class, 'checkout'])->name('restaurant.checkout');
         Route::resource('orders', OrderController::class)->middleware('can:manage orders');
         Route::get('order/print/{id}', [OrderController::class, 'print'])->middleware('can:manage orders')->name('order.print');
+        Route::get('order/show/{id}', [OrderController::class, 'show'])->middleware('can:manage orders')->name('orders.show');
         Route::get('get-ingredients', [IngredientsController::class, 'getIngredients'])->name('get-ingredients');
         Route::get('get-product-ingredients', [IngredientsController::class, 'getProductIngredients'])->name('get-product-ingredients');
         Route::get('get-products', [ProductController::class, 'getProducts'])->name('get-products');
@@ -255,6 +268,7 @@ Route::middleware([
         Route::get('/opurchase-payment/{id}', [OtherPurchaseController::class, 'viewAddPayment'])->name('opurchases.payment');
         Route::post('/opurchase-payment', [OtherPurchaseController::class, 'addPayment'])->name('opurchases.payment.add');
         Route::get('/opurchase-payments/view/{id}', [OtherPurchaseController::class, 'viewPayments'])->name('opurchases.payments.view');
+Route::post('/orders/update-status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
 
         Route::get('/inventory/stock', [InventoryController::class, 'stock'])->name('inventory.stock');
         Route::resource('inventory', InventoryController::class)->middleware('can:manage Inventory');

@@ -12,9 +12,11 @@ class Order extends Model
     protected $connection = 'tenant';
     protected $fillable = [
         'customer_id',
+        'web_customer_id',
         'order_date',
         'type',
         'status',
+        'payment_status',
         'discount',
         'vat',
         'total',
@@ -23,6 +25,10 @@ class Order extends Model
         'coupon_code',
         'coupon_value',
         'coupon_type',
+        'source',
+        'delivery_method',
+        'payment_method',
+        'delivery_address',
         'created_by',
         'updated_by',
         'deleted_by'
@@ -32,6 +38,32 @@ class Order extends Model
     {
         return $this->belongsTo(Customer::class);
     }
+    public function webCustomer()
+    {
+        // just define the relationship
+        return $this->belongsTo(WebCustomer::class, 'web_customer_id');
+    }
+
+
+    public function nextStatuses(): array
+    {
+        // Normalize values (optional, depends on how you save them)
+        $source = strtoupper($this->source);
+        $delivery = strtolower($this->delivery_method);
+
+        return match ($source) {
+            'POS' => ['Pending', 'Complete'],
+
+            'WEB' => match ($delivery) {
+                'pickup' => ['Pending', 'Confirmed', 'Packed', 'Complete'],
+                'shipping', 'delivery' => ['Pending', 'Confirmed', 'Packed', 'Out for Delivery', 'Complete'],
+                default => ['Pending', 'Complete'],
+            },
+
+            default => ['Pending', 'Complete'],
+        };
+    }
+
 
     public function items()
     {
