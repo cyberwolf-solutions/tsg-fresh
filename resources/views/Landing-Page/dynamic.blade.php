@@ -155,7 +155,7 @@
         }
 
         .btn-filter {
-            background-color: #8a7775;
+            background-color: #8b7f7e;
             color: #fff;
             border: none;
             padding: 8px 15px;
@@ -165,7 +165,7 @@
         }
 
         .btn-filter:hover {
-            background-color: #8d706d;
+            background-color: #8b7f7e;
         }
 
         /* Sorting */
