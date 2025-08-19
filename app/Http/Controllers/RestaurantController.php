@@ -6,6 +6,8 @@ use App\Events\notifyBot;
 use App\Events\notifyKot;
 use App\Models\BookingsRooms;
 use App\Models\Category;
+use App\Models\Coupon;
+use App\Models\CouponUsage;
 use App\Models\Currency;
 use App\Models\Customer;
 use App\Models\Inventory;
@@ -26,6 +28,7 @@ use App\Models\SetMenuType;
 use App\Models\Table;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use PhpParser\Modifiers;
 
@@ -114,13 +117,16 @@ class RestaurantController extends Controller
             ->get()
             ->map(function ($item) {
                 $obj = (object) $item->toArray();  // convert to stdClass to add dynamic props
-
+                $vid = null; // default
                 // Compose full name with variant if exists
                 $name = $item->product ? $item->product->name : 'Unknown Product';
                 if ($item->variant) {
                     $name .= ' - ' . $item->variant->variant_name;
+                    $vid = $item->variant->id;
                 }
                 $obj->full_name = $name;
+                $obj->pname = $item->product->id;
+                $obj->varientid =  $vid;
 
                 // Categories from product relation
                 $obj->categories = $item->product ? $item->product->categories : collect();
@@ -566,10 +572,13 @@ class RestaurantController extends Controller
         $validator = Validator::make($request->all(), [
             'customer' => 'required',
             'sub' => 'required|numeric',
-            'discount' => 'required|numeric',
+            'discount' => 'nullable|numeric',
             'vat' => 'required|numeric',
-            'total' => 'required|numeric',
+            'total' => 'nullable|numeric',
             'payment_note' => 'required|string',
+            'coupon_code' => 'nullable|string',
+            'coupon_type' => 'nullable|in:fixed,percentage',
+            'coupon_value' => 'nullable|numeric|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -578,44 +587,95 @@ class RestaurantController extends Controller
         }
 
         try {
-            // Create Order
+            $sub = $request->sub; // original subtotal
+
+            // 1️⃣ Coupon calculation
+            $couponCode = $request->coupon_code;
+            $couponType = $request->coupon_type;
+            $couponValue = $request->coupon_value;
+
+            $couponDiscount = 0;
+            $couponId = null;
+
+            if ($couponCode) {
+                $coupon = Coupon::where('code', $couponCode)->first();
+                $couponId = $coupon?->id;
+
+                if ($couponType === 'fixed') {
+                    $couponDiscount = $couponValue;
+                } elseif ($couponType === 'percentage') {
+                    $couponDiscount = $sub * ($couponValue / 100);
+                }
+            }
+
+            // 2️⃣ Subtotal after discount
+            $discountedSub = max(0, $sub - $couponDiscount);
+
+            // 3️⃣ VAT calculation (apply on discounted subtotal)
+            $vatPercentage = $request->vat;
+            $vatAmount = $discountedSub * ($vatPercentage / 100);
+
+            // 4️⃣ Total
+            $total = $discountedSub + $vatAmount;
+
+            // 5️⃣ Create Order
             $order = Order::create([
-                'customer_id' => $request->customer,
-                'order_date' => now(),
-                'type' => $request->type ?? 'RoomDelivery',
-                'subtotal' => $request->sub,
-                'discount' => $request->discount,
-                'vat' => $request->vat,
-                'total' => $request->total,
-                'created_by' => Auth::id(),
+                'customer_id'   => $request->customer,
+                'order_date'    => now(),
+                'subtotal'      => $sub,
+                'discount'      => $couponDiscount, // store coupon discount
+                'vat'           => $vatAmount,
+                'total'         => $total,
+                'coupon_id'     => $couponId,
+                'coupon_code'   => $couponCode,
+                'coupon_value'  => $couponValue,
+                'coupon_type'   => $couponType,
+                'created_by'    => Auth::id(),
             ]);
 
-            // Decode cart items
-            $cart = json_decode($request->cart, true);
+            if ($couponCode && $coupon) {
+                $coupon->increment('used_count');
 
+                // Create a coupon usage record
+                CouponUsage::create([
+                    'coupon_id'   => $coupon->id,
+                    'customer_id' => $request->customer,
+                    'order_id'    => $order->id,
+                    'created_by'  => Auth::id(),
+                ]);
+            }
+            // 6️⃣ Store Order Items and decrement inventory
+            $cart = json_decode($request->cart, true);
             foreach ($cart as $item) {
-                // Find inventory row
-                $inventory = Inventory::where('product_id', $item['product_id'])
+                $invId = $item['inventory_id'] ?? $item['stock_id'] ?? null;
+
+                $inventory = $invId ? Inventory::find($invId) : Inventory::where('product_id', $item['product_id'])
                     ->when(!empty($item['variant_id']), fn($q) => $q->where('variant_id', $item['variant_id']))
                     ->first();
 
-                if (!$inventory) {
-                    continue; // skip if inventory not found
-                }
+                if (!$inventory) continue;
 
-                // Create OrderItem
-                $orderItem = OrderItem::create([
-                    'order_id' => $order->id,
-                    'product_id' => $item['product_id'],
-                    'variant_id' => $item['variant_id'] ?? null,
+                OrderItem::create([
+                    'order_id'    => $order->id,
+                    'product_id'  => $inventory->product_id,
+                    'variant_id'  => $inventory->variant_id ?? null,
                     'inventory_id' => $inventory->id,
-                    'price' => $item['price'],
-                    'total' => $item['price'] * $item['quantity'],
-                    'created_by' => Auth::id(),
+                    'quantity'    => $item['quantity'] ?? 1,
+                    'price'       => $item['price'] ?? 0,
+                    'total'       => ($item['price'] ?? 0) * ($item['quantity'] ?? 1),
+                    'created_by'  => Auth::id(),
                 ]);
 
-                // Reduce stock
-                $inventory->decrement('quantity', $item['quantity']);
+                $inventory->decrement('quantity', $item['quantity'] ?? 1);
+            }
+
+            // 7️⃣ Loyalty points (10% of total bill)
+            if ($order->customer_id && $order->customer_id != 0) {
+                $customer = Customer::find($order->customer_id);
+                if ($customer) {
+                    $loyaltyPoints = $total * 0.10;
+                    $customer->increment('loyality', $loyaltyPoints);
+                }
             }
 
             return response()->json([
@@ -630,6 +690,7 @@ class RestaurantController extends Controller
             ]);
         }
     }
+
 
     // public function checkout(Request $request)
     // {

@@ -19,6 +19,10 @@ class Order extends Model
         'vat',
         'total',
         'subtotal',
+        'coupon_id',
+        'coupon_code',
+        'coupon_value',
+        'coupon_type',
         'created_by',
         'updated_by',
         'deleted_by'

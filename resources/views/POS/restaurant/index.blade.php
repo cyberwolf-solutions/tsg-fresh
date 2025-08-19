@@ -112,7 +112,7 @@
                                 style="height: auto;padding-top:10px;padding-bottom:10px;margin-bottom:10px;margin-left:10px">
                                 <div class="row p-1">
                                     <div class="col-12">
-                                        <div class="row justify-content-between">
+                                        {{-- <div class="row justify-content-between">
                                             <div class="col-4">
                                                 <button id="customer-btn"
                                                     class="btn btn-light btn-sm form-control"data-ajax-popup="true"
@@ -142,6 +142,27 @@
                                             <div class="col-md-12 mt-3">
                                                 <input type="text" class="form-control"
                                                     placeholder="Search product by names" id="searchInput">
+                                            </div>
+                                        </div> --}}
+
+                                        {{-- <div class="col-4">
+                                            <input type="text" id="customer-search" class="form-control"
+                                                placeholder="Search Customer">
+                                            <input type="hidden" id="customer-id"> 
+                                        </div> --}}
+
+                                        <div class="row g-2 align-items-center">
+                                            <!-- Customer Search Select2 -->
+                                            <div class="col-6">
+                                                <select id="customer" class="form-control"></select>
+                                            </div>
+                                            <!-- Customer Display Button -->
+                                            <div class="col-6">
+                                                <button id="customer-btn" class="btn btn-light btn-sm" disabled
+                                                    style="min-width: 180px;">
+                                                    <i class="mdi mdi-account me-1"></i>
+                                                    <span id="customer-name">Select Customer</span>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -204,23 +225,23 @@
                                                                     <strong id="coupon_html">LKR 0.00</strong>
                                                                 </div>
                                                                 <a href="javascript:void(0)" class="btn btn-sm"
-                                                                    data-ajax-popup="true" data-title="Edit Coupon"
-                                                                    data-size="lg" data-url="">
+                                                                    data-bs-toggle="modal" data-bs-target="#couponModal">
                                                                     <i class="bi bi-pencil" style="color: #318CE7"></i>
                                                                 </a>
+
                                                             </div>
                                                         </div>
 
                                                         <div class="col-md-4 small">
                                                             <div class="d-flex justify-content-between align-items-center">
                                                                 <div>
-                                                                    <span class="text-muted">Tax</span><br>
-                                                                    <strong id="tax_html">LKR 0.00</strong>
+                                                                    <span class="text-muted">VAT</span><br>
+                                                                    <strong id="vat_html"> 0 %</strong>
                                                                 </div>
                                                                 <a href="javascript:void(0)" class="btn btn-sm"
                                                                     data-ajax-popup="true" data-title="Edit Tax"
                                                                     data-size="lg" data-url="">
-                                                                    <i class="bi bi-pencil" style="color: #318CE7"></i>
+                                                                    {{-- <i class="bi bi-pencil" style="color: #318CE7"></i> --}}
 
                                                                 </a>
                                                             </div>
@@ -276,7 +297,7 @@
                     {{-- show --}}
                     <div class=" col-md-7">
 
-                        <div class="row">
+                        {{-- <div class="row">
 
 
                             <div class="col-md-4 d-flex flex-wrap "
@@ -344,6 +365,17 @@
                                                                     style="font-weight: 600; font-size: 0.9rem; color: #222;">
                                                                     {{ $item->full_name }}
                                                                 </h6>
+
+                                                                <h6 class="pname mb-1"
+                                                                    style="font-weight: 600; font-size: 0.9rem; color: #222;">
+                                                                    {{ $item->pname }}
+                                                                </h6>
+
+                                                                <h6 class="vname mb-1"
+                                                                    style="font-weight: 600; font-size: 0.9rem; color: #222;">
+                                                                    {{ $item->varientid }}
+                                                                </h6>
+
                                                                 <small class="d-block text-muted"
                                                                     style="font-size: 0.55rem;">
                                                                     MFD:
@@ -374,7 +406,93 @@
                                     </div>
                                 </div>
                             </div>
+                        </div> --}}
+
+                        <div class="row justify-content-center mb-3 mt-3">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                    <span class="input-group-text text-white"
+                                        style="background-color: #1793b8;border:none">
+                                        <i class="bi bi-search"></i>
+                                    </span>
+                                    <input type="text" id="product-search" class="form-control"
+                                        style="border:none;background-color:rgb(247, 247, 247)"
+                                        placeholder="Search by name, variant, category or price">
+                                </div>
+                            </div>
                         </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="d-flex flex-wrap overflow-auto gap-3 p-3 bg-light rounded-4"
+                                    style="max-height: 60vh; min-height: 30vh;" id="setmenuContainer">
+
+                                    @foreach ($items as $item)
+                                        <div class="col-md-3 cursor-pointer meal-item shadow rounded-3 p-2"
+                                            data-id="{{ $item->id }}"
+                                            data-category="{{ $item->categories->pluck('id')->implode(',') }}"
+                                            data-image="{{ URL::asset($item->product_image_url) }}"
+                                            data-price="{{ $item->unit_price }}"
+                                            style="background: #fff; border: 1px solid #e0e0e0;">
+
+                                            <div class="card border-0 mb-2 rounded-4 overflow-hidden"
+                                                style="height: 20vh;">
+                                                <img src="{{ URL::asset($item->product_image_url) }}"
+                                                    alt="{{ $item->full_name }}" class="card-img-top"
+                                                    style="width: 100%; height: 100%; object-fit: cover;">
+                                            </div>
+
+                                            <div class="text-center"
+                                                style="background-color: #ffffff; border-radius: 0 0 10px 10px; padding: 8px;">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <h6 class="meal-name mb-1"
+                                                            style="font-weight: 600; font-size: 0.9rem; color: #222;">
+                                                            {{ $item->full_name }}
+                                                        </h6>
+
+                                                        <h6 class="pname mb-1"
+                                                            style="font-weight: 600; font-size: 0.9rem; color: #222;"
+                                                            hidden>
+                                                            {{ $item->pname }}
+                                                        </h6>
+
+                                                        <h6 class="vname mb-1"
+                                                            style="font-weight: 600; font-size: 0.9rem; color: #222;"
+                                                            hidden>
+                                                            {{ $item->varientid }}
+                                                        </h6>
+
+                                                        <small class="d-block text-muted" style="font-size: 0.55rem;">
+                                                            MFD:
+                                                            {{ $item->manufacture_date ? \Carbon\Carbon::parse($item->manufacture_date)->format('Y-m-d') : 'N/A' }}
+                                                            &nbsp;&nbsp;|&nbsp;&nbsp;
+                                                            EXP:
+                                                            {{ $item->expiry_date ? \Carbon\Carbon::parse($item->expiry_date)->format('Y-m-d') : 'N/A' }}
+                                                        </small>
+                                                    </div>
+
+                                                    <div class="col-12 mb-2 mt-1">
+                                                        @foreach ($item->categories as $category)
+                                                            <span class="badge bg-secondary me-1"
+                                                                style="font-size: 0.65rem;">{{ $category->name }}</span>
+                                                        @endforeach
+                                                    </div>
+
+                                                    <div class="col-12">
+                                                        <p class="text-primary fw-semibold" style="font-size: 0.85rem;">
+                                                            LKR. {{ number_format($item->unit_price, 2) }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+
+                                </div>
+                            </div>
+                        </div>
+
 
                     </div>
 
@@ -455,6 +573,25 @@
         </div>
 
 
+        <!-- Coupon Modal -->
+        <div class="modal fade" id="couponModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Enter Coupon Code</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="text" id="coupon_code_input" class="form-control" placeholder="Coupon Code">
+                        <div class="text-danger mt-2" id="coupon_error" style="display:none;"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="apply_coupon_btn">Apply</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
         <!-- End modal -->
 
@@ -471,8 +608,15 @@
 
 
     @section('script')
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- jQuery must come first -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <!-- Bootstrap (optional, after jQuery) -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- Select2 -->
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 
         <script>
@@ -499,7 +643,7 @@
             var discount_val = 0;
             var discount_method;
 
-            var vat = 0;
+            // var vat = 0;
             var vat_val = 0;
             var vat_method;
 
@@ -512,6 +656,33 @@
             var staff_note
             var payment_note
 
+            var couponValue;
+
+            $(document).ready(function() {
+                $('#product-search').on('input', function() {
+                    let query = $(this).val().toLowerCase();
+
+                    $('#setmenuContainer .meal-item').each(function() {
+                        let name = $(this).find('.meal-name').text().toLowerCase();
+                        let variant = $(this).find('.vname').text().toLowerCase();
+
+                        // Concatenate all category badge texts
+                        let categories = '';
+                        $(this).find('.badge').each(function() {
+                            categories += $(this).text().toLowerCase() + ' ';
+                        });
+
+                        let price = $(this).find('.text-primary').text().toLowerCase();
+
+                        if (name.includes(query) || variant.includes(query) || categories.includes(
+                                query) || price.includes(query)) {
+                            $(this).show();
+                        } else {
+                            $(this).hide();
+                        }
+                    });
+                });
+            });
 
             $(document).ready(function() {
 
@@ -522,11 +693,11 @@
                     // alert("clicked");
 
                     // Check if customer is selected
-                    // if (customer === 0) {
-                    //     display_error('Please select a customer first.');
-                    //     $('#loader').addClass('d-none');
-                    //     return;
-                    // }
+                    if (customer === 0) {
+                        display_error('Please select a customer first.');
+                        $('#loader').addClass('d-none');
+                        return;
+                    }
                     // if (room === 0) {
                     //     display_error('Please select a Room first.');
                     //     $('#loader').addClass('d-none');
@@ -537,8 +708,10 @@
 
                     var id = $(this).data('id');
                     var mealName = $(this).find('.meal-name').text();
+                    var pid = $(this).find('.pname').text();
+                    var vid = $(this).find('.vname').text();
                     var image = $(this).data('image');
-                    var price = $(this).data('price-lkr');
+                    var price = $(this).data('price');
                     var quantity = 1;
 
                     if (cart.find(e => e.id == id)) {
@@ -550,6 +723,8 @@
                     cart.push({
                         id: id,
                         name: mealName,
+                        pid: pid,
+                        vid: vid,
                         image: image,
                         price: price,
                         quantity: quantity,
@@ -666,12 +841,186 @@
 
 
             });
+
+
+            // $(document).ready(function() {
+            //     $('#customer').select2({
+            //         placeholder: 'Search Customer',
+            //         ajax: {
+            //             url: "{{ route('customers.search') }}",
+            //             dataType: 'json',
+            //             delay: 250,
+            //             data: function(params) {
+            //                 return { q: params.term };
+            //             },
+            //             processResults: function(data) {
+            //                 console.log("Data from server:", data); // 🔥 debug here
+            //                 return { results: data };
+            //             },
+            //             cache: true
+            //         }
+            //     });
+
+            //     $('#customer').on('select2:select', function(e) {
+            //         var data = e.params.data;
+            //         console.log("Selected:", data); // 🔥 debug selected value
+            //         var binding = "?customer=" + data.id;
+            //         $('#customer-btn').attr('data-binding', binding);
+            //     });
+            // });
+
+            // $(document).ready(function() {
+            //     $('#customer').select2({
+            //         placeholder: 'Search Customer',
+            //         ajax: {
+            //             url: "{{ route('customers.search') }}",
+            //             dataType: 'json',
+            //             delay: 250,
+            //             data: function(params) {
+            //                 return {
+            //                     q: params.term
+            //                 };
+            //             },
+            //             processResults: function(data) {
+            //                 return {
+            //                     results: data
+            //                 };
+            //             },
+            //             cache: true
+            //         }
+            //     });
+
+            //     // Update button when a customer is selected
+            //     $('#customer').on('select2:select', function(e) {
+            //         var data = e.params.data;
+
+            //         // Change the text inside the button
+            //         $('#customer-btn #customer-name').text(data.text);
+
+            //         // Update binding with customer id
+            //         var binding = "?customer=" + data.id;
+            //         $('#customer-btn').attr('data-binding', binding);
+            //     });
+            // });
+
+
+
+            var customerVAT = 0; // store selected customer's VAT
+
+            $(document).ready(function() {
+                // Initialize Select2 with AJAX search
+                $('#customer').select2({
+                    placeholder: 'Search Customer',
+                    ajax: {
+                        url: "{{ route('customers.search') }}",
+                        dataType: 'json',
+                        delay: 250,
+                        data: function(params) {
+                            return {
+                                q: params.term
+                            };
+                        },
+                        processResults: function(data) {
+                            return {
+                                results: data
+                            };
+                        },
+                        cache: true
+                    }
+                });
+
+                // When a customer is selected
+                $('#customer').on('select2:select', function(e) {
+                    var data = e.params.data;
+
+                    // Update button text
+                    $('#customer-btn #customer-name').text(data.text);
+
+                    // Update data-binding attribute
+                    var binding = "?customer=" + data.id;
+                    $('#customer-btn').attr('data-binding', binding);
+
+                    // Store VAT from selected customer
+                    customerVAT = Number(data.vat) || 0;
+
+                    // Update VAT display
+                    $('#vat_html').text(` ${customerVAT.toFixed(2)} %`);
+                    alert(text(data.text));
+                    // Recalculate totals
+                    loadCart();
+                });
+            });
+
+
+
+            // coupon
+
+
+            $('#apply_coupon_btn').click(function() {
+                let code = $('#coupon_code_input').val().trim();
+                if (!code) return;
+
+                $.ajax({
+                    url: '/coupons/apply',
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        code: code,
+                        sub_total: parseFloat($('#sub').val())
+                    },
+                    success: function(res) {
+                        if (res.success) {
+                            let type = res.coupon.type;
+                            let value = parseFloat(res.coupon.value);
+                            let couponDiscount = 0;
+
+                            // Get current subtotal and manual discount
+                            let sub = parseFloat($('#sub').val()) || 0;
+                            let manualDiscount = parseFloat($('#discount').val()) || 0;
+
+                            // Calculate coupon discount
+                            if (type == 'fixed') {
+                                couponDiscount = value;
+                                $('#coupon_html').html(`Rs. ${value.toFixed(2)}`);
+                            } else if (type == 'percentage') {
+                                couponDiscount = (sub - manualDiscount) * value / 100;
+                                $('#coupon_html').html(`${value.toFixed(2)}%`);
+                            }
+
+                            // Properly hide modal and remove backdrop
+                            $('#couponModal').modal('hide');
+                            $('.modal-backdrop').remove();
+
+                            // Recalculate VAT based on net amount after discounts
+                            let vatText = $('#vat_html').text().replace(/[^0-9.]/g, ''); // removes % sign
+                            let vatPercent = parseFloat(vatText) || 0; // now vatPercent = 21
+
+                            let netAmount = Math.max(0, sub - manualDiscount - couponDiscount);
+                            let vatAmount = netAmount * vatPercent / 100;
+                            alert(vatPercent);
+                            // Calculate final total
+                            let total = netAmount + vatAmount;
+
+                            // Update display
+                            $('#discount_html').html(`Rs. ${manualDiscount.toFixed(2)}`);
+                            $('#total_html').html(`Rs. ${total.toFixed(2)}`);
+                            $('#grand_total').text(`LKR ${total.toFixed(2)}`);
+                        } else {
+                            $('#coupon_error').text(res.message).show();
+                        }
+                    },
+                    error: function(err) {
+                        $('#coupon_error').text('Invalid coupon').show();
+                    }
+                });
+            });
         </script>
         <script>
             var cart = [];
 
             var sub = 0;
             var total = 0;
+            var vat = 0;
 
             function loadCart() {
                 console.log('Loading cart...');
@@ -774,6 +1123,26 @@
                 $('#discount_html').html(
                     `${symbol} ${discount.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`);
 
+                // Extract coupon code and value
+                let couponCode = $('#coupon_code_input').val().trim();
+                let couponType = $('#coupon_html').text().includes('%') ? 'percentage' : 'fixed';
+
+                // Get the coupon text and clean it
+                let text = $('#coupon_html').text().trim();
+                text = text.replace(/,/g, '').replace(/\u00A0/g, '');
+
+                // Extract numeric value
+                let match = text.match(/\d+(\.\d+)?/);
+                let couponValue = match ? parseFloat(match[0]) : 0;
+
+                // Calculate coupon discount
+                let couponDiscount = 0;
+                if (couponType === 'fixed') {
+                    couponDiscount = couponValue;
+                } else if (couponType === 'percentage') {
+                    couponDiscount = sub * couponValue / 100;
+                }
+
                 // Calculate VAT
                 if (vat_method == 'precentage') {
                     $('#vat_method_html').html(`${vat_val}%`);
@@ -783,14 +1152,28 @@
                     $('#vat_method_html').html(`${symbol} ${vat_val}`);
                 }
 
-                $('#vat_html').html(
-                    `${symbol} ${vat.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`);
+
+                // $('#vat_html').html(
+                //     `${symbol} ${vat.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`);
 
                 // Calculate total
-                total = Math.max(0, sub - discount + vat);
+                var vatAmount = sub * (customerVAT / 100);
+
+                total = Math.max(0, sub - discount - couponDiscount + vatAmount);
                 $('#total_html').html(
-                    `${symbol} ${total.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`);
+                    `${symbol} ${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
+
+                $('#sub').html(
+                    `${symbol} ${sub.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
+
+                $('#sub').val(sub);
                 $('#total').val(total);
+
+                // Update Grand Total in POS footer
+                $('#grand_total').text(`LKR ${total.toLocaleString('en-US', { 
+    minimumFractionDigits: 2, 
+    maximumFractionDigits: 2 
+})}`);
 
                 // Initialize tooltips
                 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
@@ -799,12 +1182,6 @@
                 $('#loader').addClass('d-none');
             }
             $(document).ready(function() {
-
-
-
-
-
-
 
                 $(document).on('click', '.deleteBtn', function(e) {
                     e.preventDefault();
@@ -843,6 +1220,7 @@
 
             });
         </script>
+
 
         {{-- <script>
             function checkout() {
@@ -923,21 +1301,46 @@
                 formData.append('customer', customer);
                 formData.append('sub', sub);
                 formData.append('discount', discount);
-                formData.append('vat', vat);
+                formData.append('vat', customerVAT);
                 formData.append('total', total);
                 formData.append('payment_note', payment_note);
                 formData.append('type', $('#type').val());
 
                 // Prepare cart items for backend
                 const stockCart = cart.map(item => ({
-                    product_id: item.product_id,
-                    variant_id: item.variant_id || null,
+                    product_id: item.pid,
+                    variant_id: item.vid || null,
                     inventory_id: item.inventory_id,
                     price: item.price,
                     quantity: item.quantity,
                     vat: item.vat || 0
                 }));
 
+
+                // Assume you already have coupon code and type/value calculated
+                let couponCode = $('#coupon_code_input').val().trim();
+                let couponType = $('#coupon_html').text().includes('%') ? 'percentage' : 'fixed';
+
+                // Get the coupon text
+                let text = $('#coupon_html').text().trim();
+
+                // Replace commas and non-breaking spaces
+                text = text.replace(/,/g, '').replace(/\u00A0/g, '');
+
+                // Extract first numeric value (digits + optional decimal)
+                let match = text.match(/\d+(\.\d+)?/);
+
+                // Convert to number, default to 0 if not found
+                couponValue = match ? parseFloat(match[0]) : 0;
+
+                // console.log(couponValue); // Should be 100 for "100 Rs." or 10 for "10%"
+
+
+
+                // Append coupon details to formData
+                formData.append('coupon_code', couponCode);
+                formData.append('coupon_type', couponType);
+                formData.append('coupon_value', couponValue);
                 formData.append('cart', JSON.stringify(stockCart));
 
                 $.ajax({

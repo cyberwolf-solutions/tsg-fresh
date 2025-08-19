@@ -6,32 +6,29 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Customer extends Model
+class Coupon extends Model
 {
+   
     use HasFactory, SoftDeletes;
     protected $connection = 'tenant';
-    protected $table = 'customers';
+    protected $table = 'coupons';
     protected $fillable = [
-        'name',
-        'contact',
-        'email',
-        'address',
-        'company_name',
-        'vat',
-        'city',
-        'state',
-        'postalcode',
-        'country',
-        'loyality',
-        'group',
+        'code',
+        'type',
+        'value',
+        'expiry_date',
+        'max_uses',
+        'used_count',
+        'active',
         'created_by',
         'updated_by',
         'deleted_by',
-
     ];
 
-
-
+    public function usages()
+    {
+        return $this->hasMany(CouponUsage::class);
+    }
     public function createdBy()
     {
         return $this->hasOne(User::class, 'id', 'created_by');
@@ -45,10 +42,5 @@ class Customer extends Model
     public function deletedBy()
     {
         return $this->hasOne(User::class, 'id', 'deleted_by');
-    }
-
-    public function currency()
-    {
-        return $this->belongsTo(Currency::class);
     }
 }
