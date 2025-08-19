@@ -361,7 +361,7 @@
 
                     <div class="sidebar-widget">
                         <h4 class="text-secondary">BROWSE</h4>
-                        <ul id="category-list mb-3">
+                        <ul id="category-list" class=" mb-3">
                             @foreach ($categories as $category)
                                 <li class="">
                                     <a class="text-dark" style="font-size: 1.2em;" href="#"
@@ -619,17 +619,54 @@
             document.querySelectorAll('#category-list a').forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
-                    let categoryId = this.getAttribute('data-id');
-                    loadProducts(`{{ route('shopnow.product') }}?category_id=${categoryId}`);
+                    const categoryId = this.getAttribute('data-id');
+
+                    // Get current URL and parameters
+                    const url = new URL(window.location.href);
+
+                    // Toggle category filter - if same category clicked again, remove filter
+                    if (url.searchParams.get('category_id') === categoryId) {
+                        url.searchParams.delete('category_id');
+                        this.classList.remove('active');
+                    } else {
+                        url.searchParams.set('category_id', categoryId);
+                        // Remove active class from all and add to clicked one
+                        document.querySelectorAll('#category-list a').forEach(a => a.classList
+                            .remove('active'));
+                        this.classList.add('active');
+                    }
+
+                    // Always reset to first page when changing filters
+                    url.searchParams.delete('page');
+
+                    loadProducts(url.toString());
                 });
             });
 
-            // Handle pagination clicks (event delegation)
+            // Initialize active category from URL if present
+            const urlParams = new URLSearchParams(window.location.search);
+            const activeCategoryId = urlParams.get('category_id');
+            if (activeCategoryId) {
+                const activeLink = document.querySelector(`#category-list a[data-id="${activeCategoryId}"]`);
+                if (activeLink) {
+                    activeLink.classList.add('active');
+                }
+            }
+
+            // Rest of your existing code (price filter, pagination, etc.)
+            document.querySelector('.btn-filter').addEventListener('click', function() {
+                const priceValue = document.querySelector('.price-slider').value;
+                const url = new URL(window.location.href);
+                url.searchParams.set('min_price', priceValue);
+                url.searchParams.delete('page');
+                loadProducts(url.toString());
+            });
+
             document.addEventListener('click', function(e) {
-                if (e.target.closest('.pagination a')) {
+                const paginationLink = e.target.closest('.pagination a');
+                if (paginationLink) {
                     e.preventDefault();
-                    let url = e.target.closest('a').href;
-                    loadProducts(url);
+                    loadProducts(paginationLink.href);
                 }
             });
 
@@ -639,18 +676,30 @@
                             'X-Requested-With': 'XMLHttpRequest'
                         }
                     })
-                    .then(response => response.text())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.text();
+                    })
                     .then(html => {
                         document.querySelector('#product-grid').innerHTML = html;
-                        // Scroll to products section for better UX
+                        history.pushState(null, null, url);
                         document.querySelector('#product-grid').scrollIntoView({
                             behavior: 'smooth'
                         });
                     })
-                    .catch(error => console.error('Error:', error));
+                    .catch(error => {
+                        console.error('Error loading products:', error);
+                        alert('Failed to load products. Please try again.');
+                    });
             }
-        });
-        document.addEventListener('DOMContentLoaded', () => {
+
+            window.addEventListener('popstate', function(event) {
+                loadProducts(window.location.href);
+            });
+
+            // Price slider functionality
             const slider = document.querySelector('.price-slider');
             const priceDisplay = document.querySelector('.price-range span');
             const min = parseInt(slider.min);
@@ -662,11 +711,11 @@
                 const percentage = ((value - min) / range) * 100;
                 slider.style.background =
                     `linear-gradient(to right, #fff 0%, #fff ${percentage}%, #ffcccc ${percentage}%, #ffcccc 100%)`;
-                priceDisplay.textContent = `Price: රු${value} - රු${max}`;
+                priceDisplay.textContent = `Price: රු${value.toLocaleString()} - රු${max.toLocaleString()}`;
             }
 
             slider.addEventListener('input', updateSlider);
-            updateSlider(); // Initial call to set the default state
+            updateSlider();
         });
     </script>
 @endsection

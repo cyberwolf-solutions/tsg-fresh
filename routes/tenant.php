@@ -49,6 +49,7 @@ use App\Http\Controllers\OtherPurchaseController;
 use App\Http\Controllers\SingelProductController;
 use App\Http\Controllers\CheckinCheckoutController;
 use App\Http\Controllers\AdditionalPaymentController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\TableArrangementsController;
 use App\Http\Controllers\EmployeeDesignationsController;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
@@ -158,9 +159,13 @@ Route::middleware([
     Route::get('/shop-now', [ShopNowController::class, 'product'])->name('shopnow.product');
     Route::get('/single/{product}', [SingelProductController::class, 'index'])->name('single.index');
 
+    Route::get('/shop-now', [ShopNowController::class, 'product'])->name('shopnow.product');
 
 
     Route::get('/single/{product}', [SingelProductController::class, 'index'])->name('single.index');
+
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
 
     Route::middleware(['guest'])->group(function () {
         Route::get('/', function () {
