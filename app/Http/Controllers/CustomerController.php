@@ -9,6 +9,7 @@ use Cassandra\Custom;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class CustomerController extends Controller
@@ -51,6 +52,54 @@ class CustomerController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
+    //   public function search(Request $request)
+    // {
+    //     $term = $request->get('q');
+
+    //     $customers = Customer::where('name', 'LIKE', "%{$term}%")
+    //         ->orWhere('contact', 'LIKE', "%{$term}%")
+    //         ->orWhere('email', 'LIKE', "%{$term}%")
+    //         ->limit(10)
+    //         ->get();
+
+    //     return response()->json($customers->map(function($customer){
+    //         return [
+    //             'id' => $customer->id,
+    //             'text' => $customer->name . ' (' . $customer->contact . ')',
+    //             'name' => $customer->name
+    //         ];
+    //     }));
+    // }
+
+
+public function search(Request $request)
+{
+    $term = $request->get('q');
+
+Log::info("Customer search called", ['q' => $term]);
+
+    $customers = Customer::where('name', 'LIKE', "%{$term}%")
+        ->orWhere('contact', 'LIKE', "%{$term}%")
+        ->orWhere('email', 'LIKE', "%{$term}%")
+        ->limit(10)
+        ->get();
+
+    Log::info("Customers found", $customers->toArray());
+
+    return response()->json(
+        $customers->map(function ($customer) {
+            return [
+                'id' => $customer->id,
+                'vat'=>$customer->vat,
+                'text' => $customer->name . ' (' . $customer->contact . ')',
+            ];
+        })
+    );
+}
+
+
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -127,41 +176,41 @@ class CustomerController extends Controller
         $html = '<table class="table" cellspacing="0" cellpadding="0">';
         $html .= '<tr>';
         $html .= '<td>Name: </td>';
-        $html .= '<td>' . $data->name . '</td>';
-        $html .= '</tr>';
-        $html .= '<tr>';
-        $html .= '<td>Contact </td>';
-        $html .= '<td>' . $data->contact . '</td>';
-        $html .= '</tr>';
-        $html .= '<tr>';
-        $html .= '<td>Passport Number </td>';
-        $html .= '<td>' . $data->state . '</td>';
-        $html .= '</tr>';
-        $html .= '<tr>';
-        $html .= '<td>Next Destination </td>';
-        $html .= '<td>' . $data->group . '</td>';
-        $html .= '</tr>';
-        $html .= '<tr>';
-        $html .= '<td>Nationality </td>';
-        $html .= '<td>' . $data->country . '</td>';
-        $html .= '</tr>';
-        $html .= '<tr>';
-        $html .= '<td>Email: </td>';
-        $html .= '<td>' . $data->email . '</td>';
-        $html .= '</tr>';
-        $html .= '<tr>';
-        $html .= '<td>Address: </td>';
-        $html .= '<td>' . $data->address . '</td>';
-        $html .= '</tr>';
-        $html .= '<tr>';
-        $html .= '<td>Created By: </td>';
-        $html .= '<td>' . $data->createdBy->name . '</td>';
-        $html .= '</tr>';
-        $html .= '<tr>';
-        $html .= '<td>Created Date: </td>';
-        $html .= '<td>' . date_format(new DateTime('@' . strtotime($data->created_at)), $settings->date_format) . '</td>';
-        $html .= '</tr>';
-        $html .= '</table>';
+        // $html .= '<td>' . $data->name . '</td>';
+        // $html .= '</tr>';
+        // $html .= '<tr>';
+        // $html .= '<td>Contact </td>';
+        // $html .= '<td>' . $data->contact . '</td>';
+        // $html .= '</tr>';
+        // $html .= '<tr>';
+        // $html .= '<td>Passport Number </td>';
+        // $html .= '<td>' . $data->state . '</td>';
+        // $html .= '</tr>';
+        // $html .= '<tr>';
+        // $html .= '<td>Next Destination </td>';
+        // $html .= '<td>' . $data->group . '</td>';
+        // $html .= '</tr>';
+        // $html .= '<tr>';
+        // $html .= '<td>Nationality </td>';
+        // $html .= '<td>' . $data->country . '</td>';
+        // $html .= '</tr>';
+        // $html .= '<tr>';
+        // $html .= '<td>Email: </td>';
+        // $html .= '<td>' . $data->email . '</td>';
+        // $html .= '</tr>';
+        // $html .= '<tr>';
+        // $html .= '<td>Address: </td>';
+        // $html .= '<td>' . $data->address . '</td>';
+        // $html .= '</tr>';
+        // $html .= '<tr>';
+        // $html .= '<td>Created By: </td>';
+        // $html .= '<td>' . $data->createdBy->name . '</td>';
+        // $html .= '</tr>';
+        // $html .= '<tr>';
+        // $html .= '<td>Created Date: </td>';
+        // $html .= '<td>' . date_format(new DateTime('@' . strtotime($data->created_at)), $settings->date_format) . '</td>';
+        // $html .= '</tr>';
+        // $html .= '</table>';
 
         return response()->json([$html]);
     }

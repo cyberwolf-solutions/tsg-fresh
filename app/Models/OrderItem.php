@@ -9,38 +9,46 @@ class OrderItem extends Model
 {
     use HasFactory;
     protected $connection = 'tenant';
-    protected $fillable = [
+     protected $fillable = [
         'order_id',
-        'itemable_id',
-        'itemable_type',
-        'price',
+        'product_id',
         'quantity',
+        'variant_id',
+        'inventory_id',
+        'price',
         'total',
+        'vat',
         'created_by',
-        'updated_by',
+        'updated_by'
     ];
 
-    public function meal()
+    public function order()
     {
-        return $this->hasOne(Meal::class, 'id', 'itemable_id');
+        return $this->belongsTo(Order::class);
     }
 
-    public function modifiers()
-    {
-        return $this->hasMany(OrderItemModifier::class, 'item_id', 'id');
-    }
     public function product()
     {
-        return $this->hasOne(Product::class, 'id', 'itemable_id');
+        return $this->belongsTo(Product::class);
     }
-   
 
-    // public function product()
-    // {
-    //     return $this->belongsTo(Product::class);
-    // }
-    public function itemable()
+    public function variant()
     {
-        return $this->morphTo();
+        return $this->belongsTo(ProductVariant::class);
+    }
+
+    public function inventory()
+    {
+        return $this->belongsTo(Inventory::class);
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 }

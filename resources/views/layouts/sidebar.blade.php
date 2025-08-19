@@ -398,6 +398,12 @@ border-right: none !important;">
                                     </li>
                                 @endcan
 
+                                  @can('manage units')
+                                    <li class="nav-item">
+                                        <a href="{{ route('coupon.index') }}" class="nav-link">Coupon</a>
+                                    </li>
+                                @endcan
+
                             </ul>
                         </div>
                     </li>

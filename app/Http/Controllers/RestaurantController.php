@@ -6,6 +6,8 @@ use App\Events\notifyBot;
 use App\Events\notifyKot;
 use App\Models\BookingsRooms;
 use App\Models\Category;
+use App\Models\Coupon;
+use App\Models\CouponUsage;
 use App\Models\Currency;
 use App\Models\Customer;
 use App\Models\Inventory;
@@ -26,6 +28,7 @@ use App\Models\SetMenuType;
 use App\Models\Table;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use PhpParser\Modifiers;
 
@@ -57,7 +60,7 @@ class RestaurantController extends Controller
     //  return view('pos.restaurant.index', compact('title', 'breadcrumbs', 'categories', 'meals', 'products', 'items'));
     // }
 
-   
+
 
     // public function index()
     // {
@@ -99,47 +102,50 @@ class RestaurantController extends Controller
 
 
     public function index()
-{
-    $title = 'POS';
+    {
+        $title = 'POS';
 
-    $breadcrumbs = [
-        ['label' => $title, 'url' => '', 'active' => true],
-    ];
+        $breadcrumbs = [
+            ['label' => $title, 'url' => '', 'active' => true],
+        ];
 
-    $categories = Category::all();  // Or filter if needed
+        $categories = Category::all();  // Or filter if needed
 
-    // Load inventory items with product & variant eager loaded, only with quantity > 0
-    $items = Inventory::with(['product.categories', 'variant'])
-        ->where('quantity', '>', 0)
-        ->get()
-        ->map(function ($item) {
-            $obj = (object) $item->toArray();  // convert to stdClass to add dynamic props
+        // Load inventory items with product & variant eager loaded, only with quantity > 0
+        $items = Inventory::with(['product.categories', 'variant'])
+            ->where('quantity', '>', 0)
+            ->get()
+            ->map(function ($item) {
+                $obj = (object) $item->toArray();  // convert to stdClass to add dynamic props
+                $vid = null; // default
+                // Compose full name with variant if exists
+                $name = $item->product ? $item->product->name : 'Unknown Product';
+                if ($item->variant) {
+                    $name .= ' - ' . $item->variant->variant_name;
+                    $vid = $item->variant->id;
+                }
+                $obj->full_name = $name;
+                $obj->pname = $item->product->id;
+                $obj->varientid =  $vid;
 
-            // Compose full name with variant if exists
-            $name = $item->product ? $item->product->name : 'Unknown Product';
-            if ($item->variant) {
-                $name .= ' - ' . $item->variant->variant_name;
-            }
-            $obj->full_name = $name;
+                // Categories from product relation
+                $obj->categories = $item->product ? $item->product->categories : collect();
 
-            // Categories from product relation
-            $obj->categories = $item->product ? $item->product->categories : collect();
+                // Add product image url, fallback to default if none
+                $obj->product_image_url = $item->product && $item->product->image_url
+                    ? 'uploads/products/' . $item->product->image_url
+                    : 'uploads/cutlery.png';
 
-            // Add product image url, fallback to default if none
-            $obj->product_image_url = $item->product && $item->product->image_url
-                ? 'uploads/products/' . $item->product->image_url
-                : 'uploads/cutlery.png';
+                return $obj;
+            });
 
-            return $obj;
-        });
-
-    return view('pos.restaurant.index', compact(
-        'title',
-        'breadcrumbs',
-        'categories',
-        'items'
-    ));
-}
+        return view('pos.restaurant.index', compact(
+            'title',
+            'breadcrumbs',
+            'categories',
+            'items'
+        ));
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -373,194 +379,317 @@ class RestaurantController extends Controller
     //     }
     // }
 
+    // public function checkout(Request $request)
+    // {
+
+    //     // dd($request);
+    //     $validator = Validator::make($request->all(), [
+    //         'customer' => 'required',
+    //         // 'room' => 'required',
+    //         // 'table' => 'required',
+    //         'sub' => 'required',
+    //         'discount' => 'required',
+    //         'vat' => 'required',
+    //         'total' => 'required',
+    //         // 'kitchen_note' => 'required',
+    //         // 'bar_note' => 'required',
+    //         // 'staff_note' => 'required',
+    //         'payment_note' => 'required',
+    //         // 'type' => 'required',
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         $all_errors = null;
+
+    //         foreach ($validator->errors()->messages() as $errors) {
+    //             foreach ($errors as $error) {
+    //                 $all_errors .= $error . "<br>";
+    //             }
+    //         }
+
+    //         return response()->json(['success' => false, 'message' => $all_errors]);
+    //     }
+
+    //     try {
+    //         $data = [
+    //             'customer_id' => $request->customer,
+    //             // 'room_id' => $request->room,
+    //             // 'table_id' => $request->table,
+    //             'orderable_type' => 'App\Models\OrderItem',
+    //             'orderable_id' => '0',
+    //             'order_date' => date('d-m-Y'),
+    //             'type' => 'RoomDelivery',
+    //             'created_by' => Auth::user()->id,
+    //         ];
+
+    //         // Create order
+    //         $order = Order::create($data);
+
+    //         // Get the cart items
+    //         $cart = json_decode($request->cart, true);
+
+    //         $isKOT = false;
+    //         $isBOT = false;
+
+    //         foreach ($cart as $key => $value) {
+    //             if (isset($value['id']) && isset($value['name'])) {
+
+
+    //                 // $product = Product::find($value['id']);
+    //                 $product = Product::where('id', $value['id'])
+    //                     ->where('name', $value['name'])
+    //                     ->first();
+
+    //                 if ($product) {
+    //                     // dd($product);
+    //                     // if ($product->type == 'KOT') {
+    //                     //     $isKOT = true;
+    //                     // } elseif ($product->type == 'BOT') {
+    //                     //     $isBOT = true;
+    //                     // }
+
+    //                     $data = [
+    //                         'itemable_type' => 'App\Models\Product',
+    //                         'itemable_id' => $value['id'],
+    //                         'order_id' => $order->id,
+    //                         'price' => $value['price'],
+    //                         'quantity' => $value['quantity'],
+    //                         'total' => $value['price'] * $value['quantity'],
+    //                     ];
+
+    //                     $item = OrderItem::create($data);
+
+    //                     if (isset($value['modifiers'])) {
+    //                         foreach ($value['modifiers'] as $key => $modifier) {
+    //                             $data = [
+    //                                 'item_id' => $item->id,
+    //                                 'modifier_id' => $modifier['id'],
+    //                                 'price' => $modifier['price'],
+    //                                 'quantity' => $value['quantity'],
+    //                                 'total' => $modifier['price'] * $value['quantity'],
+    //                             ];
+
+    //                             OrderItemModifier::create($data);
+    //                         }
+    //                     }
+    //                 } else {
+
+
+
+
+
+    //                     $data = [
+
+    //                         'itemable_id' => $value['id'],
+    //                         'order_id' => $order->id,
+    //                         'price' => $value['price'],
+    //                         'quantity' => $value['quantity'],
+    //                         'total' => $value['price'] * $value['quantity'],
+    //                     ];
+
+    //                     $item = OrderItem::create($data);
+    //                 }
+
+
+
+
+
+    //                 // Process set menu item
+
+    //             }
+    //             // else {
+
+
+    //             //     // $setmenu = SetMenu::find($value['id']);
+    //             //     // $setmenu = SetMenu::where('id', $value['id'])
+    //             //     //     ->where('name', $value['name'])
+    //             //     //     ->first();
+
+
+    //             //     // if ($setmenu->type == 'KOT') {
+    //             //     //     $isKOT = true;
+    //             //     // } elseif ($setmenu->type == 'BOT') {
+    //             //     //     $isBOT = true;
+    //             //     // }
+
+    //             //     // $data = [
+    //             //     //     'itemable_type' => 'App\Models\SetMenu',
+    //             //     //     'itemable_id' => $value['id'],
+    //             //     //     'order_id' => $order->id,
+    //             //     //     'price' => $value['price'],
+    //             //     //     'quantity' => $value['quantity'],
+    //             //     //     'total' => $value['price'] * $value['quantity'],
+    //             //     // ];
+
+    //             //     // $item = OrderItem::create($data);
+    //             // }
+    //         }
+
+    //         $data = [
+    //             'order_id' => $order->id,
+    //             'kot' => $request->kitchen_note,
+    //             'bot' => $request->bar_note,
+    //             'staff' => $request->staff_note,
+    //             'payment' => $request->payment_note,
+    //         ];
+
+    //         OrderNote::create($data);
+
+    //         $data = [
+    //             'order_id' => $order->id,
+    //             'date' => date('d-m-Y'),
+    //             'sub_total' => $request->sub,
+    //             'vat' => $request->vat,
+    //             'discount' => $request->discount,
+    //             'total' => $request->total,
+    //             'created_by' => Auth::user()->id,
+    //         ];
+
+    //         if ($request->type == 'Dining' || $request->type == 'TakeAway') {
+    //             $data['payment_status'] = 'Unpaid';
+    //         }
+
+    //         OrderPayment::create($data);
+
+    //         // Reserve the table if selected
+
+
+    //         if ($isKOT) {
+    //             event(new notifyKot('New KOT'));
+    //         }
+    //         if ($isBOT) {
+    //             event(new notifyBot('New BOT'));
+    //         }
+
+    //         return response()->json(['success' => true, 'message' => 'Order Placed!', 'url' => route('order.print', [$order->id])]);
+    //     } catch (\Throwable $th) {
+    //         return response()->json(['success' => false, 'message' => 'Something went wrong! ' . $th->getMessage()]);
+    //     }
+    // }
+
     public function checkout(Request $request)
     {
-
-        // dd($request);
         $validator = Validator::make($request->all(), [
             'customer' => 'required',
-            // 'room' => 'required',
-            // 'table' => 'required',
-            'sub' => 'required',
-            'discount' => 'required',
-            'vat' => 'required',
-            'total' => 'required',
-            // 'kitchen_note' => 'required',
-            // 'bar_note' => 'required',
-            // 'staff_note' => 'required',
-            'payment_note' => 'required',
-            // 'type' => 'required',
+            'sub' => 'required|numeric',
+            'discount' => 'nullable|numeric',
+            'vat' => 'required|numeric',
+            'total' => 'nullable|numeric',
+            'payment_note' => 'required|string',
+            'coupon_code' => 'nullable|string',
+            'coupon_type' => 'nullable|in:fixed,percentage',
+            'coupon_value' => 'nullable|numeric|min:0',
         ]);
 
         if ($validator->fails()) {
-            $all_errors = null;
-
-            foreach ($validator->errors()->messages() as $errors) {
-                foreach ($errors as $error) {
-                    $all_errors .= $error . "<br>";
-                }
-            }
-
+            $all_errors = implode("<br>", $validator->errors()->all());
             return response()->json(['success' => false, 'message' => $all_errors]);
         }
 
         try {
-            $data = [
-                'customer_id' => $request->customer,
-                // 'room_id' => $request->room,
-                // 'table_id' => $request->table,
-                'orderable_type' => 'App\Models\OrderItem',
-                'orderable_id' => '0',
-                'order_date' => date('d-m-Y'),
-                'type' => 'RoomDelivery',
-                'created_by' => Auth::user()->id,
-            ];
+            $sub = $request->sub; // original subtotal
 
-            // Create order
-            $order = Order::create($data);
+            // 1️⃣ Coupon calculation
+            $couponCode = $request->coupon_code;
+            $couponType = $request->coupon_type;
+            $couponValue = $request->coupon_value;
 
-            // Get the cart items
-            $cart = json_decode($request->cart, true);
+            $couponDiscount = 0;
+            $couponId = null;
 
-            $isKOT = false;
-            $isBOT = false;
+            if ($couponCode) {
+                $coupon = Coupon::where('code', $couponCode)->first();
+                $couponId = $coupon?->id;
 
-            foreach ($cart as $key => $value) {
-                if (isset($value['id']) && isset($value['name'])) {
-
-
-                    // $product = Product::find($value['id']);
-                    $product = Product::where('id', $value['id'])
-                        ->where('name', $value['name'])
-                        ->first();
-
-                    if ($product) {
-                        // dd($product);
-                        // if ($product->type == 'KOT') {
-                        //     $isKOT = true;
-                        // } elseif ($product->type == 'BOT') {
-                        //     $isBOT = true;
-                        // }
-
-                        $data = [
-                            'itemable_type' => 'App\Models\Product',
-                            'itemable_id' => $value['id'],
-                            'order_id' => $order->id,
-                            'price' => $value['price'],
-                            'quantity' => $value['quantity'],
-                            'total' => $value['price'] * $value['quantity'],
-                        ];
-
-                        $item = OrderItem::create($data);
-
-                        if (isset($value['modifiers'])) {
-                            foreach ($value['modifiers'] as $key => $modifier) {
-                                $data = [
-                                    'item_id' => $item->id,
-                                    'modifier_id' => $modifier['id'],
-                                    'price' => $modifier['price'],
-                                    'quantity' => $value['quantity'],
-                                    'total' => $modifier['price'] * $value['quantity'],
-                                ];
-
-                                OrderItemModifier::create($data);
-                            }
-                        }
-                    } else {
-
-
-
-
-
-                        $data = [
-
-                            'itemable_id' => $value['id'],
-                            'order_id' => $order->id,
-                            'price' => $value['price'],
-                            'quantity' => $value['quantity'],
-                            'total' => $value['price'] * $value['quantity'],
-                        ];
-
-                        $item = OrderItem::create($data);
-                    }
-
-
-
-
-
-                    // Process set menu item
-
+                if ($couponType === 'fixed') {
+                    $couponDiscount = $couponValue;
+                } elseif ($couponType === 'percentage') {
+                    $couponDiscount = $sub * ($couponValue / 100);
                 }
-                // else {
-
-
-                //     // $setmenu = SetMenu::find($value['id']);
-                //     // $setmenu = SetMenu::where('id', $value['id'])
-                //     //     ->where('name', $value['name'])
-                //     //     ->first();
-
-
-                //     // if ($setmenu->type == 'KOT') {
-                //     //     $isKOT = true;
-                //     // } elseif ($setmenu->type == 'BOT') {
-                //     //     $isBOT = true;
-                //     // }
-
-                //     // $data = [
-                //     //     'itemable_type' => 'App\Models\SetMenu',
-                //     //     'itemable_id' => $value['id'],
-                //     //     'order_id' => $order->id,
-                //     //     'price' => $value['price'],
-                //     //     'quantity' => $value['quantity'],
-                //     //     'total' => $value['price'] * $value['quantity'],
-                //     // ];
-
-                //     // $item = OrderItem::create($data);
-                // }
             }
 
-            $data = [
-                'order_id' => $order->id,
-                'kot' => $request->kitchen_note,
-                'bot' => $request->bar_note,
-                'staff' => $request->staff_note,
-                'payment' => $request->payment_note,
-            ];
+            // 2️⃣ Subtotal after discount
+            $discountedSub = max(0, $sub - $couponDiscount);
 
-            OrderNote::create($data);
+            // 3️⃣ VAT calculation (apply on discounted subtotal)
+            $vatPercentage = $request->vat;
+            $vatAmount = $discountedSub * ($vatPercentage / 100);
 
-            $data = [
-                'order_id' => $order->id,
-                'date' => date('d-m-Y'),
-                'sub_total' => $request->sub,
-                'vat' => $request->vat,
-                'discount' => $request->discount,
-                'total' => $request->total,
-                'created_by' => Auth::user()->id,
-            ];
+            // 4️⃣ Total
+            $total = $discountedSub + $vatAmount;
 
-            if ($request->type == 'Dining' || $request->type == 'TakeAway') {
-                $data['payment_status'] = 'Unpaid';
+            // 5️⃣ Create Order
+            $order = Order::create([
+                'customer_id'   => $request->customer,
+                'order_date'    => now(),
+                'subtotal'      => $sub,
+                'discount'      => $couponDiscount, // store coupon discount
+                'vat'           => $vatAmount,
+                'total'         => $total,
+                'coupon_id'     => $couponId,
+                'coupon_code'   => $couponCode,
+                'coupon_value'  => $couponValue,
+                'coupon_type'   => $couponType,
+                'created_by'    => Auth::id(),
+            ]);
+
+            if ($couponCode && $coupon) {
+                $coupon->increment('used_count');
+
+                // Create a coupon usage record
+                CouponUsage::create([
+                    'coupon_id'   => $coupon->id,
+                    'customer_id' => $request->customer,
+                    'order_id'    => $order->id,
+                    'created_by'  => Auth::id(),
+                ]);
+            }
+            // 6️⃣ Store Order Items and decrement inventory
+            $cart = json_decode($request->cart, true);
+            foreach ($cart as $item) {
+                $invId = $item['inventory_id'] ?? $item['stock_id'] ?? null;
+
+                $inventory = $invId ? Inventory::find($invId) : Inventory::where('product_id', $item['product_id'])
+                    ->when(!empty($item['variant_id']), fn($q) => $q->where('variant_id', $item['variant_id']))
+                    ->first();
+
+                if (!$inventory) continue;
+
+                OrderItem::create([
+                    'order_id'    => $order->id,
+                    'product_id'  => $inventory->product_id,
+                    'variant_id'  => $inventory->variant_id ?? null,
+                    'inventory_id' => $inventory->id,
+                    'quantity'    => $item['quantity'] ?? 1,
+                    'price'       => $item['price'] ?? 0,
+                    'total'       => ($item['price'] ?? 0) * ($item['quantity'] ?? 1),
+                    'created_by'  => Auth::id(),
+                ]);
+
+                $inventory->decrement('quantity', $item['quantity'] ?? 1);
             }
 
-            OrderPayment::create($data);
-
-            // Reserve the table if selected
-
-
-            if ($isKOT) {
-                event(new notifyKot('New KOT'));
-            }
-            if ($isBOT) {
-                event(new notifyBot('New BOT'));
+            // 7️⃣ Loyalty points (10% of total bill)
+            if ($order->customer_id && $order->customer_id != 0) {
+                $customer = Customer::find($order->customer_id);
+                if ($customer) {
+                    $loyaltyPoints = $total * 0.10;
+                    $customer->increment('loyality', $loyaltyPoints);
+                }
             }
 
-            return response()->json(['success' => true, 'message' => 'Order Placed!', 'url' => route('order.print', [$order->id])]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Order placed successfully!',
+                'url' => route('order.print', $order->id)
+            ]);
         } catch (\Throwable $th) {
-            return response()->json(['success' => false, 'message' => 'Something went wrong! ' . $th->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong! ' . $th->getMessage()
+            ]);
         }
     }
-
 
 
     // public function checkout(Request $request)

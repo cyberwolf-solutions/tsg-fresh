@@ -473,6 +473,59 @@ class ProductController extends Controller
         ]);
     }
 
+public function search(Request $request)
+{
+    $term = $request->get('q');
+
+    $items = \App\Models\Inventory::with(['product.categories', 'variant'])
+        ->whereHas('product', function($q) use ($term) {
+            $q->where('name', 'LIKE', "%{$term}%")
+              ->orWhere('product_price', 'LIKE', "%{$term}%");
+        })
+        ->orWhereHas('variant', function($q) use ($term) {
+            $q->where('variant_name', 'LIKE', "%{$term}%");
+        })
+        ->orWhereHas('product.categories', function($q) use ($term) {
+            $q->where('name', 'LIKE', "%{$term}%");
+        })
+        ->where('quantity', '>', 0)
+        ->get()
+        ->map(function ($item) {
+            $obj = (object) $item->toArray();
+            $vid = null;
+            $name = $item->product ? $item->product->name : 'Unknown Product';
+            if ($item->variant) {
+                $name .= ' - ' . $item->variant->variant_name;
+                $vid = $item->variant->id;
+            }
+            $obj->full_name = $name;
+            $obj->pname = $item->product ? $item->product->id : null;
+            $obj->varientid = $vid;
+            $obj->categories = $item->product ? $item->product->categories : collect();
+            $obj->product_image_url = $item->product && $item->product->image_url
+                ? 'uploads/products/' . $item->product->image_url
+                : 'uploads/cutlery.png';
+            $obj->unit_price = $item->product ? $item->product->product_price : 0;
+
+            return $obj;
+        });
+
+    return response()->json(
+        $items->map(function($item) {
+            return [
+                'id' => $item->id,
+                'full_name' => $item->full_name,
+                'pname' => $item->pname,
+                'varientid' => $item->varientid,
+                'categories' => $item->categories->pluck('name')->implode(', '),
+                'unit_price' => number_format($item->unit_price, 2),
+                'product_image_url' => URL::asset($item->product_image_url),
+            ];
+        })
+    );
+}
+
+
 
     public function getProducts(Request $request)
     {

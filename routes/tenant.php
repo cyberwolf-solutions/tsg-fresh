@@ -49,7 +49,11 @@ use App\Http\Controllers\OtherPurchaseController;
 use App\Http\Controllers\SingelProductController;
 use App\Http\Controllers\CheckinCheckoutController;
 use App\Http\Controllers\AdditionalPaymentController;
+
+use App\Http\Controllers\CouponController;
+
 use App\Http\Controllers\CartController;
+
 use App\Http\Controllers\TableArrangementsController;
 use App\Http\Controllers\EmployeeDesignationsController;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
@@ -164,8 +168,10 @@ Route::middleware([
 
     Route::get('/single/{product}', [SingelProductController::class, 'index'])->name('single.index');
 
+
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+
 
     Route::middleware(['guest'])->group(function () {
         Route::get('/', function () {
@@ -176,6 +182,11 @@ Route::middleware([
     Auth::routes();
 
     Route::middleware(['auth'])->group(function () {
+        Route::get('/customers/search', [App\Http\Controllers\CustomerController::class, 'search'])
+            ->name('customers.search');
+        Route::get('/products/search', [App\Http\Controllers\ProductController::class, 'search'])
+            ->name('products.search');
+
         //reports
         Route::get('/user', [ReportsController::class, 'user'])->name('users.ReportsIndex')->middleware('can:User report');
         Route::get('/customer', [ReportsController::class, 'customer'])->name('customers.ReportsIndex')->middleware('can:Customer report');
@@ -189,6 +200,11 @@ Route::middleware([
         Route::get('/orders/reports', [ReportsController::class, 'orders'])->name('orders.Reports')->middleware('can:Booking report');
         Route::get('/booking1', [ReportsController::class, 'booking'])->name('booking.ReportsIndex1')->middleware('can:Booking report');
         Route::get('/tareports', [ReportsController::class, 'ta'])->name('TaReport')->middleware('can:Booking report');
+        Route::get('/coupon', [CouponController::class, 'index'])->name('coupon.index');
+        Route::get('/coupon-create', [CouponController::class, 'create'])->name('coupon.create');
+        Route::post('/coupon-store', [CouponController::class, 'store'])->name('coupons.store');
+        Route::post('/coupon-update', [CouponController::class, 'update'])->name('coupon.update');
+        Route::post('/coupons/apply', [CouponController::class, 'apply'])->name('coupons.apply');
 
         Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
         Route::post('/change/mode', [UserController::class, 'changeMode'])->name('change.mode');
@@ -219,6 +235,8 @@ Route::middleware([
         Route::get('/restaurant-rooms', [RestaurantController::class, 'rooms'])->name('restaurant.rooms');
         Route::get('/restaurant-customer', [RestaurantController::class, 'customer'])->name('restaurant.customer');
         Route::get('/restaurant-customer-add', [RestaurantController::class, 'customerAdd'])->name('restaurant.customer-add');
+        // Route::get('/customers/search', [App\Http\Controllers\CustomerController::class, 'search'])->name('customers.search');
+
         Route::get('/restaurant-discount', [RestaurantController::class, 'discount'])->name('restaurant.discount');
         Route::get('/restaurant-vat', [RestaurantController::class, 'vat'])->name('restaurant.vat');
         Route::get('/restaurant-modifiers', [RestaurantController::class, 'modifiers'])->name('restaurant.modifiers');

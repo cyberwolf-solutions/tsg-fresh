@@ -12,35 +12,44 @@ class Order extends Model
     protected $connection = 'tenant';
     protected $fillable = [
         'customer_id',
-        'room_id',
-        'table_id',
-        'orderable_id',
-        'orderable_type',
         'order_date',
-        'note',
         'type',
-        'progress',
         'status',
+        'discount',
+        'vat',
+        'total',
+        'subtotal',
+        'coupon_id',
+        'coupon_code',
+        'coupon_value',
+        'coupon_type',
         'created_by',
         'updated_by',
-        'deleted_by',
+        'deleted_by'
     ];
 
     public function customer()
     {
-        return $this->hasOne(Customer::class, 'id', 'customer_id');
+        return $this->belongsTo(Customer::class);
     }
-    public function user()
-    {
-        return $this->hasOne(User::class, 'id', 'created_by');
-    }
-  
-    public function payment()
-    {
-        return $this->hasOne(OrderPayment::class, 'order_id', 'id');
-    }
+
     public function items()
     {
-        return $this->hasMany(OrderItem::class, 'order_id', 'id');
+        return $this->hasMany(OrderItem::class);
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function deletedBy()
+    {
+        return $this->belongsTo(User::class, 'deleted_by');
     }
 }

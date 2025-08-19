@@ -19,12 +19,12 @@ return new class extends Migration
             $table->string('address')->nullable();
             $table->string('company_name');
             $table->string('vat');
+            $table->integer('loyality')->default(0);
             $table->string('city');
             $table->string('state');
             $table->string('postalcode');
             $table->string('country');
             $table->string('group');
-
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->unsignedBigInteger('deleted_by')->nullable();
