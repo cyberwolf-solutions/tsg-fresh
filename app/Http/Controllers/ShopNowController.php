@@ -53,12 +53,12 @@ class ShopNowController extends Controller
         $tenant = tenancy()->tenant;
 
         // Get all categories for sidebar (remove pagination for categories)
-        $categories = Category::withCount('products')->get(); // Use get() instead of paginate()
+        $categories = Category::withCount('products')->get();
 
         // Base query
         $query = Product::with(['variants', 'categories']);
 
-        // If category_id is passed, filter products
+        // Category filter
         if ($request->has('category_id') && !empty($request->category_id)) {
             $categoryId = $request->input('category_id');
             $query->whereHas('categories', function ($q) use ($categoryId) {
@@ -66,7 +66,13 @@ class ShopNowController extends Controller
             });
         }
 
-        // If search term is provided
+        // Price filter
+        if ($request->has('min_price') && !empty($request->min_price)) {
+            $minPrice = $request->input('min_price');
+            $query->where('final_price', '>=', $minPrice);
+        }
+
+        // Search filter
         if ($request->has('search') && !empty($request->search)) {
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
@@ -78,6 +84,32 @@ class ShopNowController extends Controller
             });
         }
 
+        // Sorting
+        if ($request->has('sort') && !empty($request->sort)) {
+            switch ($request->sort) {
+                case 'Sort by popularity':
+                    // Implement popularity sorting if you have a popularity metric
+                    break;
+                case 'Sort by average rating':
+                    // Implement rating sorting if you have ratings
+                    break;
+                case 'Sort by latest':
+                    $query->orderBy('created_at', 'desc');
+                    break;
+                case 'Sort by price: low to high':
+                    $query->orderBy('final_price', 'asc');
+                    break;
+                case 'Sort by price: high to low':
+                    $query->orderBy('final_price', 'desc');
+                    break;
+                default:
+                    // Default sorting
+                    $query->orderBy('created_at', 'desc');
+            }
+        } else {
+            // Default sorting if none specified
+            $query->orderBy('created_at', 'desc');
+        }
 
         // Paginate results
         $products = $query->paginate(15);
