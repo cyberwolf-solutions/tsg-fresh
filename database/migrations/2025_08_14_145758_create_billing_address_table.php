@@ -14,11 +14,13 @@ return new class extends Migration
         Schema::create('billing_addresses', function (Blueprint $table) {
             $table->id();
 
-            $table->unsignedBigInteger('customer_id'); // define column first
-            $table->foreign('customer_id')
-                ->references('id')
-                ->on('web_customers')
+
+            // Define the column and the foreign key in one go
+            $table->foreignId('customer_id')
+                ->constrained('web_customers')
                 ->onDelete('cascade');
+
+
             $table->string('first_name')->nullable();
             $table->string('last_name')->nullable();
             $table->string('street_address')->nullable();
