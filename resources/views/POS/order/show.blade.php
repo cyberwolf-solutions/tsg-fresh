@@ -21,25 +21,31 @@
     <div class="row mt-4">
         <div class="col-md-6">
             <h5>Customer</h5>
-            @if ($data->customer_id == 0)
+            @php
+                $customer = $data->webCustomer ?? $data->customer;
+                $currency = $customer?->currency?->name ?? 'Rs';
+            @endphp
+
+            @if (!$customer)
                 <p>Walking Customer</p>
             @else
-                <p>{{ $data->customer->name }},</p>
-                <p>{{ $data->customer->contact }},</p>
-                <p>{{ $data->customer->email }},</p>
-                <p>{{ $data->customer->address }}.</p>
+                <p>{{ $customer->name ?? 'Guest' }}</p>
+                <p>{{ $customer->contact ?? '-' }}</p>
+                <p>{{ $customer->email ?? '-' }}</p>
+                <p>{{ $customer->address ?? '-' }}</p>
             @endif
         </div>
-        @if ($data->room_id != 0)
+
+        @if ($data->room_id)
             <div class="col-md-3">
                 <h5>Room</h5>
-                <p>{{ $data->room->name }}</p>
+                <p>{{ $data->room?->name ?? '-' }}</p>
             </div>
         @endif
-        @if ($data->table_id != 0)
+        @if ($data->table_id)
             <div class="col-md-3">
                 <h5>Table</h5>
-                <p>{{ $data->table->name }}</p>
+                <p>{{ $data->table?->name ?? '-' }}</p>
             </div>
         @endif
     </div>
@@ -63,53 +69,50 @@
                     @foreach ($data->items as $key => $item)
                         <tr>
                             <td>{{ $key + 1 }}</td>
-                            {{-- <td>{{ $item->product->name }}</td> --}}
-                            <td>
-                                @if ($item->itemable_type === 'App\Models\Product')
-                                    {{ $item->itemable->name }}
-                                @elseif ($item->itemable_type === 'App\Models\SetMenu')
-                                    {{ $item->itemable->name }}
-                                @else
-                                    Unknown Item
-                                @endif
-                            </td>
-                            <td>{{ $data->customer->currency->name }} {{ number_format($item->price, 2) }}</td>
+                           <td>
+                                    {{ $item->product->name }}
+                                    @if($item->variant)
+                                        - {{ $item->variant->variant_name }}
+                                    @endif
+                                    <br>
+                                    <small class="text-muted">
+                                        {{-- MFD: {{ $item->product->manufacture_date ? \Carbon\Carbon::parse($item->manufacture_date)->format('Y-m-d') : 'N/A' }}
+                                        | EXP: {{ $item->product->expiry_date ? \Carbon\Carbon::parse($item->product->expiry_date)->format('Y-m-d') : 'N/A' }} --}}
+                                        {{-- <br> --}}
+                                        Categories: 
+                                        @foreach($item->product->categories as $category)
+                                            {{ $category->name }}@if(!$loop->last), @endif
+                                        @endforeach
+                                    </small>
+                                </td>
+                            <td>{{ $currency }} {{ number_format($item->price, 2) }}</td>
                             <td>{{ $item->quantity }}</td>
-                            <td>{{ $data->customer->currency->name }} {{ number_format($item->total, 2) }}</td>
+                            <td>{{ $currency }} {{ number_format($item->total, 2) }}</td>
                         </tr>
-                        @if (!empty($item->modifiers))
-                            @foreach ($item->modifiers as $item2)
-                                <tr>
-                                    <td></td>
-                                    <td>{{ $item2->modifier->name }} <br> <span class="small text-muted">Modifier</span></td>
-                                    <td>{{ $data->customer->currency->name }} {{ number_format($item2->price, 2) }}</td>
-                                    <td>{{ $item2->quantity }}</td>
-                                    <td>{{ $data->customer->currency->name }} {{ number_format($item2->total, 2) }}</td>
-                                </tr>
-                            @endforeach
-                        @endif
+
+                     
                     @endforeach
                 </tbody>
                 <tfoot>
                     <tr>
                         <td colspan="3"></td>
                         <td>Sub Total</td>
-                        <td>{{ $data->customer->currency->name }} {{ number_format($data->payment ? $data->payment->sub_total : 0, 2) }}</td>
+                        <td>{{ $currency }} {{ number_format($data->subtotal  ?? 0, 2) }}</td>
                     </tr>
                     <tr>
                         <td colspan="3"></td>
                         <td>Discount</td>
-                        <td>{{ $data->customer->currency->name }} {{ number_format($data->payment ? $data->payment->discount : 0, 2) }}</td>
+                        <td>{{ $currency }} {{ number_format($data->discount ?? 0, 2) }}</td>
                     </tr>
                     <tr>
                         <td colspan="3"></td>
                         <td>VAT</td>
-                        <td>{{ $data->customer->currency->name }} {{ number_format($data->payment ? $data->payment->vat : 0, 2) }}</td>
+                        <td>{{ $currency }} {{ number_format($data->vat ?? 0, 2) }}</td>
                     </tr>
                     <tr>
                         <td colspan="3"></td>
                         <td><h3>Total</h3></td>
-                        <td><h4>{{ $data->customer->currency->name }} {{ number_format($data->payment ? $data->payment->total : 0, 2) }}</h4></td>
+                        <td><h4>{{ $currency }} {{ number_format($data->total ?? 0, 2) }}</h4></td>
                     </tr>
                 </tfoot>
             </table>

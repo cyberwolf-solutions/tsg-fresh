@@ -51,12 +51,9 @@
                          
                                 <select class="form-control js-example-basic-single" name="cgroup" id="">
                                     <option value="" selected>Select...</option>
-                                    @foreach ($currencies as $currency)
-                                        <option value="{{ $currency->id }}"
-                                            {{ $is_edit && $data->currency_id == $currency->id ? 'selected' : '' }}>
-                                            {{ $currency->name }}
-                                        </option>
-                                    @endforeach
+                                    <option value="1" selected>WEB</option>
+                                    <option value="2" selected>POS</option>
+                                  
                                 </select>
                         
                         </div>

@@ -139,17 +139,7 @@
                                 <td>{{ number_format($item->total, 2) }}</td>
                             </tr>
 
-                            @if (!empty($item->modifiers))
-                                @foreach ($item->modifiers as $mod)
-                                    <tr>
-                                        <td></td>
-                                        <td>{{ $mod->modifier->name }} <small class="text-muted">Modifier</small></td>
-                                        <td>{{ number_format($mod->price, 2) }}</td>
-                                        <td>{{ $mod->quantity }}</td>
-                                        <td>{{ number_format($mod->total, 2) }}</td>
-                                    </tr>
-                                @endforeach
-                            @endif
+                           
                         @endforeach
                     </tbody>
                     <tfoot>

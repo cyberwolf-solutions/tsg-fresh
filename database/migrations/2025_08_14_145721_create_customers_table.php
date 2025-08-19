@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('last_name')->nullable();
             $table->string('email')->unique();
             $table->string('password');
+            $table->integer('loyalty')->default(0);
             $table->string('remember_token', 100)->nullable();
             $table->timestamps();
         });

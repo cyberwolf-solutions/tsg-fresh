@@ -138,7 +138,19 @@ border-right: none !important;">
                             <ul class="nav nav-sm flex-column">
                                 @can('manage orders')
                                     <li class="nav-item">
-                                        <a href="{{ route('orders.index') }}" class="nav-link">Orders</a>
+                                        <a href="{{ route('orders.index') }}" class="nav-link">Pos Orders</a>
+                                    </li>
+                                @endcan
+
+                                  @can('manage orders')
+                                    <li class="nav-item">
+                                        <a href="{{ route('orders.web') }}" class="nav-link">Web Orders</a>
+                                    </li>
+                                @endcan
+
+                                  @can('manage orders')
+                                    <li class="nav-item">
+                                        <a href="{{ route('orders.instore') }}" class="nav-link">Instore pickups</a>
                                     </li>
                                 @endcan
                                 {{-- @can('manage orders')
