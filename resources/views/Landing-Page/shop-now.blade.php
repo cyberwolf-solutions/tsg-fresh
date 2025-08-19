@@ -1,12 +1,12 @@
 @extends('landing-page.layouts.app')
 
 @section('content')
-    <div class="container-fluid"
+    <div class="container-fluid mt-5"
         style="background: url('{{ asset('build/images/bg.jpg') }}') no-repeat center center;
         background-color:whitesmoke; background-size: cover; padding: 60px 15px;
         margin-top:50px">
 
-        <div class="text-center mb-5">
+        <div class="text-center mb-5 mt-5">
             <h2 class="fw-bold">OUR OUTLETS</h2>
             <p>Please choose your nearest outlet for a better service.</p>
         </div>
