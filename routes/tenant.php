@@ -166,6 +166,9 @@ Route::middleware([
 
     Route::get('/shop-now', [ShopNowController::class, 'product'])->name('shopnow.product');
 
+    Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])
+        ->name('checkout.success');
+
 
     Route::get('/single/{product}', [SingelProductController::class, 'index'])->name('single.index');
 
@@ -190,10 +193,10 @@ Route::middleware([
 
     Route::post('/checkout/place-order', [CheckoutController::class, 'placeOrder'])->name('web.checkout.place');
 
-        Route::post('/apply-coupon', [CheckoutController::class, 'applyCoupon'])
-            ->name('coupon.apply');
+    Route::post('/apply-coupon', [CheckoutController::class, 'applyCoupon'])
+        ->name('coupon.apply');
     // Checkout success page
-    Route::get('/checkout/success/{order}', [CheckoutController::class, 'checkoutSuccess'])->name('checkout.success');
+    // Route::get('/checkout/success/{order}', [CheckoutController::class, 'checkoutSuccess'])->name('checkout.success');
     Route::post('/cart/update/{item}', [CartController::class, 'updateQuantity'])->name('cart.update');
 
     Route::middleware(['auth'])->group(function () {
