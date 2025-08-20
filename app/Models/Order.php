@@ -29,6 +29,8 @@ class Order extends Model
         'delivery_method',
         'payment_method',
         'delivery_address',
+        'delivery_date',
+        'delivery_fee',
         'created_by',
         'updated_by',
         'deleted_by'

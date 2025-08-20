@@ -39,6 +39,8 @@ return new class extends Migration {
             $table->string('delivery_method')->nullable(); // 'Pickup' or 'Shipping'
             $table->string('payment_method')->nullable(); // 'COD', 'Card', 'Bank'
             $table->text('delivery_address')->nullable(); // For shipping orders
+            $table->date('delivery_date')->nullable();
+            $table->string('delivery_fee')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->unsignedBigInteger('deleted_by')->nullable();
