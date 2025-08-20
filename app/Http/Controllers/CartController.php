@@ -61,7 +61,10 @@ class CartController extends Controller
 
     public function addToCart(Request $request)
     {
-        $customerId = auth()->check() ? auth()->id() : null;
+        $customerId = Auth::guard('customer')->check()
+            ? Auth::guard('customer')->id()
+            : null;
+
         $sessionId  = session()->getId();
 
         $validated = $request->validate([
@@ -114,7 +117,6 @@ class CartController extends Controller
                 'quantity' => $newQty,
                 'total'    => $newQty * $inventory->unit_price,
             ]);
-
         } else {
             $cartItem = CartItem::create([
                 'cart_id'      => $cart->id,
@@ -127,7 +129,6 @@ class CartController extends Controller
                 'price'        => $inventory->unit_price,
                 'total'        => $validated['quantity'] * $inventory->unit_price,
             ]);
-
         }
 
         return response()->json([
@@ -186,7 +187,7 @@ class CartController extends Controller
 
         if ($cart && $cart->items) {
             foreach ($cart->items as $item) {
-                $price = $item->variant ? $item->variant->final_price : $item->product->final_price ;
+                $price = $item->variant ? $item->variant->final_price : $item->product->final_price;
                 $subtotal += $price * $item->quantity;
             }
         }
