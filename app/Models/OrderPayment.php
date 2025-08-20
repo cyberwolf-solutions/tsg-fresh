@@ -21,6 +21,7 @@ class OrderPayment extends Model
         'payment_type',
         'description',
         'payment_status',
+        'receipt_no',
         'created_by',
         'updated_by',
         'deleted_by',

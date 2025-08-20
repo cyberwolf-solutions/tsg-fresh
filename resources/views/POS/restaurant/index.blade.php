@@ -112,44 +112,7 @@
                                 style="height: auto;padding-top:10px;padding-bottom:10px;margin-bottom:10px;margin-left:10px">
                                 <div class="row p-1">
                                     <div class="col-12">
-                                        {{-- <div class="row justify-content-between">
-                                            <div class="col-4">
-                                                <button id="customer-btn"
-                                                    class="btn btn-light btn-sm form-control"data-ajax-popup="true"
-                                                    data-title="Customers" data-size="lg" data-binding=""
-                                                    data-url="{{ route('restaurant.customer') }}"><i
-                                                        class="mdi mdi-account"></i>
-                                                    <span id="name"> Select Customer</span>
-                                                </button>
-                                            </div>
-                                            <div class="col-4">
-                                                <button id="room-btn" class="btn btn-light btn-sm form-control"
-                                                    data-ajax-popup="true" data-title="Rooms" data-size="lg"
-                                                    data-url="{{ route('restaurant.rooms') }}" data-binding=""><i
-                                                        class="mdi mdi-room-service"></i>
-                                                    <span id="name"> Select User</span>
-                                                </button>
-                                            </div>
-                                            <div class="col-4">
-                                                <button id="table-btn" class="btn btn-light btn-sm form-control"
-                                                    data-ajax-popup="true" data-title="Tables" data-size="lg"
-                                                    data-url="{{ route('restaurant.tables') }}" data-binding=""><i
-                                                        class="mdi mdi-table"></i>
-                                                    <span id="name">
-                                                        Select
-                                                        Warehouse</span></button>
-                                            </div>
-                                            <div class="col-md-12 mt-3">
-                                                <input type="text" class="form-control"
-                                                    placeholder="Search product by names" id="searchInput">
-                                            </div>
-                                        </div> --}}
 
-                                        {{-- <div class="col-4">
-                                            <input type="text" id="customer-search" class="form-control"
-                                                placeholder="Search Customer">
-                                            <input type="hidden" id="customer-id"> 
-                                        </div> --}}
 
                                         <div class="row g-2 align-items-center">
                                             <!-- Customer Search Select2 -->
@@ -297,116 +260,6 @@
                     {{-- show --}}
                     <div class=" col-md-7">
 
-                        {{-- <div class="row">
-
-
-                            <div class="col-md-4 d-flex flex-wrap "
-                                style="height: auto;padding-top:10px;padding-bottom:10px;margin-bottom:10px;">
-
-                                <div class="col-md-12 cursor-pointer category-item border border rounded position-relative text-center mx-1"
-                                    data-id="" onclick="highlightCategoryItem(this)" id="clickable-span"
-                                    style="height: auto; width:90%; margin-top: 10px; color: rgb(251, 249, 249); background-color:#74d0da; display: block; text-align: center; padding: 10px; cursor: pointer;">
-                                    <span class="category-name"> Category</span>
-
-                                </div>
-
-                            </div>
-                            <div class="col-md-4 d-flex flex-wrap "
-                                style="height: auto;padding-top:10px;padding-bottom:10px;margin-bottom:10px;">
-
-                                <div class="col-md-12 cursor-pointer category-item border border rounded position-relative text-center mx-1"
-                                    data-id="" onclick="highlightCategoryItem(this)" id="clickable-span"
-                                    style="height: auto; width:90%; margin-top: 10px; color: rgb(249, 249, 249); background-color:#f65050; display: block; text-align: center; padding: 10px; cursor: pointer;">
-                                    <span class="category-name"> Brand</span>
-
-                                </div>
-
-                            </div>
-                            <div class="col-md-4 d-flex flex-wrap "
-                                style="height: auto;padding-top:10px;padding-bottom:10px;margin-bottom:10px;">
-
-                                <div class="col-md-12 cursor-pointer category-item border border rounded position-relative text-center mx-1"
-                                    data-id="" onclick="highlightCategoryItem(this)" id="clickable-span"
-                                    style="height: auto; width:90%; margin-top: 10px; color: rgb(255, 255, 255); background-color:#d58bed; display: block; text-align: center; padding: 10px; cursor: pointer;">
-                                    <span class="category-name"> Feature</span>
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="col-md-12 mt-2 mt-md-0">
-                                <div class="row">
-                                    <div class="col-md-12 pe-2">
-                                        <div class="d-flex flex-wrap overflow-auto gap-3 pe-3 p-3 bg-light rounded-4"
-                                            style="max-height: 60vh; min-height: 30vh; background: #ffffff;"
-                                            id="setmenuContainer">
-
-                                            @foreach ($items as $item)
-                                                <div class="col-md-3 cursor-pointer meal-item shadow rounded-3 p-2"
-                                                    data-id="{{ $item->id }}"
-                                                    data-category="{{ $item->categories->pluck('id')->implode(',') }}"
-                                                    data-image="{{ URL::asset($item->product_image_url) }}"
-                                                    data-price-lkr="{{ floatval($item->unit_price) }}"
-                                                    style="background: #fff; border: 1px solid #e0e0e0;">
-
-                                                    <div class="card border-0 mb-2 rounded-4 overflow-hidden"
-                                                        style="height: 20vh;">
-                                                        <img src="{{ URL::asset($item->product_image_url) }}"
-                                                            alt="{{ $item->full_name }}" class="card-img-top"
-                                                            style="width: 100%; height: 100%; object-fit: cover;">
-                                                    </div>
-
-                                                    <div class="text-center"
-                                                        style="background-color: #ffffff; border-radius: 0 0 10px 10px; padding: 8px;">
-                                                        <div class="row">
-                                                            <div class="col-12">
-                                                                <h6 class="meal-name mb-1"
-                                                                    style="font-weight: 600; font-size: 0.9rem; color: #222;">
-                                                                    {{ $item->full_name }}
-                                                                </h6>
-
-                                                                <h6 class="pname mb-1"
-                                                                    style="font-weight: 600; font-size: 0.9rem; color: #222;">
-                                                                    {{ $item->pname }}
-                                                                </h6>
-
-                                                                <h6 class="vname mb-1"
-                                                                    style="font-weight: 600; font-size: 0.9rem; color: #222;">
-                                                                    {{ $item->varientid }}
-                                                                </h6>
-
-                                                                <small class="d-block text-muted"
-                                                                    style="font-size: 0.55rem;">
-                                                                    MFD:
-                                                                    {{ $item->manufacture_date ? \Carbon\Carbon::parse($item->manufacture_date)->format('Y-m-d') : 'N/A' }}
-                                                                    &nbsp;&nbsp;|&nbsp;&nbsp;
-                                                                    EXP:
-                                                                    {{ $item->expiry_date ? \Carbon\Carbon::parse($item->expiry_date)->format('Y-m-d') : 'N/A' }}
-                                                                </small>
-                                                            </div>
-                                                            <div class="col-12 mb-2 mt-1">
-                                                                @foreach ($item->categories as $category)
-                                                                    <span class="badge bg-secondary me-1"
-                                                                        style="font-size: 0.65rem;">{{ $category->name }}</span>
-                                                                @endforeach
-                                                            </div>
-                                                            <div class="col-12">
-                                                                <p class="text-primary fw-semibold"
-                                                                    style="font-size: 0.85rem;">
-                                                                    LKR. {{ number_format($item->unit_price, 2) }}
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @endforeach
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> --}}
 
                         <div class="row justify-content-center mb-3 mt-3">
                             <div class="col-md-12">
@@ -424,26 +277,26 @@
 
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="d-flex flex-wrap overflow-auto gap-3 p-3 bg-light rounded-4"
+                                <div class="d-flex flex-wrap overflow-auto gap-1 p-3 bg-light rounded-4"
                                     style="max-height: 60vh; min-height: 30vh;" id="setmenuContainer">
 
                                     @foreach ($items as $item)
-                                        <div class="col-md-3 cursor-pointer meal-item shadow rounded-3 p-2"
+                                        <div class="col-md-2 cursor-pointer meal-item shadow rounded-0 p-1"
                                             data-id="{{ $item->id }}"
                                             data-category="{{ $item->categories->pluck('id')->implode(',') }}"
                                             data-image="{{ URL::asset($item->product_image_url) }}"
                                             data-price="{{ $item->unit_price }}"
-                                            style="background: #fff; border: 1px solid #e0e0e0;">
+                                            style="background: #fff; border: 0px solid #e0e0e0;">
 
-                                            <div class="card border-0 mb-2 rounded-4 overflow-hidden"
-                                                style="height: 20vh;">
+                                            <div class="card border-0 mb-2 rounded-2 overflow-hidden"
+                                                style="height: 15vh;">
                                                 <img src="{{ URL::asset($item->product_image_url) }}"
                                                     alt="{{ $item->full_name }}" class="card-img-top"
                                                     style="width: 100%; height: 100%; object-fit: cover;">
                                             </div>
 
                                             <div class="text-center"
-                                                style="background-color: #ffffff; border-radius: 0 0 10px 10px; padding: 8px;">
+                                                style="background-color: #ffffff; border-radius: 0 0 10px 10px; padding: 1px;">
                                                 <div class="row">
                                                     <div class="col-12">
                                                         <h6 class="meal-name mb-1"
@@ -501,56 +354,112 @@
                         style="background-color: #f0f3f4; padding: 10px;margin-top:-20px">
 
                         <!-- Cash -->
+                        <!-- Cash Button -->
+                        <!-- Trigger -->
                         <div class="col-auto mb-2">
-                            <div onclick="highlightCategoryItem(this)" class="category-item"
+                            <div onclick="openCashPopup()" class="category-item"
                                 style="background-color: #f95cc2; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; display: inline-block; transition: 0.3s;">
                                 <i class="ri-money-dollar-circle-line me-1"></i> Cash
                             </div>
                         </div>
 
-                        <!-- Draft -->
-                        <div class="col-auto mb-2">
-                            <div onclick="highlightCategoryItem(this)" class="category-item"
-                                style="background-color: #17a2b8; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; display: inline-block; transition: 0.3s;">
-                                <i class="ri-draft-line me-1"></i> Draft
+                        <input type="hidden" name="total_bill" id="totalBillHidden">
+                        <input type="hidden" name="cash_received" id="cashReceivedHidden">
+                        <input type="hidden" name="cash_balance" id="cashBalanceHidden">
+                        <input type="hidden" id="paymentTypeHidden" name="paymentType">
+                        <input type="hidden" id="depositReceiptHidden" name="deposit_receipt">
+
+                        <!-- Modal -->
+                        <!-- Cash Payment Modal -->
+                        <!-- Cash Payment Modal -->
+                        <div class="modal fade" id="cashPaymentModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-sm">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Cash Payment</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-2">
+                                            <label>Total Bill</label>
+                                            <input type="text" id="totalBill" class="form-control" readonly>
+                                        </div>
+                                        <div class="mb-2">
+                                            <label>Cash Received</label>
+                                            <input type="number" id="cashReceived" class="form-control"
+                                                placeholder="Enter cash received">
+                                        </div>
+                                        <div class="mb-2">
+                                            <label>Balance</label>
+                                            <input type="text" id="cashBalance" class="form-control" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Cancel</button>
+                                        <button type="button" class="btn btn-primary" id="saveCashBtn">Save
+                                            Payment</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
+
+
+
+
+
+                        {{-- deposite --}}
+                        <div class="modal fade" id="depositModal" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Deposit Payment</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-2">
+                                            <label>Total Bill</label>
+                                            <input type="text" id="depositTotalBill" class="form-control" readonly>
+                                        </div>
+                                        <div class="mb-2">
+                                            <label>Receipt Number</label>
+                                            <input type="text" id="depositReceiptNo" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-primary" onclick="saveDeposit()">Save
+                                            Deposit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+
                         <!-- Card -->
                         <div class="col-auto mb-2">
-                            <div onclick="highlightCategoryItem(this)" class="category-item"
+                            <div onclick="openCardPayment()"
                                 style="background-color: #6f42c1; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; display: inline-block; transition: 0.3s;">
                                 <i class="ri-bank-card-line me-1"></i> Card
                             </div>
                         </div>
 
-                        <!-- Cheque -->
-                        <div class="col-auto mb-2">
-                            <div onclick="highlightCategoryItem(this)" class="category-item"
-                                style="background-color: #fd7e14; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; display: inline-block; transition: 0.3s;">
-                                <i class="ri-file-text-line me-1"></i> Cheque
-                            </div>
-                        </div>
-
-                        <!-- Gift Card -->
-                        <div class="col-auto mb-2">
-                            <div onclick="highlightCategoryItem(this)" class="category-item"
-                                style="background-color: #20c997; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; display: inline-block; transition: 0.3s;">
-                                <i class="ri-gift-line me-1"></i> Gift Card
-                            </div>
-                        </div>
-
                         <!-- Deposit -->
+                        <!-- Deposit button -->
                         <div class="col-auto mb-2">
-                            <div onclick="highlightCategoryItem(this)" class="category-item"
+                            <div onclick="openDepositModal()"
                                 style="background-color: #007bff; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; display: inline-block; transition: 0.3s;">
                                 <i class="ri-bank-line me-1"></i> Deposit
                             </div>
                         </div>
 
+
                         <!-- Cancel -->
                         <div class="col-auto mb-2">
-                            <div onclick="highlightCategoryItem(this)" class="category-item"
+                            <div onclick="cancelOrder()"
                                 style="background-color: #dc3545; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; display: inline-block; transition: 0.3s;">
                                 <i class="ri-close-circle-line me-1"></i> Cancel
                             </div>
@@ -558,17 +467,93 @@
 
                         <!-- Recent Transactions -->
                         <div class="col-auto mb-2">
-                            <div onclick="highlightCategoryItem(this)" class="category-item"
+                            <div onclick="openRecentTransactions()"
                                 style="background-color: #6c757d; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; display: inline-block; transition: 0.3s;">
                                 <i class="ri-history-line me-1"></i> Recent Transactions
                             </div>
                         </div>
+
+                        <div class="col-auto mb-2">
+                            <div style="background-color:#53cb6f; color:white; padding:8px 16px; border-radius:6px; cursor:pointer;"
+                                onclick="openCashInHandModal()">
+                                <i class="ri-money-dollar-circle-line me-1"></i> Cash in Hand
+                            </div>
+                        </div>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="recentTransactionsModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-xl">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Recent Transactions</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <table class="table table-bordered table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Order ID</th>
+                                                    <th>Date</th>
+                                                    <th>Customer</th>
+                                                    <th>Items</th>
+                                                    <th>Total</th>
+                                                    <th>Payments</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="recentTransactionsTableBody">
+                                                <!-- Filled dynamically -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
 
                     </div>
 
 
                 </div>
                 {{-- </div> --}}
+            </div>
+        </div>
+
+
+        {{-- cash in hand --}}
+
+        <div class="modal fade" id="cashInHandModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Cash in Hand</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-2">
+                            <label>Opening Cash</label>
+                            <input type="number" class="form-control" id="openingCash" min="0">
+                        </div>
+                        <div class="mb-2">
+                            <label>Total Cash Received</label>
+                            <input type="number" class="form-control" id="totalCashReceived" readonly>
+                        </div>
+                        <div class="mb-2">
+                            <label>Closing Cash</label>
+                            <input type="number" class="form-control" id="closingCash" min="0">
+                        </div>
+                        <div class="mb-2">
+                            <label>Balance / Variance</label>
+                            <input type="number" class="form-control" id="cashBalance" readonly>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" onclick="saveCashInHand()">Save</button>
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -623,7 +608,96 @@
             console.log(myObject); // Check the value of myObject before accessing properties
             console.log(myObject.toLocaleString()); // Check if myObject is defined and has the toLocaleString method
         </script>
+        <!-- JS Logic -->
+        <script>
+            var ptype;
 
+            function openCashPopup() {
+                // Get total from the span
+                let totalBill = parseFloat(document.getElementById("grand_total").innerText.replace(/[^0-9.]/g, '')) || 0;
+
+                document.getElementById("totalBill").value = totalBill.toFixed(2);
+                document.getElementById("cashReceived").value = "";
+                document.getElementById("cashBalance").value = "";
+                document.getElementById("paymentTypeHidden").value = "";
+
+                document.getElementById("saveCashBtn").onclick = function() {
+                    let received = parseFloat(document.getElementById("cashReceived").value) || 0;
+                    let balance = received - totalBill;
+
+                    if (received < totalBill) {
+                        alert("Cash received must be greater than or equal to total bill!");
+                        return;
+                    }
+
+                    // Save to hidden fields for checkout
+                    document.getElementById("totalBillHidden").value = totalBill.toFixed(2);
+                    document.getElementById("cashReceivedHidden").value = received.toFixed(2);
+                    document.getElementById("cashBalanceHidden").value = balance.toFixed(2);
+                    document.getElementById("paymentTypeHidden").value = "Cash";
+
+                    let modal = bootstrap.Modal.getInstance(document.getElementById('cashPaymentModal'));
+                    modal.hide();
+                };
+
+                let modal = new bootstrap.Modal(document.getElementById('cashPaymentModal'));
+                modal.show();
+            }
+
+            // Auto-calculate balance while typing
+            document.getElementById("cashReceived").addEventListener("input", function() {
+                let total = parseFloat(document.getElementById("totalBill").value) || 0;
+                let received = parseFloat(this.value) || 0;
+                let balance = received - total;
+                document.getElementById("cashBalance").value = balance >= 0 ? balance.toFixed(2) : 0;
+            });
+
+            // Open Deposit Modal
+            function openDepositModal() {
+                let total = parseFloat(document.getElementById('grand_total').innerText.replace(/[^0-9.]/g, '')) || 0;
+                document.getElementById('depositTotalBill').value = total.toFixed(2);
+                document.getElementById('depositReceiptNo').value = "";
+
+                let modal = new bootstrap.Modal(document.getElementById('depositModal'));
+                modal.show();
+            }
+
+            // Save Deposit Payment to hidden fields
+            function saveDeposit() {
+                let receiptNo = document.getElementById('depositReceiptNo').value.trim();
+                if (!receiptNo) {
+                    alert('Please enter receipt number!');
+                    return;
+                }
+
+                let total = parseFloat(document.getElementById('grand_total').innerText.replace(/[^0-9.]/g, '')) || 0;
+
+                // Fill hidden fields for checkout
+                document.getElementById('totalBillHidden').value = total.toFixed(2);
+                document.getElementById('cashReceivedHidden').value = total.toFixed(2); // consider full amount received
+                document.getElementById('cashBalanceHidden').value = 0;
+                document.getElementById('paymentTypeHidden').value = 'Deposit';
+                document.getElementById('depositReceiptHidden').value = receiptNo;
+
+                let modal = bootstrap.Modal.getInstance(document.getElementById('depositModal'));
+                modal.hide();
+            }
+        </script>
+        <script>
+            function openCardPayment() {
+                // Grab total bill from POS panel
+                let total = parseFloat(document.getElementById('grand_total').innerText.replace(/[^0-9.-]+/g, "")) || 0;
+
+                // Fill hidden fields
+                document.getElementById('totalBillHidden').value = total;
+                document.getElementById('cashReceivedHidden').value = total; // assuming full card payment
+                document.getElementById('cashBalanceHidden').value = 0;
+                document.getElementById('paymentTypeHidden').value = 'Card';
+                document.getElementById('depositReceiptHidden').value = ''; // not applicable for card
+
+                alert("Card payment selected. Hidden fields filled for checkout.");
+            }
+        </script>
         <script>
             function beep() {
                 var context = new AudioContext();
@@ -1220,71 +1294,122 @@
 
             });
         </script>
+        <script>
+            function cancelOrder() {
+                // Refresh the page
+                location.reload();
+            }
 
-
-        {{-- <script>
-            function checkout() {
-                beep();
-                $('#loader').removeClass('d-none');
-
-                if (cart.length == 0) {
-                    display_error('Add one or more items to the cart');
-                    $('#loader').addClass('d-none');
-                    return
-                }
-
-                var formData = new FormData();
-                formData.append('cart', JSON.stringify(cart));
-                formData.append('customer', customer);
-                formData.append('room', room);
-                formData.append('table', table);
-                formData.append('sub', sub);
-                formData.append('discount', discount);
-                formData.append('vat', vat);
-                formData.append('total', total);
-                formData.append('kitchen_note', kitchen_note);
-                formData.append('bar_note', bar_note);
-                formData.append('staff_note', staff_note);
-                formData.append('payment_note', payment_note);
-                formData.append('type', $('#type').val());
-                // alert($('#type').val());
-
+            function openRecentTransactions() {
                 $.ajax({
-                    type: 'POST',
-                    url: "{{ route('restaurant.checkout') }}",
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    dataType: "JSON",
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-                    data: formData,
-                    success: function(response) {
-                        $('#loader').addClass('d-none');
-                        if (response.success) {
-                            display_success(response.message); // replace with your success message
-                            setTimeout(function() {
-                                window.location.href = response.url
-                            }, 1500);
+                    url: "{{ route('orders.recent') }}",
+                    method: "GET",
+                    success: function(res) {
+                        if (res.success) {
+                            let container = document.getElementById('recentTransactionsTableBody');
+                            container.innerHTML = ''; // clear previous rows
+
+                            res.orders.forEach(order => {
+                                let itemsHtml = order.items.map(item =>
+                                    `${item.product_name}${item.variant_name ? ' (' + item.variant_name + ')' : ''} x ${item.quantity}`
+                                ).join('<br>');
+
+                                let paymentsHtml = order.payments.map(p =>
+                                    `${p.payment_type} - ${Number(p.total).toFixed(2)} (${p.status})`
+                                ).join('<br>');
+
+                                container.innerHTML += `
+                        <tr>
+                            <td>${order.id}</td>
+                            <td>${order.order_date}</td>
+                            <td>${order.customer_name}</td>
+                            <td>${itemsHtml}</td>
+                            <td>${Number(order.total).toFixed(2)}</td>
+                            <td>${paymentsHtml}</td>
+                        </tr>
+                    `;
+                            });
+
+                            let modal = new bootstrap.Modal(document.getElementById('recentTransactionsModal'));
+                            modal.show();
                         } else {
-                            display_error(response.message); // replace with your error message
-                        }
-                        if (response.url) {
-                            window.open(response.url, '_blank');
-                            setTimeout(function() {
-                                window.location.reload();
-                            }, 1500);
+                            alert('Failed to load transactions.');
                         }
                     },
-                    error: function(xhr) {
-                        $('#loader').addClass('d-none');
-                        var errorMessage = xhr.status + ': ' + xhr.statusText;
-                        display_error(errorMessage);
+                    error: function(err) {
+                        console.error(err);
+                        alert('Failed to load transactions.');
                     }
                 });
             }
-        </script> --}}
+
+            const closingInput = document.getElementById('closingCash');
+
+            closingInput.addEventListener('input', function() {
+                let opening = parseFloat(document.getElementById('openingCash').value) || 0;
+                let received = parseFloat(document.getElementById('totalCashReceived').value) || 0;
+                let closing = parseFloat(this.value) || 0;
+
+                let balance = closing - (opening + received);
+                document.getElementById('cashBalance').value = balance.toFixed(2);
+            });
+
+            function openCashInHandModal() {
+                fetch("{{ route('cash.modal') }}")
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            document.getElementById('openingCash').value = data.data.opening_cash ?? 0;
+                            document.getElementById('totalCashReceived').value = data.data.total_cash_received ?? 0;
+                            document.getElementById('closingCash').value = data.data.closing_cash ?? 0;
+
+                            // Calculate initial balance
+                            updateCashBalance();
+
+                            // Show modal
+                            let modal = new bootstrap.Modal(document.getElementById('cashInHandModal'));
+                            modal.show();
+                        }
+                    });
+            }
+
+            function updateCashBalance() {
+                let opening = parseFloat(document.getElementById('openingCash').value) || 0;
+                let received = parseFloat(document.getElementById('totalCashReceived').value) || 0;
+                let closing = parseFloat(document.getElementById('closingCash').value) || 0;
+
+                let balance = closing - (opening + received);
+                document.getElementById('cashBalance').value = balance.toFixed(2);
+            }
+
+            function saveCashInHand() {
+                let opening = parseFloat(document.getElementById('openingCash').value) || 0;
+                let closing = parseFloat(document.getElementById('closingCash').value) || 0;
+
+                fetch("{{ route('cash.save') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                        },
+                        body: JSON.stringify({
+                            opening_cash: opening,
+                            closing_cash: closing
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        // Update the fields with the returned balance
+                        document.getElementById('cashBalance').value = (data.balance ?? 0).toFixed(2);
+
+                        alert(data.message + "\nBalance: " + (data.balance ?? 0).toFixed(2));
+
+                        let modal = bootstrap.Modal.getInstance(document.getElementById('cashInHandModal'));
+                        modal.hide();
+                    })
+                    .catch(err => console.error(err));
+            }
+        </script>
 
         <script>
             function checkout() {
@@ -1297,12 +1422,26 @@
                     return;
                 }
 
+
+                var totalBill = document.getElementById("totalBillHidden").value;
+                var received = document.getElementById("cashReceivedHidden").value;
+                var balance = document.getElementById("cashBalanceHidden").value;
+                var depositrecipt = document.getElementById("depositReceiptHidden").value;
+                ptype = document.getElementById("paymentTypeHidden").value;
+
                 const formData = new FormData();
                 formData.append('customer', customer);
                 formData.append('sub', sub);
                 formData.append('discount', discount);
                 formData.append('vat', customerVAT);
                 formData.append('total', total);
+
+                formData.append('total_bill', totalBill);
+                formData.append('cash_received', received);
+                formData.append('cash_balance', balance);
+                formData.append('ptype', ptype);
+                formData.append('dr', depositrecipt);
+
                 formData.append('payment_note', payment_note);
                 formData.append('type', $('#type').val());
 
@@ -1373,7 +1512,8 @@
                     }
                 });
             }
-        </script>
+      
+      </script>
 
         <script>
             var previouslyClickedItem = null;

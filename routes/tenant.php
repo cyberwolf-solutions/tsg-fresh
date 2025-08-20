@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 
+use App\Http\Controllers\CashInHandController;
 use App\Models\Tenant;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -217,7 +218,15 @@ Route::middleware([
         Route::post('/coupon-store', [CouponController::class, 'store'])->name('coupons.store');
         Route::post('/coupon-update', [CouponController::class, 'update'])->name('coupon.update');
         Route::post('/coupons/apply', [CouponController::class, 'apply'])->name('coupons.apply');
+        Route::get('/orders/recent', [RestaurantController::class, 'recentOrders'])->name('orders.recent');
 
+        Route::prefix('cash')->group(function () {
+    Route::get('modal', [CashInHandController::class, 'openModal'])->name('cash.modal');
+    Route::post('save', [CashInHandController::class, 'save'])->name('cash.save');
+});
+
+
+        Route::post('/orders/payments/store', [OrderController::class, 'payment'])->name('orders.payments.store');
         Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
         Route::post('/change/mode', [UserController::class, 'changeMode'])->name('change.mode');
         Route::resource('settings', SettingsController::class)->middleware('can:manage settings');

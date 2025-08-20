@@ -84,4 +84,10 @@ class Order extends Model
     {
         return $this->belongsTo(User::class, 'deleted_by');
     }
+
+
+    public function payments()
+    {
+        return $this->hasMany(OrderPayment::class);
+    }
 }

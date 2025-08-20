@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 use App\Models\ProductVariant;
 use App\Models\Unit;
+use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
@@ -317,10 +318,11 @@ class ProductController extends Controller
     public function update(Request $request, string $id)
     {
 
+         dd($request->all());
         $tableData = json_decode($request->input('table_data'), true);
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|unique:products,name',
+            'name' => 'required|string|unique:products,name,' . $id . ',id',
             'pcode' => 'required',
             'barcode' => 'required',
             'brand' => 'required',
@@ -335,19 +337,17 @@ class ProductController extends Controller
             'ptype' => 'required',
             'productDetails' => 'required',
             'image' => 'nullable|max:5000',
+            'force_error' => 'required',
         ]);
 
-        if ($validator->fails()) {
-            $all_errors = null;
-
-            foreach ($validator->errors()->messages() as $errors) {
-                foreach ($errors as $error) {
-                    $all_errors .= $error . "<br>";
-                }
-            }
-
-            return response()->json(['success' => false, 'message' => $all_errors]);
-        }
+      if ($validator->fails()) {
+    $errors = $validator->errors()->all();
+    Log::error('Validation failed', $errors);
+    return response()->json([
+        'success' => false,
+        'errors' => $errors
+    ], 422);
+}
 
         if ($request->file('image') != null) {
             $preferred_name = trim($request->name);
