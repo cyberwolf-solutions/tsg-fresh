@@ -563,7 +563,7 @@
                                         @foreach ($product->variants as $variant)
                                             <option value="{{ $variant->id }}">
                                                 {{ $variant->variant_name }} - Rs
-                                                {{ number_format($variant->variant_price, 2) }}
+                                                {{ number_format($variant->final_price, 2) }}
                                             </option>
                                         @endforeach
                                     </select>

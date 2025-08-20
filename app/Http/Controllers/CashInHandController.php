@@ -91,9 +91,15 @@ class CashInHandController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(CashInHand $cashInHand)
-    {
-        //
+      public function show() {
+        $title = 'Cash in hand';
+
+        $breadcrumbs = [
+            // ['label' => 'First Level', 'url' => '', 'active' => false],
+            ['label' => $title, 'url' => '', 'active' => true],
+        ];
+        $data = CashInHand::all();
+     return view('pos.cashinhand.index', compact('title', 'breadcrumbs', 'data'));
     }
 
     /**

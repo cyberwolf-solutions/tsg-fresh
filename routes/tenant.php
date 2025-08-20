@@ -190,8 +190,10 @@ Route::middleware([
 
     Route::post('/checkout/place-order', [CheckoutController::class, 'placeOrder'])->name('web.checkout.place');
 
+        Route::post('/apply-coupon', [CheckoutController::class, 'applyCoupon'])
+            ->name('coupon.apply');
     // Checkout success page
-    // Route::get('/checkout/success/{order}', [CheckoutController::class, 'checkoutSuccess'])->name('checkout.success');
+    Route::get('/checkout/success/{order}', [CheckoutController::class, 'checkoutSuccess'])->name('checkout.success');
     Route::post('/cart/update/{item}', [CartController::class, 'updateQuantity'])->name('cart.update');
 
     Route::middleware(['auth'])->group(function () {
@@ -221,9 +223,10 @@ Route::middleware([
         Route::get('/orders/recent', [RestaurantController::class, 'recentOrders'])->name('orders.recent');
 
         Route::prefix('cash')->group(function () {
-    Route::get('modal', [CashInHandController::class, 'openModal'])->name('cash.modal');
-    Route::post('save', [CashInHandController::class, 'save'])->name('cash.save');
-});
+            Route::get('modal', [CashInHandController::class, 'openModal'])->name('cash.modal');
+            Route::post('save', [CashInHandController::class, 'save'])->name('cash.save');
+            Route::get('show', [CashInHandController::class, 'show'])->name('cashinhand');
+        });
 
 
         Route::post('/orders/payments/store', [OrderController::class, 'payment'])->name('orders.payments.store');

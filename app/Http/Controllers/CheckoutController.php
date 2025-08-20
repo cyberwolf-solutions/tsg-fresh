@@ -14,6 +14,7 @@ use App\Models\DeliveryCharge;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\Coupon;
 use Illuminate\Support\Facades\Auth;
 
 class CheckoutController extends Controller
@@ -205,6 +206,7 @@ class CheckoutController extends Controller
             'items_count' => $cart->items->count()
         ]);
 
+
         // 3. Calculate totals
         $subtotal = $discount = $vat = $total = 0;
         foreach ($cart->items as $item) {
@@ -217,6 +219,31 @@ class CheckoutController extends Controller
 
         Log::info('Totals calculated', compact('subtotal', 'discount', 'vat', 'total'));
 
+        // Apply coupon if available
+        $couponSession = session('coupon');
+        $couponDiscount = 0;
+
+        if ($couponSession) {
+            if ($couponSession['type'] === 'percent') {
+                $couponDiscount = $subtotal * ($couponSession['value'] / 100);
+            } else { // fixed value
+                $couponDiscount = $couponSession['value'];
+            }
+        }
+
+        // add normal discount (like 5% over 12500)
+        $discount = ($subtotal > 12500) ? $subtotal * 0.05 : 0;
+        $discount += $couponDiscount;  // include coupon
+
+        $vat   = ($subtotal - $discount) * 0.18;
+        $total = $subtotal - $discount + $vat;
+
+        Log::info('Totals calculated', compact('subtotal', 'discount', 'vat', 'total'));
+
+        // Parse delivery date before order creation
+        $deliveryDate = $request->delivery_date
+            ? \Carbon\Carbon::createFromFormat('d/m/Y', $request->delivery_date)->format('Y-m-d')
+            : null;
         DB::beginTransaction();
         try {
             // 4. Create order
@@ -234,10 +261,19 @@ class CheckoutController extends Controller
                 'delivery_address' => $request->delivery_address,
                 'delivery_date'   => $deliveryDate,
                 'delivery_fee'  => $request->delivery_charge,
+                'coupon_id'       => $couponSession['id'] ?? null,
+                'coupon_code'     => $couponSession['code'] ?? null,
+                'coupon_value'    => $couponSession['value'] ?? null,
+                'coupon_type'     => $couponSession['type'] ?? null,
                 'created_by'       => $customer->id,
             ]);
 
             Log::info('Order created', ['order_id' => $order->id]);
+
+            if ($couponSession) {
+                Coupon::where('id', $couponSession['id'])->increment('used_count');
+                session()->forget('coupon'); // clear coupon after use
+            }
 
             // 5. Create order items & reduce stock
             foreach ($cart->items as $item) {
@@ -277,10 +313,16 @@ class CheckoutController extends Controller
             Log::info('Cart cleared', ['cart_id' => $cart->id]);
 
             DB::commit();
+            // Clear applied coupon from session
+            session()->forget('coupon');
 
             Log::info('--- Order placement successful ---', ['order_id' => $order->id]);
             return redirect()->route('checkout.success', $order->id)
                 ->with('success', 'Order placed successfully.');
+            // Log::info('--- Order placement successful ---', ['order_id' => $order->id]);
+
+            // return redirect()->route('order.print', $order->id)
+            //     ->with('success', 'Order placed successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Order placement failed', [
@@ -289,5 +331,59 @@ class CheckoutController extends Controller
             ]);
             return redirect()->back()->with('error', 'Failed to place order. Please try again.');
         }
+    }
+
+    public function applyCoupon(Request $request)
+    {
+        $request->validate(['code' => 'required|string']);
+
+        $coupon = Coupon::where('code', $request->code)
+            ->where('active', 1)
+            ->where(function ($q) {
+                $q->whereNull('expiry_date')->orWhere('expiry_date', '>=', now());
+            })
+            ->first();
+
+        if (!$coupon) {
+            return response()->json(['success' => false, 'message' => 'Invalid or expired coupon.']);
+        }
+
+        // Get subtotal from current cart
+        $cart = Cart::with('items.product', 'items.variant')
+            ->where('session_id', session()->getId())
+            ->first();
+
+        if (!$cart || $cart->items->isEmpty()) {
+            return response()->json(['success' => false, 'message' => 'Cart is empty.']);
+        }
+
+        // Calculate subtotal
+        $subtotal = 0;
+        foreach ($cart->items as $item) {
+            $price = $item->variant ? $item->variant->final_price : $item->product->final_price;
+            $subtotal += $price * $item->quantity;
+        }
+
+        // Calculate discount amount
+        if ($coupon->type == 'fixed') {
+            $discountValue = $coupon->value;
+        } else { // percent
+            $discountValue = $subtotal * ($coupon->value / 100);
+        }
+
+        // Save coupon in session
+        session(['coupon' => [
+            'id' => $coupon->id,
+            'code' => $coupon->code,
+            'type' => $coupon->type,
+            'value' => $coupon->value,
+            'discount' => $discountValue
+        ]]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Coupon applied successfully.',
+            'discount' => $discountValue
+        ]);
     }
 }
