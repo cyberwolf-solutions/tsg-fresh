@@ -317,17 +317,23 @@
                                     @if (isset($pvdata) && $pvdata->product_type === 'variable' && $pvdata->variants)
                                         @foreach ($pvdata->variants as $index => $variant)
                                             <div class="row variant-row">
-                                                <div class="col-12 col-md-4 col-lg-4">
+                                                <div class="col-12 col-md-3 col-lg-3">
                                                     <label class="form-label">Type name</label>
                                                     <input type="text" name="tname[]"
                                                         value="{{ $variant->variant_name }}" class="form-control"
                                                         required>
                                                 </div>
-                                                <div class="col-12 col-md-4 col-lg-4">
+                                                <div class="col-12 col-md-3 col-lg-3">
                                                     <label class="form-label">Type price</label>
                                                     <input type="text" name="tprice[]"
                                                         value="{{ $variant->variant_price }}" class="form-control"
                                                         required>
+                                                </div>
+                                                <div class="col-12 col-md-3 col-lg-3">
+                                                    <label class="form-label">Final price</label>
+                                                    <input type="text" name="tfprice[]"
+                                                        value="{{ $variant->final_price }}" class="form-control" required
+                                                        readonly>
                                                 </div>
                                                 <div class="col-12 col-md-2 col-lg-2 d-flex align-items-end">
                                                     <button type="button"
@@ -338,15 +344,20 @@
                                     @else
                                         {{-- default blank row if not editing --}}
                                         <div class="row variant-row">
-                                            <div class="col-12 col-md-4 col-lg-4">
+                                            <div class="col-12 col-md-3 col-lg-3">
                                                 <label class="form-label">Type name</label>
                                                 <input type="text" name="tname[]" class="form-control"
-                                                    placeholder="Enter Type Name">
+                                                    placeholder="Enter Type Name" required>
                                             </div>
-                                            <div class="col-12 col-md-4 col-lg-4">
+                                            <div class="col-12 col-md-3 col-lg-3">
                                                 <label class="form-label">Type price</label>
                                                 <input type="text" name="tprice[]" class="form-control"
-                                                    placeholder="Enter Type Price">
+                                                    placeholder="Enter Type Price" required>
+                                            </div>
+                                            <div class="col-12 col-md-3 col-lg-3">
+                                                <label class="form-label">Final price</label>
+                                                <input type="text" name="tfprice[]" class="form-control"
+                                                    placeholder="Auto-calculated" required disabled>
                                             </div>
                                             <div class="col-12 col-md-2 col-lg-2 d-flex align-items-end">
                                                 <button type="button" class="btn btn-danger remove-row">Remove</button>
@@ -491,14 +502,54 @@
             document.getElementById('finalPrice').value = finalPrice.toFixed(2);
         }
 
+        // ✅ For variants
+        function calculateVariantFinalPrices() {
+            const tax = parseFloat(document.querySelector('[name="tax"]').value) || 0;
+            const taxStatus = document.querySelector('[name="taxstatus"]').value;
+            const taxMethod = document.querySelector('[name="taxmethod"]').value;
+
+            document.querySelectorAll('.variant-row').forEach(function(row) {
+                const priceInput = row.querySelector('[name="tprice[]"]');
+                const finalInput = row.querySelector('[name="tfprice[]"]');
+
+                if (!priceInput || !finalInput) return;
+
+                const price = parseFloat(priceInput.value) || 0;
+                let finalPrice = price;
+
+                if (taxStatus === 'taxable') {
+                    if (taxMethod === 'exclusive') {
+                        finalPrice = price + (price * tax / 100);
+                    } else if (taxMethod === 'inclusive') {
+                        finalPrice = price; // already includes tax
+                    }
+                } else {
+                    finalPrice = price;
+                }
+
+                finalInput.value = finalPrice.toFixed(2);
+            });
+        }
+
         // Attach event listeners
         document.querySelector('[name="pprice"]').addEventListener('input', calculateFinalPrice);
         document.querySelector('[name="tax"]').addEventListener('input', calculateFinalPrice);
         document.querySelector('[name="taxstatus"]').addEventListener('change', calculateFinalPrice);
         document.querySelector('[name="taxmethod"]').addEventListener('change', calculateFinalPrice);
+        // Attach events to variant price inputs dynamically
+        document.addEventListener('input', function(e) {
+            if (e.target.matches('[name="tprice[]"]')) {
+                calculateVariantFinalPrices();
+            }
+        });
 
-        // Initial calculation
-        document.addEventListener('DOMContentLoaded', calculateFinalPrice);
+        // Initial calc
+        document.addEventListener('DOMContentLoaded', () => {
+            calculateFinalPrice();
+            calculateVariantFinalPrices();
+        });
+        // // Initial calculation
+        // document.addEventListener('DOMContentLoaded', calculateFinalPrice);
     </script>
 
     <script>
@@ -518,15 +569,21 @@
             $('#add-variant').click(function() {
                 const row = `
                 <div class="row variant-row">
-                    <div class="col-12 col-md-4 col-lg-4">
+                    <div class="col-12 col-md-3 col-lg-3">
                         <input type="text" name="tname[]" class="form-control mt-2" placeholder="Enter Type Name" required>
                     </div>
-                    <div class="col-12 col-md-4 col-lg-4">
+                    <div class="col-12 col-md-3 col-lg-3">
                         <input type="text" name="tprice[]" class="form-control mt-2" placeholder="Enter Type Price" required>
                     </div>
+                    <div class="col-12 col-md-3 col-lg-3">
+                      <input type="text" name="tfprice[]"
+                                                       class="form-control" required
+                                                        disabled>
+                                                </div>
                     <div class="col-12 col-md-2 col-lg-2 d-flex align-items-end">
                         <button type="button" class="btn btn-danger mt-2 remove-row">Remove</button>
                     </div>
+
                 </div>`;
                 $('#variant-container').append(row);
             });
@@ -621,9 +678,6 @@
 
 
         function sendDataToServer() {
-
-
-
 
             var tableData = [];
             $('#ingredient_tbl tbody tr').each(function(index, row) {
