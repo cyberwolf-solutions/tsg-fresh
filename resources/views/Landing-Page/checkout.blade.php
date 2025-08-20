@@ -559,36 +559,35 @@
                             <div class="col-md-6 mb-3 text-dark small fw-semibold">
                                 <label class="form-label">Last Name *</label>
                                 <input type="text" class="form-control" name="last_name" required>
-
-                        <!-- Header -->
-                        <div class="d-flex justify-content-between mt-2 text-secondary small">
-                            <strong>PRODUCT</strong>
-                            <strong>SUBTOTAL</strong>
-                        </div>
-                        <hr style="margin-top:5px; margin-bottom:8px;">
-
-                        <!-- Cart Items -->
-                        @foreach ($cart->items as $item)
-                            @php
-                                $price = $item->variant ? $item->variant->final_price : $item->product->final_price;
-                            @endphp
-                            <div class="d-flex justify-content-between align-items-center text-secondary small mb-2">
-                                <div class="d-flex align-items-center" style="gap:10px;">
-                                    <img src="{{ asset($item->product->image ?? 'build/images/landing/l1.png') }}"
-                                        alt="Product Image" style="width:50px; height:50px;" class="img-thumbnail">
-                                    <div>
-                                        <span>{{ $item->product->name }}</span>
-                                        @if ($item->variant)
-                                            <span> - {{ $item->variant->variant_name }}</span>
-                                        @endif
-                                        <br>
-                                        <span>Qty: {{ $item->quantity }}</span>
-                                    </div>
-                                </div>
-                                <span class="text-dark fw-semibold">රු
-                                    {{ number_format($price * $item->quantity, 2) }}</span>
-
                             </div>
+                            <!-- Header -->
+                            <div class="d-flex justify-content-between mt-2 text-secondary small">
+                                <strong>PRODUCT</strong>
+                                <strong>SUBTOTAL</strong>
+                            </div>
+                            <hr style="margin-top:5px; margin-bottom:8px;">
+
+                            <!-- Cart Items -->
+                            {{-- 
+                            @foreach ($cart->items as $item)
+                                <div class="d-flex justify-content-between align-items-center text-secondary small mb-2">
+                                    <div class="d-flex align-items-center" style="gap:10px;">
+                                        <img src="{{ asset($item->product->image ?? 'build/images/landing/l1.png') }}"
+                                            alt="Product Image" style="width:50px; height:50px;" class="img-thumbnail">
+                                        <div>
+                                            <span>{{ $item->product->name }}</span>
+                                            @if ($item->variant)
+                                                <span> - {{ $item->variant->variant_name }}</span>
+                                            @endif
+                                            <br>
+                                            <span>Qty: {{ $item->quantity }}</span>
+                                        </div>
+                                    </div>
+                                    <span class="text-dark fw-semibold">රු
+                                        {{ number_format($price * $item->quantity, 2) }}</span>
+                                </div>
+                            @endforeach --}}
+
                         </div>
 
                         <!-- Address -->
@@ -687,6 +686,9 @@
                             <span class="small text-secondary mt-3 d-block">Shipping</span>
                             <hr style="height:2px; margin-top:0; margin-bottom:0;" class="mb-3">
 
+                            <input type="hidden" name="delivery_charge" id="deliveryChargeInput" value="0">
+
+
                             @if ($subtotal >= 10000)
                                 <!-- Subtotal above 10,000 -->
                                 <div class="form-check" style="margin-left: 10px; margin-right:10px;">
@@ -782,6 +784,7 @@
                         </div>
                     </div>
                 </div>
+            </div>
         </form>
     </div>
 
@@ -972,6 +975,29 @@
 
         // Initialize total on page load
         updateTotal();
+    </script>
+    <script>
+        const deliveryRadios = document.querySelectorAll('input[name="delivery_method"]');
+        const deliveryChargeInput = document.getElementById('deliveryChargeInput');
+        const deliveryChargeValue = @json($deliveryCharge ?? 0); // from blade
+
+        deliveryRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'Shipping') {
+                    // Check if it's free or paid
+                    @if ($subtotal >= 10000)
+                        deliveryChargeInput.value = 0; // Free delivery
+                    @else
+                        deliveryChargeInput.value = deliveryChargeValue; // Rs. deliveryCharge
+                    @endif
+                } else if (this.value === 'Store Pickup') {
+                    deliveryChargeInput.value = 0;
+                }
+            });
+        });
+
+        // Trigger initial selection
+        document.querySelector('input[name="delivery_method"]:checked').dispatchEvent(new Event('change'));
     </script>
 
 @endsection

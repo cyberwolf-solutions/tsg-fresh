@@ -53,15 +53,14 @@ class CheckoutController extends Controller
     {
         $tenant = tenant();
 
-        $customerId = Auth::guard('customer')->check()
-            ? Auth::guard('customer')->id()
-            : null;
-
+        // Use customer guard
         $customer = Auth::guard('customer')->check()
-            ? Auth::guard('customer')->user()
+            ? WebCustomer::with('billingAddress')->find(Auth::guard('customer')->id())
             : null;
 
-        Log::info('Customer ID for checkout', ['customer_id' => $customerId]);
+
+
+        $customerId = $customer?->id;
         $sessionId  = session()->getId();
 
         $cart = Cart::with('items.product', 'items.variant')
@@ -85,21 +84,37 @@ class CheckoutController extends Controller
             }
         }
 
-        $deliveryCharge = DeliveryCharge::where('tenant_id', $tenant->id)
-            ->first()?->charge ?? 0;
         // Apply discount if subtotal > 12500
         $discount = ($subtotal > 12500) ? $subtotal * 0.05 : 0;
         $total = $subtotal - $discount;
 
-        return view('Landing-page.checkout', compact('cart', 'subtotal', 'discount', 'total', 'customer', 'deliveryCharge'));
+        $deliveryCharge = DeliveryCharge::where('tenant_id', $tenant->id)
+            ->first()?->charge ?? 0;
+
+        // Fetch billing address
+        $billingAddress = $customer?->billingAddress;
+
+        return view('Landing-page.checkout', compact(
+            'cart',
+            'subtotal',
+            'discount',
+            'total',
+            'deliveryCharge',
+            'customer',
+            'billingAddress'
+        ));
     }
+
     public function placeOrder(Request $request)
     {
         Log::info('--- Start placeOrder ---');
-
+        Log::info($request);
         $customer = null;
+        $oldSessionId = session()->getId();
 
-        // 1. If user is not authenticated, create a new customer first
+
+
+        // 1. If user is not authenticated, create a new customer
         if (!Auth::guard('customer')->check()) {
             Log::info('User not authenticated, validating input for new customer.');
 
@@ -111,8 +126,15 @@ class CheckoutController extends Controller
                 'address1'   => 'required|string',
                 'city'       => 'required|string',
                 'phone'      => 'required|string',
+
+                'delivery_date' => 'required|date_format:d/m/Y|after_or_equal:' . now()->format('d/m/Y'),
             ]);
 
+            $deliveryDate = $request->delivery_date
+                ? \Carbon\Carbon::createFromFormat('d/m/Y', $request->delivery_date)->format('Y-m-d')
+                : null;
+
+            // Create new customer
             $customer = WebCustomer::create([
                 'first_name' => $request->first_name,
                 'last_name'  => $request->last_name,
@@ -124,40 +146,51 @@ class CheckoutController extends Controller
 
             // Create billing address
             $billing = BillingAddress::create([
-                'customer_id'   => $customer->id,
-                'first_name'    => $request->first_name,
-                'last_name'     => $request->last_name,
+                'customer_id'    => $customer->id,
+                'first_name'     => $request->first_name,
+                'last_name'      => $request->last_name,
                 'street_address' => $request->address1,
-                'town'          => $request->city,
-                'phone'         => $request->phone,
-                'email'         => $request->email,
+                'town'           => $request->city,
+                'phone'          => $request->phone,
+                'email'          => $request->email,
             ]);
 
             Log::info('Billing address created', ['billing_id' => $billing->id]);
 
             // Login the new customer
             Auth::guard('customer')->login($customer);
-            Log::info('Customer logged in', ['customer_id' => $customer->id]);
+            session()->regenerate(); // new session id
+            $newSessionId = session()->getId();
 
-            // CRITICAL: Transfer cart from session to customer
+            Log::info('Customer logged in', [
+                'customer_id'    => $customer->id,
+                'old_session_id' => $oldSessionId,
+                'new_session_id' => $newSessionId,
+            ]);
+
+            // Transfer cart from guest session to customer
             $sessionCart = Cart::with('items.product', 'items.variant')
-                ->where('session_id', session()->getId())
+                ->where('session_id', $oldSessionId)
                 ->first();
 
             if ($sessionCart) {
-                // Update cart with customer ID
-                $sessionCart->update(['customer_id' => $customer->id]);
+                $sessionCart->update([
+                    'customer_id' => $customer->id,
+                    'session_id'  => $newSessionId, // update to new session
+                ]);
+
                 Log::info('Cart transferred to customer', [
-                    'cart_id' => $sessionCart->id,
+                    'cart_id'     => $sessionCart->id,
                     'customer_id' => $customer->id
                 ]);
             }
         } else {
+            // Already authenticated customer
             $customer = Auth::guard('customer')->user();
             Log::info('Authenticated user found', ['customer_id' => $customer->id]);
         }
 
-        // 2. Retrieve cart (now it should find the customer's cart)
+        // 2. Retrieve customer cart
         $cart = Cart::with('items.product', 'items.variant')
             ->where('customer_id', $customer->id)
             ->first();
@@ -168,19 +201,19 @@ class CheckoutController extends Controller
         }
 
         Log::info('Cart retrieved', [
-            'cart_id' => $cart->id,
+            'cart_id'     => $cart->id,
             'items_count' => $cart->items->count()
         ]);
 
-        // 3. Calculate totals, discounts, VAT, etc.
+        // 3. Calculate totals
         $subtotal = $discount = $vat = $total = 0;
         foreach ($cart->items as $item) {
             $price = $item->variant ? $item->variant->final_price : $item->product->final_price;
             $subtotal += $price * $item->quantity;
         }
         $discount = ($subtotal > 12500) ? $subtotal * 0.05 : 0;
-        $vat = ($subtotal - $discount) * 0.18;
-        $total = $subtotal - $discount + $vat;
+        $vat      = ($subtotal - $discount) * 0.18;
+        $total    = $subtotal - $discount + $vat;
 
         Log::info('Totals calculated', compact('subtotal', 'discount', 'vat', 'total'));
 
@@ -188,47 +221,54 @@ class CheckoutController extends Controller
         try {
             // 4. Create order
             $order = Order::create([
-                'web_customer_id' => $customer->id,
-                'order_date' => now(),
-                'status' => 'Pending',
-                'subtotal' => $subtotal,
-                'total' => $total,
-                'discount' => $discount,
-                'vat' => $vat,
-                'source' => 'WEB',
-                'delivery_method' => $request->delivery_method,
-                'payment_method' => $request->payment_method,
+                'web_customer_id'  => $customer->id,
+                'order_date'       => now(),
+                'status'           => 'Pending',
+                'subtotal'         => $subtotal,
+                'total'            => $total,
+                'discount'         => $discount,
+                'vat'              => $vat,
+                'source'           => 'WEB',
+                'delivery_method'  => $request->delivery_method,
+                'payment_method'   => $request->payment_method,
                 'delivery_address' => $request->delivery_address,
-                'created_by' => $customer->id,
+                'delivery_date'   => $deliveryDate,
+                'delivery_fee'  => $request->delivery_charge,
+                'created_by'       => $customer->id,
             ]);
 
             Log::info('Order created', ['order_id' => $order->id]);
 
-            // 5. Insert order items and reduce stock
+            // 5. Create order items & reduce stock
             foreach ($cart->items as $item) {
-
                 $price = $item->variant ? $item->variant->final_price : $item->product->final_price;
 
                 OrderItem::create([
-
-                    'order_id' => $order->id,
-                    'product_id' => $item->product_id,
-                    'variant_id' => $item->variant_id,
+                    'order_id'     => $order->id,
+                    'product_id'   => $item->product_id,
+                    'variant_id'   => $item->variant_id,
                     'inventory_id' => $item->inventory_id,
-                    'price' => $price,
-                    'quantity' => $item->quantity,
-                    'total' => $price * $item->quantity,
-                    'created_by' => $customer->id
+                    'price'        => $price,
+                    'quantity'     => $item->quantity,
+                    'total'        => $price * $item->quantity,
+                    'created_by'   => $customer->id,
                 ]);
 
-                Log::info('Order item created', ['order_item_id' => $orderItem->id]);
-
+                // Decrement stock
                 if ($item->inventory_id) {
-                    Inventory::where('id', $item->inventory_id)->decrement('quantity', $item->quantity);
-                    Log::info('Inventory decremented', ['inventory_id' => $item->inventory_id, 'quantity' => $item->quantity]);
+                    Inventory::where('id', $item->inventory_id)
+                        ->decrement('quantity', $item->quantity);
+                    Log::info('Inventory decremented', [
+                        'inventory_id' => $item->inventory_id,
+                        'quantity'     => $item->quantity
+                    ]);
                 } else {
-                    Product::where('id', $item->product_id)->decrement('stock_qty', $item->quantity);
-                    Log::info('Product stock decremented', ['product_id' => $item->product_id, 'quantity' => $item->quantity]);
+                    Product::where('id', $item->product_id)
+                        ->decrement('stock_qty', $item->quantity);
+                    Log::info('Product stock decremented', [
+                        'product_id' => $item->product_id,
+                        'quantity'   => $item->quantity
+                    ]);
                 }
             }
 
@@ -245,7 +285,7 @@ class CheckoutController extends Controller
             DB::rollBack();
             Log::error('Order placement failed', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace'   => $e->getTraceAsString()
             ]);
             return redirect()->back()->with('error', 'Failed to place order. Please try again.');
         }
