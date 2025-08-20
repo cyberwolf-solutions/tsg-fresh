@@ -48,6 +48,7 @@ use App\Http\Controllers\CheckinCheckoutController;
 use App\Http\Controllers\WebCustomerAuthController;
 use App\Http\Controllers\customer\AccountController;
 use App\Http\Controllers\AdditionalPaymentController;
+use App\Http\Controllers\CustomerOrderController;
 use App\Http\Controllers\TableArrangementsController;
 use App\Http\Controllers\EmployeeDesignationsController;
 
@@ -71,6 +72,9 @@ Route::group(['middleware' => ['web']], function () {
     Route::post('/address', [AccountController::class, 'storeAddress'])->name('customer.address.store');
 
     Route::post('/web-logout', [WebCustomerAuthController::class, 'logout'])->name('customer.logout');
+
+    Route::get('/webcustomer/orders', [CustomerOrderController::class, 'index'])
+        ->name('customer.order.index');
 });
 
 foreach (config('tenancy.central_domains') as $domain) {

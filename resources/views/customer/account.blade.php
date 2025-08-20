@@ -159,7 +159,7 @@
                 </div>
                 <nav>
                     <a href="{{ route('customer.dashboard') }}">Dashboard</a>
-                    <a href="{{ route('customer.dashboard') }}">Orders</a>
+                    <a href="{{ route('customer.order.index') }}" class="active">Orders</a>
                     <a href="{{ route('customer.dashboard') }}">Downloads</a>
                     <a href="{{ route('customer.address') }}">Addresses</a>
                     <a href="{{ route('customer.account') }}" class="active">Account details</a>
