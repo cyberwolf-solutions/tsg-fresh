@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Cart;
 use App\Models\Order;
+use App\Models\Coupon;
 use App\Models\Product;
 use App\Models\Inventory;
 use App\Models\OrderItem;
+use App\Models\BankDetail;
 use App\Models\WebCustomer;
 use Illuminate\Http\Request;
 use App\Models\BillingAddress;
@@ -14,7 +16,6 @@ use App\Models\DeliveryCharge;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use App\Models\Coupon;
 use Illuminate\Support\Facades\Auth;
 
 class CheckoutController extends Controller
@@ -332,6 +333,33 @@ class CheckoutController extends Controller
             return redirect()->back()->with('error', 'Failed to place order. Please try again.');
         }
     }
+
+
+    public function success($orderId)
+    {
+        $customerId = Auth::guard('customer')->id();
+
+        // Get order from tenant DB
+        $order = Order::with(['items.product', 'items.variant'])
+            ->where('id', $orderId)
+            ->where('web_customer_id', $customerId)
+            ->first();
+
+        if (!$order) {
+            return redirect()->route('checkout.index')
+                ->with('error', 'Order not found.');
+        }
+
+        // Get customer from central DB
+        $customer = WebCustomer::with('billingAddress')->find($order->web_customer_id);
+
+        // Get tenant bank details
+        $tenantId = tenant('id'); // current tenant id
+        $bankDetails = BankDetail::where('tenant_id', $tenantId)->first();
+
+        return view('Landing-page.ordercomplete', compact('order', 'customer', 'bankDetails'));
+    }
+
 
     public function applyCoupon(Request $request)
     {

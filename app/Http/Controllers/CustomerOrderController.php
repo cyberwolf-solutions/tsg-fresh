@@ -5,46 +5,59 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 
 class CustomerOrderController extends Controller
 {
-    //
     public function index()
     {
+        // Get authenticated customer
         $webCustomer = Auth::guard('customer')->user();
+        if (!$webCustomer) {
+            return redirect()->route('customer.login')->with('error', 'Please login first.');
+        }
 
-        // 1. Get all tenants (assuming you have a tenants table with 'db_name' column)
-        $tenants = DB::connection('central')->table('tenants')->get();
-
+        // Collection to hold all orders
         $allOrders = collect();
 
+        // Get all tenants from central DB
+        $tenants = DB::connection('central')->table('tenants')->get();
+
         foreach ($tenants as $tenant) {
+            $tenantData = json_decode($tenant->data ?? '{}', true);
+            $dbName = $tenantData['tenancy_db_name'] ?? null;
+
+            if (!$dbName) continue;
+
             try {
-                // 2. Dynamically set the tenant DB for this query
-                $orders = DB::connection('tenant') // tenant connection in config
-                    ->setDatabaseName($tenant->db_name) // this requires you to dynamically change the database
-                    ->table('orders')
+                // Dynamically set tenant DB
+                config(['database.connections.tenant.database' => $dbName]);
+                DB::purge('tenant');
+                DB::reconnect('tenant');
+
+                $orders = Order::on('tenant')
                     ->where('web_customer_id', $webCustomer->id)
-                    ->whereNull('deleted_at')
+                    ->with(['items.product', 'items.variant'])
                     ->orderBy('order_date', 'desc')
                     ->get();
 
-                // 3. Add tenant info to each order (optional)
                 foreach ($orders as $order) {
-                    $order->tenant_name = $tenant->name ?? $tenant->db_name;
+                    $order->tenant_name = $tenant->name ?? $dbName;
                 }
 
                 $allOrders = $allOrders->merge($orders);
             } catch (\Exception $e) {
-                // skip tenant if DB doesn't exist or connection fails
+                Log::error('Tenant DB failed: ' . $dbName, ['error' => $e->getMessage()]);
                 continue;
             }
         }
 
+        // Sort all orders by order_date descending
+        $allOrders = $allOrders->sortByDesc('order_date');
+
         return view('customer.order', [
-            'orders' => $allOrders->sortByDesc('order_date'),
+            'orders' => $allOrders,
             'webCustomer' => $webCustomer
         ]);
     }

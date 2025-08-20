@@ -1,7 +1,11 @@
 @extends('landing-page.layouts.app')
 @section('content')
     <style>
-        /* Reuse styles from account page */
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         .account-container {
             margin-top: 100px;
             margin-bottom: 30px;
@@ -35,6 +39,7 @@
             padding: 20px;
             background: #fff;
             border-radius: 5px;
+            height: fit-content;
         }
 
         .account-sidebar img {
@@ -76,39 +81,123 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
         }
 
-        .order-card {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: #fefefe;
+        .order-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
         }
 
-        .order-card h5 {
-            font-weight: bold;
-            margin-bottom: 10px;
+        .order-table th {
+            background-color: #f8f9fa;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #e9ecef;
         }
 
-        .order-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 5px 0;
-            border-bottom: 1px solid #eee;
+        .order-table td {
+            padding: 16px 15px;
+            border-bottom: 1px solid #e9ecef;
+            vertical-align: middle;
         }
 
-        .order-item:last-child {
-            border-bottom: none;
+        .order-table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .order-number {
+            color: #007bff;
+            font-weight: 500;
+        }
+
+        .order-status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .status-on-hold {
+            background-color: #fff3cd;
+            color: #856404;
         }
 
         .order-total {
-            text-align: right;
-            font-weight: bold;
-            margin-top: 10px;
+            font-weight: 600;
+            color: #2c2c2c;
         }
 
-        .text-status {
-            font-weight: 600;
-            color: #0073aa;
+        .order-items {
+            color: #6c757d;
+            font-size: 13px;
+        }
+
+        .btn-view {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 5px 15px;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #495057;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+
+        .btn-view:hover {
+            background-color: #e9ecef;
+            color: #212529;
+        }
+
+        .btn-invoice {
+            background-color: #007bff;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 4px;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+
+        .btn-invoice:hover {
+            background-color: #0069d9;
+            color: white;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        @media (max-width: 992px) {
+            .account-sidebar {
+                border-right: none;
+                border-bottom: 1px solid #e5e5e5;
+                margin-bottom: 20px;
+            }
+
+            .account-content {
+                padding-left: 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .order-table {
+                font-size: 14px;
+            }
+
+            .order-table th,
+            .order-table td {
+                padding: 10px 8px;
+            }
+
+            .btn-view,
+            .btn-invoice {
+                padding: 4px 8px;
+                font-size: 12px;
+            }
         }
     </style>
 
@@ -135,39 +224,247 @@
             </div>
 
             <!-- Main Content -->
-            <div class="col-md-9 account-content text-start">
+            <!-- Main Content -->
+            <div class="col-lg-9 col-md-8 account-content">
                 <h3 class="mb-4">My Orders</h3>
 
-                @forelse($orders as $order)
-                    <div class="order-card">
-                        <h5>Order #{{ $order->id }} - <span class="text-status">{{ $order->status }}</span></h5>
-                        <p>Order Date: {{ \Carbon\Carbon::parse($order->order_date)->format('d/m/Y H:i') }}</p>
-                        <p>Delivery Method: {{ $order->delivery_method }} @if ($order->delivery_fee)
-                                (රු{{ number_format($order->delivery_fee, 2) }})
-                            @endif
-                        </p>
+                <div class="table-responsive">
+                    <table class="order-table">
+                        <thead>
+                            <tr>
+                                <th>ORDER</th>
+                                <th>DATE</th>
+                                <th>STATUS</th>
+                                <th>TOTAL</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($orders as $order)
+                                <tr>
+                                    <td class="order-number">#{{ $order->id }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($order->order_date)->format('F d, Y') }}</td>
+                                    <td>
+                                        @php
+                                            $statusColor = match (strtolower($order->status)) {
+                                                'completed' => 'background-color: #d4edda; color: #155724;',
+                                                'processing' => 'background-color: #d1ecf1; color: #0c5460;',
+                                                'on hold' => 'background-color: #fff3cd; color: #856404;',
+                                                default => 'background-color: #f8d7da; color: #721c24;',
+                                            };
+                                        @endphp
+                                        <span class="order-status" style="{{ $statusColor }}">
+                                            {{ ucfirst($order->status) }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span
+                                            class="order-total">රු{{ number_format($order->total + ($order->delivery_fee ?? 0), 2) }}</span>
+                                        <div class="order-items">
+                                            for {{ $order->items->count() }}
+                                            {{ Str::plural('item', $order->items->count()) }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="btn-view">VIEW</a>
+                                        <a href="#" class="btn-invoice">TAX
+                                            INVOICE</a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="text-muted text-center">You have no orders yet.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-                        <div class="order-items mt-2 mb-2">
-                            @foreach ($order->items as $item)
-                                <div class="order-item">
-                                    <div>{{ $item->product->name ?? 'Product' }} x {{ $item->quantity }}</div>
-                                    <div>රු{{ number_format($item->total, 2) }}</div>
+        </div>
+        <footer class="footer ml-4 mt-5">
+            <div class="container ">
+                <div class="row" style="margin-left: 60px; margin-right: 60px;">
+                    <!-- Latest Products -->
+                    <div class="col-md-4 ml-4">
+                        <div class="footer-widget">
+                            <h5 style="text-transform: uppercase; margin-bottom: 5px;" class="text-secondary">LATEST</h5>
+                            <hr style="border: 0.3px solid currentColor; opacity: 0.4; margin-top: 0; width: 30px;"
+                                class="mb-4">
+
+
+                            <div class="footer-product mt-2"
+                                style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
+                                    alt="Clean Jumbo Prawns"
+                                    style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
+                                <div class="footer-product-info" style="flex: 1;">
+                                    <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
+                                        Prawns
+                                        500g</h6>
+                                    <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
                                 </div>
-                            @endforeach
-                        </div>
-
-                        <div class="order-total">
-                            Subtotal: රු{{ number_format($order->subtotal, 2) }} <br>
-                            Discount: රු{{ number_format($order->discount, 2) }} <br>
-                            VAT: රු{{ number_format($order->vat, 2) }} <br>
-                            <strong>Total: රු{{ number_format($order->total + $order->delivery_fee, 2) }}</strong>
+                            </div>
+                            <div class="footer-product mt-4"
+                                style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
+                                    alt="Clean Jumbo Prawns"
+                                    style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
+                                <div class="footer-product-info" style="flex: 1;">
+                                    <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
+                                        Prawns
+                                        500g</h6>
+                                    <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
+                                </div>
+                            </div>
+                            <div class="footer-product mt-4"
+                                style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
+                                    alt="Clean Jumbo Prawns"
+                                    style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
+                                <div class="footer-product-info" style="flex: 1;">
+                                    <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
+                                        Prawns
+                                        500g</h6>
+                                    <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
+                                </div>
+                            </div>
+                            <div class="footer-product mt-4"
+                                style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
+                                    alt="Clean Jumbo Prawns"
+                                    style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
+                                <div class="footer-product-info" style="flex: 1;">
+                                    <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
+                                        Prawns
+                                        500g</h6>
+                                    <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                @empty
-                    <p class="text-muted">You have no orders yet.</p>
-                @endforelse
 
+                    <!-- Best Selling -->
+                    <div class="col-md-4 ml-4">
+                        <div class="footer-widget">
+                            <h5 style="text-transform: uppercase; margin-bottom: 5px;" class="text-secondary">BEST SELLING
+                            </h5>
+                            <hr style="border: 0.3px solid currentColor; opacity: 0.4; margin-top: 0; width: 30px;"
+                                class="mb-4">
+
+
+                            <div class="footer-product mt-2"
+                                style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
+                                    alt="Clean Jumbo Prawns"
+                                    style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
+                                <div class="footer-product-info" style="flex: 1;">
+                                    <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
+                                        Prawns
+                                        500g</h6>
+                                    <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
+                                </div>
+                            </div>
+                            <div class="footer-product mt-4"
+                                style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
+                                    alt="Clean Jumbo Prawns"
+                                    style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
+                                <div class="footer-product-info" style="flex: 1;">
+                                    <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
+                                        Prawns
+                                        500g</h6>
+                                    <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
+                                </div>
+                            </div>
+                            <div class="footer-product mt-4"
+                                style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
+                                    alt="Clean Jumbo Prawns"
+                                    style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
+                                <div class="footer-product-info" style="flex: 1;">
+                                    <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
+                                        Prawns
+                                        500g</h6>
+                                    <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
+                                </div>
+                            </div>
+                            <div class="footer-product mt-4"
+                                style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
+                                    alt="Clean Jumbo Prawns"
+                                    style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
+                                <div class="footer-product-info" style="flex: 1;">
+                                    <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
+                                        Prawns
+                                        500g</h6>
+                                    <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Top Rated -->
+                    <div class="col-md-4 ml-4">
+                        <div class="footer-widget">
+                            <h5 style="text-transform: uppercase; margin-bottom: 5px;" class="text-secondary">TOP RATED
+                            </h5>
+                            <hr style="border: 0.3px solid currentColor; opacity: 0.4; margin-top: 0; width: 30px;"
+                                class="mb-4">
+
+
+                            <div class="footer-product mt-2"
+                                style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
+                                    alt="Clean Jumbo Prawns"
+                                    style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
+                                <div class="footer-product-info" style="flex: 1;">
+                                    <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
+                                        Prawns
+                                        500g</h6>
+                                    <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
+                                </div>
+                            </div>
+                            <div class="footer-product mt-4"
+                                style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
+                                    alt="Clean Jumbo Prawns"
+                                    style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
+                                <div class="footer-product-info" style="flex: 1;">
+                                    <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
+                                        Prawns
+                                        500g</h6>
+                                    <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
+                                </div>
+                            </div>
+                            <div class="footer-product mt-4"
+                                style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
+                                    alt="Clean Jumbo Prawns"
+                                    style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
+                                <div class="footer-product-info" style="flex: 1;">
+                                    <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
+                                        Prawns
+                                        500g</h6>
+                                    <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
+                                </div>
+                            </div>
+                            <div class="footer-product mt-4"
+                                style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
+                                    alt="Clean Jumbo Prawns"
+                                    style="width: 50px; height: 50px; margin-right: 10px; object-fit: cover;">
+                                <div class="footer-product-info" style="flex: 1;">
+                                    <h6 style="margin: 0 0 5px 0; font-size: 16px;" class="text-secondary">Clean Jumbo
+                                        Prawns
+                                        500g</h6>
+                                    <p class="price text-dark" style="margin: 0; font-size: 16px;">රු 2,450.00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+        </footer>
     </div>
 @endsection

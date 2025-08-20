@@ -125,7 +125,7 @@
                                         <hr style="margin: 3px 0; border: none; border-top: 1px solid #eee;">
                                     </li>
                                     <li style="padding: 3px 0;">
-                                        <a href="{{ route('customer.dashboard') }}"
+                                        <a href="{{ route('customer.order.index') }}"
                                             style="text-decoration: none; color: #333; display: block;">Orders</a>
                                         <hr style="margin: 3px 0; border: none; border-top: 1px solid #eee;">
                                     </li>
@@ -355,20 +355,18 @@
     document.getElementById('cartButton').addEventListener('click', openHeaderCart);
 
     // Load cart items dynamically
-function loadCartItems() {
-    fetch("{{ route('cart.sidebar') }}")
-        .then(res => res.text())
-        .then(html => {
-            document.getElementById('cartItems').innerHTML = html;
+    function loadCartItems() {
+        fetch("{{ route('cart.sidebar') }}")
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('cartItems').innerHTML = html;
 
-            let totalQty = parseInt(document.getElementById('cartTotalQty')?.innerText || 0);
-            document.getElementById('cartCount').innerText = totalQty;
-        })
-        .catch(err => {
-            console.error(err);
-            document.getElementById('cartItems').innerHTML = '<p>Failed to load cart.</p>';
-        });
-}
-
-
+                let totalQty = parseInt(document.getElementById('cartTotalQty')?.innerText || 0);
+                document.getElementById('cartCount').innerText = totalQty;
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById('cartItems').innerHTML = '<p>Failed to load cart.</p>';
+            });
+    }
 </script>
