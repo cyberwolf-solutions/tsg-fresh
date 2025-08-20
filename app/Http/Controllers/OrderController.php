@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 use App\Models\Order;
+use App\Models\OrderPayment;
 use App\Models\Settings;
 use DateTime;
 use Illuminate\Http\Request;
@@ -156,7 +157,38 @@ class OrderController extends Controller
     }
 
 
+public function payment(Request $request)
+    {
+        $request->validate([
+            'order_id'      => 'required|integer',
+            'date'          => 'required|date',
+            'sub_total'     => 'required|numeric',
+            'vat'           => 'nullable|numeric',
+            'discount'      => 'nullable|numeric',
+            'total'         => 'required|numeric',
+            'payment_type'  => 'required|in:Cash,Card',
+            'payment_status'=> 'required|in:Unpaid,Partially Paid,Paid',
+        ]);
 
+        $payment = OrderPayment::create([
+            'order_id'      => $request->order_id,
+            'date'          => $request->date,
+            'sub_total'     => $request->sub_total,
+            'vat'           => $request->vat,
+            'discount'      => $request->discount,
+            'total'         => $request->total,
+            'payment_type'  => $request->payment_type,
+            'description'   => $request->description,
+            'payment_status'=> $request->payment_status,
+            'created_by'    => Auth::id(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Payment saved successfully',
+            'data'    => $payment
+        ]);
+    }
     public function print(string $id)
     {
         $data = Order::find($id);

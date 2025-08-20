@@ -713,5 +713,7 @@
 
 
         }
-    </script>
+  
+  
+  </script>
 @endsection
