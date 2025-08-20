@@ -553,25 +553,23 @@
 
                         <span class="small text-secondary">Shipping</span>
                         <hr style="height:2px; margin-top:0; margin-bottom:0;" class="mb-3">
-                        <div class="form-check" style="margin-left: 10px; margin-right:10px;">
-                            <input class="form-check-input" type="radio" name="deliveryOption" id="delivery1" checked>
-                            <label class="form-check-label" for="delivery1" style="font-size:12px;">
-                                Free Delivery in Limited Area ( above Rs. 10000 order ) (Free)
-                            </label>
+                        <div id="shippingOptions" style="margin-left: 10px; margin-right:10px;">
+                            <!-- Shipping options will be dynamically inserted here -->
                         </div>
 
-                        <div class="form-check mb-3" style="margin-left: 10px; margin-right:10px;">
-                            <input class="form-check-input" type="radio" name="deliveryOption" id="delivery2">
-                            <label class="form-check-label" for="delivery2" style="font-size:12px;">
-                                Store Pickup - #38, Charles Dr, Kollupitiya, Colombo 3
-                            </label>
-                        </div>
 
-                        <span class="text-secondary "
-                            style="margin-left: 10px;  margin-right:10px; font-size: 12px;">Shipping
-                            to No 201/4
-                            gampola Road, Nawalapitiya,
-                            Kandy.</span>
+
+                        <span class="text-secondary" style="margin-left: 10px; margin-right:10px; font-size: 12px;">
+                            Shipping to
+                            @if ($billingAddress)
+                                {{ $billingAddress->street_address }},
+                                {{ $billingAddress->town }},
+                                {{ $billingAddress->customer->city ?? '' }} <!-- if you have city column in customer -->
+                            @else
+                                No billing address set.
+                            @endif
+                        </span>
+
 
                         <span class="text-secondary change-address"
                             style="margin-left: 10px; margin-right: 10px; font-size: 12px; cursor: pointer;">Change
@@ -818,6 +816,7 @@
         });
     </script>
     <script>
+        let deliveryCharge = {{ $deliveryCharge }};
         // document.addEventListener('DOMContentLoaded', function() {
         //     loadCartPageItems();
         // });
@@ -929,17 +928,27 @@
                 subtotal += price * qty;
             });
 
-            // Discount example: 5% off for orders above 12500
+            // Discount: 5% off for orders above 12500
             let discount = subtotal > 12500 ? subtotal * 0.05 : 0;
-            let total = subtotal - discount;
+
+            // Shipping cost: Rs. 750 if subtotal < 10000, else free
+            let shippingCost = subtotal >= 10000 ? 0 : deliveryCharge;
+
+
+            // Calculate total
+            let total = subtotal - discount + shippingCost;
 
             // Update summary in DOM
-            document.querySelector('.card-body .d-flex.justify-content-between span:last-child').innerText = 'රු ' +
-                subtotal.toFixed(2); // Subtotal
-            document.querySelector('.card-body .mt-3 .d-flex.justify-content-between span:last-child').innerText = 'රු ' +
-                total.toFixed(2); // Total
-            updateDiscount();
+            document.querySelector('.cart-subtotal').innerText = 'රු' + subtotal.toFixed(2); // Subtotal
+            document.getElementById('discountValue').innerText = 'රු' + discount.toFixed(2); // Discount
+            document.getElementById('orderTotal').innerText = 'රු' + total.toFixed(2); // Total
 
+            // Update VAT (assuming 18% VAT on total)
+            let vat = total * 0.18;
+            document.querySelector('.text-end .text-muted').innerText = `(includes රු${vat.toFixed(2)} VAT 18%)`;
+
+            // Update shipping options
+            updateShippingOptions();
         }
 
         function updateDiscount() {
@@ -959,5 +968,46 @@
         }
 
         // Call this whenever subtotal or total changes
+
+        function updateShippingOptions() {
+            // Get subtotal from the DOM
+            let subtotalText = document.querySelector('.cart-subtotal').innerText;
+            let subtotal = parseFloat(subtotalText.replace(/[^\d.]/g, '')) || 0;
+
+            let shippingContainer = document.getElementById('shippingOptions');
+            shippingContainer.innerHTML = '';
+
+            let storePickupOption = `
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="radio" name="deliveryOption" id="delivery2">
+            <label class="form-check-label" for="delivery2" style="font-size:12px;">
+                Store Pickup - #38, Charles Dr, Kollupitiya, Colombo 3
+            </label>
+        </div>
+    `;
+
+            let shippingOption = '';
+            if (subtotal >= 10000) {
+                shippingOption = `
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="radio" name="deliveryOption" id="delivery1" checked>
+                <label class="form-check-label" for="delivery1" style="font-size:12px;">
+                    Free Delivery in Limited Area (above Rs. 10000 order) (Free)
+                </label>
+            </div>
+        `;
+            } else {
+                shippingOption = `
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="radio" name="deliveryOption" id="delivery1" checked>
+                <label class="form-check-label" for="delivery1" style="font-size:12px;">
+                    Delivery in Limited Areas: රු${deliveryCharge.toFixed(2)}
+                </label>
+            </div>
+        `;
+            }
+
+            shippingContainer.innerHTML = shippingOption + storePickupOption;
+        }
     </script>
 @endsection

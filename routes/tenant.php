@@ -268,7 +268,7 @@ Route::middleware([
         Route::get('/opurchase-payment/{id}', [OtherPurchaseController::class, 'viewAddPayment'])->name('opurchases.payment');
         Route::post('/opurchase-payment', [OtherPurchaseController::class, 'addPayment'])->name('opurchases.payment.add');
         Route::get('/opurchase-payments/view/{id}', [OtherPurchaseController::class, 'viewPayments'])->name('opurchases.payments.view');
-Route::post('/orders/update-status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
+        Route::post('/orders/update-status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
 
         Route::get('/inventory/stock', [InventoryController::class, 'stock'])->name('inventory.stock');
         Route::resource('inventory', InventoryController::class)->middleware('can:manage Inventory');

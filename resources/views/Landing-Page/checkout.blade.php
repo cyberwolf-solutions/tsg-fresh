@@ -481,202 +481,290 @@
         <hr class="custom-grey-hr" style="border-color:#ccc; width:58%; opacity:1; margin-top:0;">
 
 
+        <form action="{{ route('web.checkout.place') }}" method="POST">
+            @csrf
+            <!-- Checkout Grid -->
+            <div class="row mt-0">
+                <!-- Billing & Shipping -->
+                <div class="col-md-7 mt-2">
+                    <h5 class="text-dark fw-semibold" style="font-size: 18px">BILLING & SHIPPING</h5>
 
-        <!-- Checkout Grid -->
-        <div class="row mt-0">
-            <!-- Billing & Shipping -->
-            <div class="col-md-7 mt-2">
-                <h5 class="text-dark fw-semibold" style="font-size: 18px">BILLING & SHIPPING</h5>
-
-                <form action="{{ route('web.checkout.place') }}" method="POST">
-                    @csrf
                     @if (Auth::guard('customer')->check())
-                        <input type="hidden" name="web_customer_id" value="{{ Auth::guard('customer')->id() }}">
+                        <!-- Existing form for authenticated customers -->
+
+                        <input type="hidden" name="web_customer_id" value="{{ $customer->id ?? '' }}">
+
+                        <!-- Name -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3 text-dark small fw-semibold">
+                                <label class="form-label">First name *</label>
+                                <input type="text" class="form-control" name="first_name"
+                                    value="{{ old('first_name', $customer->billingAddress->first_name ?? ($customer->first_name ?? '')) }}"
+                                    required>
+                            </div>
+                            <div class="col-md-6 mb-3 text-dark small fw-semibold">
+                                <label class="form-label">Last name (optional)</label>
+                                <input type="text" class="form-control" name="last_name"
+                                    value="{{ old('last_name', $customer->billingAddress->last_name ?? ($customer->last_name ?? '')) }}">
+                            </div>
+                        </div>
+
+                        <!-- Address -->
+                        <div class="mb-3">
+                            <label class="form-label text-dark small fw-semibold">Street address *</label>
+                            <input type="text" class="form-control mb-2" placeholder="House number and street name"
+                                name="address1"
+                                value="{{ old('address1', $customer->billingAddress->street_address ?? '') }}" required>
+                            <input type="text" class="form-control" placeholder="Apartment, suite, unit, etc. (optional)"
+                                name="address2" value="{{ old('address2', $customer->billingAddress->address2 ?? '') }}">
+                        </div>
+
+                        <!-- City -->
+                        <div class="mb-3">
+                            <label class="form-label text-dark small fw-semibold">Town / City *</label>
+                            <input type="text" class="form-control" name="city"
+                                value="{{ old('city', $customer->billingAddress->town ?? 'Kandy') }}" required>
+                        </div>
+
+                        <!-- Phone & Email -->
+                        <div class="mb-3">
+                            <label class="form-label text-dark small fw-semibold">Phone *</label>
+                            <input type="tel" class="form-control" name="phone"
+                                value="{{ old('phone', $customer->billingAddress->phone ?? '') }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-dark small fw-semibold">Email address *</label>
+                            <input type="email" class="form-control" name="email"
+                                value="{{ old('email', $customer->billingAddress->email ?? ($customer->email ?? '')) }}"
+                                required>
+                        </div>
+
+                        <!-- Additional Info -->
+                        <div class="mb-3">
+                            <label class="form-label small text-dark fw-semibold">Order notes (optional)</label>
+                            <textarea class="form-control" name="notes" placeholder="Special notes for delivery.">{{ old('notes') }}</textarea>
+                        </div>
+                    @else
+                        <!-- Form for guest users (not authenticated) -->
+
+                        @csrf
+
+                        <!-- First & Last Name -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3 text-dark small fw-semibold">
+                                <label class="form-label">First Name *</label>
+                                <input type="text" class="form-control" name="first_name" required>
+                            </div>
+                            <div class="col-md-6 mb-3 text-dark small fw-semibold">
+                                <label class="form-label">Last Name *</label>
+                                <input type="text" class="form-control" name="last_name" required>
+                            </div>
+                        </div>
+
+                        <!-- Address -->
+                        <div class="mb-3">
+                            <label class="form-label text-dark small fw-semibold">Street Address *</label>
+                            <input type="text" class="form-control mb-2" name="address1"
+                                placeholder="House number and street name" required>
+                            <input type="text" class="form-control" name="address2"
+                                placeholder="Apartment, suite, unit, etc. (optional)">
+                        </div>
+
+                        <!-- City -->
+                        <div class="mb-3">
+                            <label class="form-label text-dark small fw-semibold">Town / City *</label>
+                            <input type="text" class="form-control" name="city" value="Kandy" required>
+                        </div>
+
+                        <!-- Phone & Email -->
+                        <div class="mb-3">
+                            <label class="form-label text-dark small fw-semibold">Phone *</label>
+                            <input type="tel" class="form-control" name="phone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-dark small fw-semibold">Email Address *</label>
+                            <input type="email" class="form-control" name="email" required>
+                        </div>
+
+                        <!-- Create Account -->
+                        <div class="mb-3">
+                            <label class="form-label text-dark small fw-semibold">Create Account Password *</label>
+                            <input type="password" class="form-control" name="password" required>
+                        </div>
+
+                        <!-- Additional Info -->
+                        <div class="mb-3">
+                            <label class="form-label small text-dark fw-semibold">Order Notes (optional)</label>
+                            <textarea class="form-control" name="notes" placeholder="Special notes for delivery."></textarea>
+                        </div>
                     @endif
+                </div>
 
-                    <!-- Name -->
-                    <div class="row">
-                        <div class="col-md-6 mb-3 text-dark small fw-semibold">
-                            <label class="form-label">First name *</label>
-                            <input type="text" class="form-control" name="first_name" required>
-                        </div>
-                        <div class="col-md-6 mb-3 text-dark small fw-semibold">
-                            <label class="form-label">Last name (optional)</label>
-                            <input type="text" class="form-control" name="last_name">
-                        </div>
-                    </div>
+                <!-- Order Summary -->
+                <div class="col-md-5">
+                    <div class="card border-primary">
+                        <div class="card-body">
+                            <h5 class="card-title mt-3 mb-2">YOUR ORDER</h5>
 
-                    <!-- Address -->
-                    <div class="mb-3">
-                        <label class="form-label text-dark small fw-semibold">Street address *</label>
-                        <input type="text" class="form-control mb-2" placeholder="House number and street name"
-                            name="address1" required>
-                        <input type="text" class="form-control" placeholder="Apartment, suite, unit, etc. (optional)"
-                            name="address2">
-                    </div>
+                            <!-- Header -->
+                            <div class="d-flex justify-content-between mt-2 text-secondary small">
+                                <strong>PRODUCT</strong>
+                                <strong>SUBTOTAL</strong>
+                            </div>
+                            <hr style="margin-top:5px; margin-bottom:8px;">
 
-                    <!-- City -->
-                    <div class="mb-3">
-                        <label class="form-label text-dark small fw-semibold">Town / City *</label>
-                        <input type="text" class="form-control" name="city" value="Kandy" required>
-                    </div>
+                            <!-- Cart Items -->
+                            @foreach ($cart->items as $item)
+                                @php
+                                    $price = $item->variant ? $item->variant->variant_price : $item->product->price;
+                                @endphp
+                                <div class="d-flex justify-content-between align-items-center text-secondary small mb-2">
+                                    <div class="d-flex align-items-center" style="gap:10px;">
+                                        <img src="{{ asset($item->product->image ?? 'build/images/landing/l1.png') }}"
+                                            alt="Product Image" style="width:50px; height:50px;" class="img-thumbnail">
+                                        <div>
+                                            <span>{{ $item->product->name }}</span>
+                                            @if ($item->variant)
+                                                <span> - {{ $item->variant->variant_name }}</span>
+                                            @endif
+                                            <br>
+                                            <span>Qty: {{ $item->quantity }}</span>
+                                        </div>
+                                    </div>
+                                    <span class="text-dark fw-semibold">රු
+                                        {{ number_format($price * $item->quantity, 2) }}</span>
+                                </div>
+                                <hr>
+                            @endforeach
 
-                    <!-- Phone & Email -->
-                    <div class="mb-3">
-                        <label class="form-label text-dark small fw-semibold">Phone *</label>
-                        <input type="tel" class="form-control" name="phone" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-dark small fw-semibold">Email address *</label>
-                        <input type="email" class="form-control" name="email" required>
-                    </div>
+                            <!-- Subtotal -->
+                            <div class="d-flex justify-content-between text-secondary small">
+                                <span>Subtotal</span>
+                                <span id="subtotalField" class="text-dark fw-semibold">රු
+                                    {{ number_format($subtotal, 2) }}</span>
+                            </div>
 
-                    <!-- Additional Info -->
-                    <div class="mb-3">
-                        <label class="form-label small text-dark fw-semibold">Order notes (optional)</label>
-                        <textarea class="form-control" name="notes" placeholder="Special notes for delivery."></textarea>
-                    </div>
+                            <!-- Discount -->
+                            <div class="d-flex justify-content-between mt-2">
+                                <span class="small text-secondary" style="font-size:12px; line-height:1.2;">
+                                    5% off for purchase above 12,500.00
+                                </span>
+                                <span id="discountValue" class="text-dark fw-semibold">රු
+                                    {{ number_format($discount, 2) }}</span>
+                            </div>
 
-            </div>
+                            <!-- Shipping -->
+                            <span class="small text-secondary mt-3 d-block">Shipping</span>
+                            <hr style="height:2px; margin-top:0; margin-bottom:0;" class="mb-3">
 
-            <!-- Order Summary -->
-            <div class="col-md-5">
-                <div class="card border-primary">
-                    <div class="card-body">
-                        <h5 class="card-title mt-3 mb-2">YOUR ORDER</h5>
+                            @if ($subtotal >= 10000)
+                                <!-- Subtotal above 10,000 -->
+                                <div class="form-check" style="margin-left: 10px; margin-right:10px;">
+                                    <input class="form-check-input" type="radio" name="delivery_method" id="delivery1"
+                                        value="Shipping" checked>
+                                    <label class="form-check-label" for="delivery1" style="font-size:12px;">
+                                        Free Delivery in Limited Area (above Rs. 10,000 order) (Free)
+                                    </label>
+                                </div>
 
-                        <!-- Header -->
-                        <div class="d-flex justify-content-between mt-2 text-secondary small">
-                            <strong>PRODUCT</strong>
-                            <strong>SUBTOTAL</strong>
-                        </div>
-                        <hr style="margin-top:5px; margin-bottom:8px;">
+                                <div class="form-check" style="margin-left: 10px; margin-right:10px;">
+                                    <input class="form-check-input" type="radio" name="delivery_method" id="pickup"
+                                        value="Store Pickup">
+                                    <label class="form-check-label" for="pickup" style="font-size:12px;">
+                                        Store Pickup - #38, Charles Dr, Kollupitiya, Colombo 3
+                                    </label>
+                                </div>
+                            @else
+                                <!-- Subtotal below 10,000 -->
+                                <div class="form-check" style="margin-left: 10px; margin-right:10px;">
+                                    <input class="form-check-input" type="radio" name="delivery_method" id="pickup"
+                                        value="Store Pickup" checked>
+                                    <label class="form-check-label" for="pickup" style="font-size:12px;">
+                                        Store Pickup - #38, Charles Dr, Kollupitiya, Colombo 3
+                                    </label>
+                                </div>
 
-                        <!-- Cart Items -->
-                        @foreach ($cart->items as $item)
-                            @php
-                                $price = $item->variant ? $item->variant->variant_price : $item->product->price;
-                            @endphp
-                            <div class="d-flex justify-content-between align-items-center text-secondary small mb-2">
-                                <div class="d-flex align-items-center" style="gap:10px;">
-                                    <img src="{{ asset($item->product->image ?? 'build/images/landing/l1.png') }}"
-                                        alt="Product Image" style="width:50px; height:50px;" class="img-thumbnail">
-                                    <div>
-                                        <span>{{ $item->product->name }}</span>
-                                        @if ($item->variant)
-                                            <span> - {{ $item->variant->variant_name }}</span>
-                                        @endif
-                                        <br>
-                                        <span>Qty: {{ $item->quantity }}</span>
+                                <div class="form-check" style="margin-left: 10px; margin-right:10px;">
+                                    <input class="form-check-input" type="radio" name="delivery_method" id="delivery1"
+                                        value="Shipping">
+                                    <label class="form-check-label" for="delivery1" style="font-size:12px;">
+                                        Delivery in Limited Areas: රු{{ number_format($deliveryCharge, 2) }}
+                                    </label>
+                                </div>
+                            @endif
+
+
+
+                            <!-- Total -->
+                            <div class="d-flex justify-content-between mt-3">
+                                <span class="small text-secondary">Total</span>
+                                <span id="orderTotal" class="small text-dark fw-semibold">රු
+                                    {{ number_format($total, 2) }}</span>
+                            </div>
+                            <div class="text-end">
+                                <small class="text-muted" style="font-size: 12px">(includes VAT)</small>
+                            </div>
+
+                            <hr>
+
+                            <!-- Delivery Date -->
+                            <div class="mb-3">
+                                <label for="deliveryDate" class="form-label small fw-bold">Delivery Date *</label>
+                                <input type="text" class="form-control mb-3" style="width: 300px;"
+                                    name="delivery_date" placeholder="Choose a date" id="deliveryDate">
+                                <span style="font-size: 10px; margin-bottom: 10px;" class="text-secondary">
+                                    We will try our best to deliver your order on the specified date.
+                                </span>
+                            </div>
+
+                            <!-- Payment Methods -->
+                            <span class="small text-secondary">Payment</span>
+                            <hr style="height:2px; margin-top:0; margin-bottom:0;" class="mb-3">
+                            <div class="mb-3">
+                                <div class="form-check" style="margin-left: 10px; margin-right:10px;">
+                                    <input type="radio" class="form-check-input" name="payment_method" id="payment1"
+                                        value="Bank" checked>
+                                    <label class="form-check-label" for="payment1" style="font-size:12px;">Direct bank
+                                        transfer</label>
+                                </div>
+                                <div class="form-check mb-3" style="margin-left: 10px; margin-right:10px;">
+                                    <input type="radio" class="form-check-input" name="payment_method" id="payment2"
+                                        value="COD">
+                                    <label class="form-check-label" for="payment2" style="font-size:12px;">Cash on
+                                        Delivery -
+                                        COD</label>
+                                </div>
+                                <div class="form-check mb-3" style="margin-left: 10px; margin-right:10px;">
+                                    <input type="radio" class="form-check-input" name="payment_method" id="payment3"
+                                        value="Card">
+                                    <label class="form-check-label" for="payment3" style="font-size:12px;">Online
+                                        Payment</label>
+                                    <div class="mt-2 ms-4">
+                                        <img src="https://www.payhere.lk/downloads/images/payhere_long_banner.png"
+                                            alt="PayHere" style="max-width: 100%;">
                                     </div>
                                 </div>
-                                <span class="text-dark fw-semibold">රු
-                                    {{ number_format($price * $item->quantity, 2) }}</span>
                             </div>
-                            <hr>
-                        @endforeach
 
-                        <!-- Subtotal -->
-                        <div class="d-flex justify-content-between text-secondary small">
-                            <span>Subtotal</span>
-                            <span id="subtotalField" class="text-dark fw-semibold">රු
-                                {{ number_format($subtotal, 2) }}</span>
+                            <!-- Place Order Button -->
+                            <button type="submit" class="btn custom-outline-blue w-100" id="check">PLACE
+                                ORDER</button>
                         </div>
-
-                        <!-- Discount -->
-                        <div class="d-flex justify-content-between mt-2">
-                            <span class="small text-secondary" style="font-size:12px; line-height:1.2;">
-                                5% off for purchase above 12,500.00
-                            </span>
-                            <span id="discountValue" class="text-dark fw-semibold">රු
-                                {{ number_format($discount, 2) }}</span>
-                        </div>
-
-                        <!-- Shipping -->
-                        <span class="small text-secondary mt-3 d-block">Shipping</span>
-                        <hr style="height:2px; margin-top:0; margin-bottom:0;" class="mb-3">
-                        <div class="form-check" style="margin-left: 10px; margin-right:10px;">
-                            <input class="form-check-input" type="radio" name="delivery_method" id="delivery1"
-                                value="Shipping" checked>
-                            <label class="form-check-label" for="delivery1" style="font-size:12px;">
-                                Free Delivery in Limited Area (above Rs. 10,000 order) (Free)
-                            </label>
-                        </div>
-                        <div class="form-check mb-3" style="margin-left: 10px; margin-right:10px;">
-                            <input class="form-check-input" type="radio" name="delivery_method" id="delivery2"
-                                value="Pickup">
-                            <label class="form-check-label" for="delivery2" style="font-size:12px;">
-                                Store Pickup - #38, Charles Dr, Kollupitiya, Colombo 3
-                            </label>
-                        </div>
-
-                        <!-- Total -->
-                        <div class="d-flex justify-content-between mt-3">
-                            <span class="small text-secondary">Total</span>
-                            <span id="orderTotal" class="small text-dark fw-semibold">රු
-                                {{ number_format($total, 2) }}</span>
-                        </div>
-                        <div class="text-end">
-                            <small class="text-muted" style="font-size: 12px">(includes VAT)</small>
-                        </div>
-
-                        <hr>
-
-                        <!-- Delivery Date -->
-                        <div class="mb-3">
-                            <label for="deliveryDate" class="form-label small fw-bold">Delivery Date *</label>
-                            <input type="text" class="form-control mb-3" style="width: 300px;" name="delivery_date"
-                                placeholder="Choose a date">
-                            <span style="font-size: 10px; margin-bottom: 10px;" class="text-secondary">
-                                We will try our best to deliver your order on the specified date.
-                            </span>
-                        </div>
-
-                        <!-- Payment Methods -->
-                        <span class="small text-secondary">Payment</span>
-                        <hr style="height:2px; margin-top:0; margin-bottom:0;" class="mb-3">
-                        <div class="mb-3">
-                            <div class="form-check" style="margin-left: 10px; margin-right:10px;">
-                                <input type="radio" class="form-check-input" name="payment_method" id="payment1"
-                                    value="Bank" checked>
-                                <label class="form-check-label" for="payment1" style="font-size:12px;">Direct bank
-                                    transfer</label>
-                            </div>
-                            <div class="form-check mb-3" style="margin-left: 10px; margin-right:10px;">
-                                <input type="radio" class="form-check-input" name="payment_method" id="payment2"
-                                    value="COD">
-                                <label class="form-check-label" for="payment2" style="font-size:12px;">Cash on Delivery -
-                                    COD</label>
-                            </div>
-                            <div class="form-check mb-3" style="margin-left: 10px; margin-right:10px;">
-                                <input type="radio" class="form-check-input" name="payment_method" id="payment3"
-                                    value="Card">
-                                <label class="form-check-label" for="payment3" style="font-size:12px;">Online
-                                    Payment</label>
-                                <div class="mt-2 ms-4">
-                                    <img src="https://www.payhere.lk/downloads/images/payhere_long_banner.png"
-                                        alt="PayHere" style="max-width: 100%;">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Place Order Button -->
-                        <button type="submit" class="btn custom-outline-blue w-100" id="check">PLACE ORDER</button>
                     </div>
                 </div>
-            </div>
-        </div>
         </form>
+    </div>
 
-        @if ($errors->any())
-            <div class="alert alert-danger mt-3">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+
+    @if ($errors->any())
+        <div class="alert alert-danger mt-3">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
     </div>
 
@@ -832,4 +920,28 @@
             }
         });
     </script>
+    <script>
+        const deliveryCharge = {{ $deliveryCharge }};
+        const subtotal = {{ $subtotal }};
+        let total = subtotal;
+
+        const orderTotalEl = document.getElementById('orderTotal');
+        const deliveryRadio = document.getElementById('delivery1');
+        const pickupRadio = document.getElementById('pickup');
+
+        function updateTotal() {
+            total = subtotal;
+            if (subtotal < 10000 && deliveryRadio.checked) {
+                total += deliveryCharge;
+            }
+            orderTotalEl.innerText = 'රු ' + total.toFixed(2);
+        }
+
+        deliveryRadio.addEventListener('change', updateTotal);
+        pickupRadio.addEventListener('change', updateTotal);
+
+        // Initialize total on page load
+        updateTotal();
+    </script>
+
 @endsection

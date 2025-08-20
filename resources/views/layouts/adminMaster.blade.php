@@ -202,6 +202,18 @@
                         <span>Web</span>
                     </a>
                 </li>
+                <li class="{{ request()->is('admin/delivery*') ? 'active' : '' }}">
+                    <a href="{{ route('delivery-charges.index') }}">
+                        <i class="fas fa-globe"></i>
+                        <span>Delivery</span>
+                    </a>
+                </li>
+                <li class="{{ request()->is('admin/bank-details*') ? 'active' : '' }}">
+                    <a href="{{ route('bank-details.index') }}">
+                        <i class="fas fa-globe"></i>
+                        <span>Bank Details</span>
+                    </a>
+                </li>
             </ul>
         </nav>
 
