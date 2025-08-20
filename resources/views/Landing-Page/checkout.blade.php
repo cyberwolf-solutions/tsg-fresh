@@ -555,7 +555,7 @@
                         <!-- Cart Items -->
                         @foreach ($cart->items as $item)
                             @php
-                                $price = $item->variant ? $item->variant->variant_price : $item->product->price;
+                                $price = $item->variant ? $item->variant->final_price : $item->product->final_price;
                             @endphp
                             <div class="d-flex justify-content-between align-items-center text-secondary small mb-2">
                                 <div class="d-flex align-items-center" style="gap:10px;">

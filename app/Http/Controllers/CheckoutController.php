@@ -65,7 +65,7 @@ class CheckoutController extends Controller
 
         if ($cart && $cart->items) {
             foreach ($cart->items as $item) {
-                $price = $item->variant ? $item->variant->variant_price : $item->product->price;
+                $price = $item->variant ? $item->variant->final_price : $item->product->final_price;
                 $subtotal += $price * $item->quantity;
                 $totalQty += $item->quantity;
             }
@@ -94,7 +94,7 @@ class CheckoutController extends Controller
         $vat = 0;
 
         foreach ($cart->items as $item) {
-            $price = $item->variant ? $item->variant->variant_price : $item->product->price;
+            $price = $item->variant ? $item->variant->final_price : $item->product->final_price;
             $subtotal += $price * $item->quantity;
         }
 
@@ -132,7 +132,7 @@ class CheckoutController extends Controller
 
             // 2. Insert order items and reduce stock
             foreach ($cart->items as $item) {
-                $price = $item->variant ? $item->variant->variant_price : $item->product->price;
+                $price = $item->variant ? $item->variant->final_price : $item->product->final_price;
 
                 OrderItem::create([
                     'order_id' => $order->id,
