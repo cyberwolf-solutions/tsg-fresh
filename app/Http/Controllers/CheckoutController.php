@@ -79,7 +79,7 @@ class CheckoutController extends Controller
 
         if ($cart && $cart->items) {
             foreach ($cart->items as $item) {
-                $price = $item->variant ? $item->variant->variant_price : $item->product->price;
+                $price = $item->variant ? $item->variant->final_price : $item->product->final_price;
                 $subtotal += $price * $item->quantity;
                 $totalQty += $item->quantity;
             }
@@ -175,7 +175,7 @@ class CheckoutController extends Controller
         // 3. Calculate totals, discounts, VAT, etc.
         $subtotal = $discount = $vat = $total = 0;
         foreach ($cart->items as $item) {
-            $price = $item->variant ? $item->variant->variant_price : $item->product->price;
+            $price = $item->variant ? $item->variant->final_price : $item->product->final_price;
             $subtotal += $price * $item->quantity;
         }
         $discount = ($subtotal > 12500) ? $subtotal * 0.05 : 0;
@@ -206,8 +206,11 @@ class CheckoutController extends Controller
 
             // 5. Insert order items and reduce stock
             foreach ($cart->items as $item) {
-                $price = $item->variant ? $item->variant->variant_price : $item->product->price;
-                $orderItem = OrderItem::create([
+
+                $price = $item->variant ? $item->variant->final_price : $item->product->final_price;
+
+                OrderItem::create([
+
                     'order_id' => $order->id,
                     'product_id' => $item->product_id,
                     'variant_id' => $item->variant_id,

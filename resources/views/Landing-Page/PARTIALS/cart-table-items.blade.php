@@ -3,7 +3,7 @@
 @if($cart && $cart->items->count() > 0)
     @foreach($cart->items as $item)
         @php
-            $price = $item->variant ? $item->variant->variant_price : $item->product->price;
+            $price = $item->variant ? $item->variant->final_price : $item->product->final_price;
             $qty = $item->quantity;
             $itemTotal = $price * $qty;
             $subtotal += $itemTotal;

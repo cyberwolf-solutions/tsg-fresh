@@ -628,6 +628,19 @@ class OtherPurchaseController extends Controller
 
                     $fullName = trim($productName . $variantName);
 
+                    // Inside the foreach ($purchaseItems as $item) { ... }
+
+                    $product = $item->product;
+                    $variant = $item->productvarient;
+
+                    // ✅ Decide unit price
+                    if ($variant) {
+                        // $unitPrice = $variant->variant_price;
+                        $unitPrice = $variant->final_price;
+                    } else {
+                        $unitPrice = $product->final_price; // or $product->final_price if that's what you use
+                    }
+
                     $inventoryItem = Inventory::where('product_id', $item->product_id)
                         ->where('variant_id', $item->variant_id)
                         ->where('manufacture_date', $item->manufacture_date)
@@ -638,6 +651,7 @@ class OtherPurchaseController extends Controller
                         // Update quantity
                         $inventoryItem->update([
                             'quantity' => $inventoryItem->quantity + $item->quantity,
+                            'unit_price' => $unitPrice, // keep price updated too
                             'updated_by' => Auth::id()
                         ]);
                     } else {
@@ -646,7 +660,7 @@ class OtherPurchaseController extends Controller
                             'product_id' => $item->product_id,
                             'variant_id' => $item->variant_id,
                             'name' => $fullName,
-                            'unit_price' => $item->buying_price,
+                            'unit_price' => $unitPrice, // ✅ save product/variant price
                             'quantity' => $item->quantity,
                             'min_quantity' => 0,
                             'unit' => $item->unit,

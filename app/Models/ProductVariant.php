@@ -15,6 +15,7 @@ class ProductVariant extends Model
         'product_id',
         'variant_name',
         'variant_price',
+        'final_price',
     ];
 
     public function product()

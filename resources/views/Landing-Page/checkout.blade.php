@@ -549,6 +549,7 @@
 
                         @csrf
 
+
                         <!-- First & Last Name -->
                         <div class="row">
                             <div class="col-md-6 mb-3 text-dark small fw-semibold">
@@ -558,6 +559,35 @@
                             <div class="col-md-6 mb-3 text-dark small fw-semibold">
                                 <label class="form-label">Last Name *</label>
                                 <input type="text" class="form-control" name="last_name" required>
+
+                        <!-- Header -->
+                        <div class="d-flex justify-content-between mt-2 text-secondary small">
+                            <strong>PRODUCT</strong>
+                            <strong>SUBTOTAL</strong>
+                        </div>
+                        <hr style="margin-top:5px; margin-bottom:8px;">
+
+                        <!-- Cart Items -->
+                        @foreach ($cart->items as $item)
+                            @php
+                                $price = $item->variant ? $item->variant->final_price : $item->product->final_price;
+                            @endphp
+                            <div class="d-flex justify-content-between align-items-center text-secondary small mb-2">
+                                <div class="d-flex align-items-center" style="gap:10px;">
+                                    <img src="{{ asset($item->product->image ?? 'build/images/landing/l1.png') }}"
+                                        alt="Product Image" style="width:50px; height:50px;" class="img-thumbnail">
+                                    <div>
+                                        <span>{{ $item->product->name }}</span>
+                                        @if ($item->variant)
+                                            <span> - {{ $item->variant->variant_name }}</span>
+                                        @endif
+                                        <br>
+                                        <span>Qty: {{ $item->quantity }}</span>
+                                    </div>
+                                </div>
+                                <span class="text-dark fw-semibold">රු
+                                    {{ number_format($price * $item->quantity, 2) }}</span>
+
                             </div>
                         </div>
 
