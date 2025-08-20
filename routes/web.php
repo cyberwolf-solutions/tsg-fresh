@@ -33,6 +33,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ModifiersController;
 use App\Http\Controllers\RoomTypesController;
+use App\Http\Controllers\BankDetailController;
 use App\Http\Controllers\RestaurantController;
 use App\Http\Controllers\TACheckoutController;
 use App\Http\Controllers\BordingTypeCOntroller;
@@ -42,6 +43,7 @@ use App\Http\Controllers\HouseKeepingCOntroller;
 use App\Http\Controllers\RoomFacilityController;
 use App\Http\Controllers\OtherPurchaseController;
 use App\Http\Controllers\Auth\AdminAuthController;
+use App\Http\Controllers\DeliveryChargeController;
 use App\Http\Controllers\CheckinCheckoutController;
 use App\Http\Controllers\WebCustomerAuthController;
 use App\Http\Controllers\customer\AccountController;
@@ -98,6 +100,15 @@ foreach (config('tenancy.central_domains') as $domain) {
             Route::post('/items', [WebController::class, 'storeItem'])->name('store-item');
             Route::put('/items/{item}', [WebController::class, 'updateItem'])->name('update-item');
             Route::delete('/items/{item}', [WebController::class, 'deleteItem'])->name('delete-item');
+
+
+            Route::get('/delivery-charges', [DeliveryChargeController::class, 'index'])->name('delivery-charges.index');
+            Route::post('/delivery-charges', [DeliveryChargeController::class, 'store'])->name('delivery-charges.store');
+            Route::delete('/delivery-charges/{id}', [DeliveryChargeController::class, 'destroy'])->name('delivery-charges.destroy');
+
+            Route::get('/bank-details', [BankDetailController::class, 'index'])->name('bank-details.index');
+            Route::post('/bank-details', [BankDetailController::class, 'store'])->name('bank-details.store');
+            Route::delete('/bank-details/{id}', [BankDetailController::class, 'destroy'])->name('bank-details.destroy');
         });
 
         // Route::post('webcustomer/register', [WebCustomerAuthController::class, 'register'])->name('customer.register.post');

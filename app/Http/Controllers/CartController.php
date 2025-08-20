@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\CartItem;
+use Illuminate\Http\Request;
+use App\Models\BillingAddress;
+use App\Models\DeliveryCharge;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
@@ -29,18 +32,32 @@ class CartController extends Controller
             abort(404, 'Domain not found for the tenant');
         }
 
+        // Get delivery charge for tenant
+        $deliveryCharge = DeliveryCharge::where('tenant_id', $tenant->id)
+            ->first()?->charge ?? 0;
+
         Log::info('Loading single product view for tenant and product', [
             'branch' => $branch,
             'domain' => $domain,
-
+            'delivery_charge' => $deliveryCharge,
         ]);
+        $billingAddress = null;
+        if (Auth::guard('customer')->check()) {
+            $billingAddress = BillingAddress::where('customer_id', Auth::guard('customer')->id())
+                ->first();
+        }
+
+
 
         return view('Landing-page.cart', [
             'tenant' => $tenant,
             'branch' => $branch,
             'domain' => $domain,
+            'deliveryCharge' => $deliveryCharge,
+            'billingAddress' => $billingAddress,
         ]);
     }
+
 
     public function addToCart(Request $request)
     {
@@ -63,11 +80,13 @@ class CartController extends Controller
             return response()->json(['success' => false, 'message' => 'No inventory found'], 404);
         }
 
+
         // Get or create cart
         $cart = Cart::firstOrCreate([
             'customer_id' => $customerId,
             'session_id'  => $sessionId,
         ]);
+
 
         // Find if already in cart
         $cartItem = CartItem::where('cart_id', $cart->id)
@@ -75,24 +94,27 @@ class CartController extends Controller
             ->where('variant_id', $validated['variant_id'] ?? null)
             ->first();
 
+
         // Current quantity already in cart
         $currentQty = $cartItem ? $cartItem->quantity : 0;
         $newQty = $currentQty + $validated['quantity'];
 
+
         // ✅ Check against stock
         if ($newQty > $inventory->quantity) {
+
             return response()->json([
                 'success' => false,
                 'message' => 'Only ' . $inventory->quantity . ' items available in stock',
             ], 400);
         }
 
-        // Update or create cart item (without touching stock)
         if ($cartItem) {
             $cartItem->update([
                 'quantity' => $newQty,
                 'total'    => $newQty * $inventory->unit_price,
             ]);
+
         } else {
             $cartItem = CartItem::create([
                 'cart_id'      => $cart->id,
@@ -105,6 +127,7 @@ class CartController extends Controller
                 'price'        => $inventory->unit_price,
                 'total'        => $validated['quantity'] * $inventory->unit_price,
             ]);
+
         }
 
         return response()->json([
@@ -116,7 +139,9 @@ class CartController extends Controller
 
     public function sidebar()
     {
-        $customerId = auth()->check() ? auth()->id() : null;
+        $customerId = Auth::guard('customer')->check()
+            ? Auth::guard('customer')->id()
+            : null;
         $sessionId  = session()->getId();
 
         $cart = Cart::with('items.product', 'items.variant')
