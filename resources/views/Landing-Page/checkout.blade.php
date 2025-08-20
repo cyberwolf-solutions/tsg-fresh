@@ -758,6 +758,13 @@
                                         value="Bank" checked>
                                     <label class="form-check-label" for="payment1" style="font-size:12px;">Direct bank
                                         transfer</label>
+                                    <br>
+
+                                    <lable class="texet-secondary small">
+                                        Make your payment directly into our bank account. Please use your Order ID as the
+                                        payment reference. Your order will not be shipped until the funds have cleared in
+                                        our account.
+                                    </lable>
                                 </div>
                                 <div class="form-check mb-3" style="margin-left: 10px; margin-right:10px;">
                                     <input type="radio" class="form-check-input" name="payment_method" id="payment2"
