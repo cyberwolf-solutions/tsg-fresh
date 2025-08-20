@@ -122,6 +122,12 @@ border-right: none !important;">
                                     </li>
                                 @endcan
 
+                                  @can('manage Inventory')
+                                    <li class="nav-item">
+                                        <a href="{{ route('cashinhand') }}" class="nav-link">Cash In Hand</a>
+                                    </li>
+                                @endcan
+
                             </ul>
                         </div>
                     </li>

@@ -472,7 +472,7 @@
                 <span class=" text-secondary">If you have a coupon code, please apply it below.</span>
                 <div class="coupon-input-group ">
 
-                    <input type="text" class="coupon-input" placeholder="Enter coupon code">
+                    <input type="text" class="coupon-input" placeholder="Enter coupon code" id="coupon">
                     <button class="coupon-button">APPLY COUPON</button>
                 </div>
             </div>
@@ -645,7 +645,7 @@
                             <!-- Cart Items -->
                             @foreach ($cart->items as $item)
                                 @php
-                                    $price = $item->variant ? $item->variant->variant_price : $item->product->price;
+                                    $price = $item->variant ? $item->variant->final_price : $item->product->price;
                                 @endphp
                                 <div class="d-flex justify-content-between align-items-center text-secondary small mb-2">
                                     <div class="d-flex align-items-center" style="gap:10px;">
@@ -666,12 +666,25 @@
                                 <hr>
                             @endforeach
 
+                            <!-- Coupon Discount -->
+                            <div class="d-flex justify-content-between mt-2" id="couponRow">
+                                <span class="small text-secondary">Coupon Discount</span>
+                                <span id="couponValue" class="text-dark fw-semibold">රු 0.00</span>
+                            </div>
+
+                            <!-- Adjusted Subtotal after coupon -->
+                            <div class="d-flex justify-content-between text-secondary small mt-2">
+                                <span>Adjusted Subtotal</span>
+                                <span id="adjustedSubtotal" class="text-dark fw-semibold">රු
+                                    {{ number_format($subtotal - $discount, 2) }}</span>
+                            </div>
+
                             <!-- Subtotal -->
-                            <div class="d-flex justify-content-between text-secondary small">
+                            {{-- <div class="d-flex justify-content-between text-secondary small">
                                 <span>Subtotal</span>
                                 <span id="subtotalField" class="text-dark fw-semibold">රු
                                     {{ number_format($subtotal, 2) }}</span>
-                            </div>
+                            </div> --}}
 
                             <!-- Discount -->
                             <div class="d-flex justify-content-between mt-2">
@@ -939,9 +952,44 @@
         </div>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script>
         flatpickr("#deliveryDate", {
             dateFormat: "d/m/Y"
+        });
+
+        //   coupon --------
+
+        $(document).on('click', '.coupon-button', function(e) {
+            e.preventDefault();
+
+            let code = $('#coupon').val();
+
+            $.ajax({
+                url: "{{ route('coupon.apply') }}",
+                method: 'POST',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    code: code
+                },
+                success: function(res) {
+                    if (res.success) {
+                        alert(res.message);
+                        // Store coupon discount in a variable
+                        window.couponDiscount = res.discount || 0;
+                        updateTotal();
+
+                        // Recalculate total
+                    } else {
+                        alert(res.message);
+                    }
+                },
+                error: function(xhr) {
+                    console.error(xhr.responseText);
+                    alert("Something went wrong applying coupon.");
+                }
+            });
         });
     </script>
     <script>
@@ -969,13 +1017,57 @@
         const deliveryRadio = document.getElementById('delivery1');
         const pickupRadio = document.getElementById('pickup');
 
+
         function updateTotal() {
             total = subtotal;
+
+            // Delivery logic stays the same
             if (subtotal < 10000 && deliveryRadio.checked) {
                 total += deliveryCharge;
             }
+
+            // Apply coupon discount if exists
+            if (window.couponDiscount) {
+                total -= window.couponDiscount;
+            }
+            // document.getElementById('couponValue').innerText = 'රු ' + couponDiscount.toFixed(2);
+
             orderTotalEl.innerText = 'රු ' + total.toFixed(2);
         }
+        // let couponDiscount = 0; // global variable
+
+        // function updateTotal() {
+        //     let adjustedSubtotal = subtotal - discount - couponDiscount;
+
+        //     // Show coupon row if applied
+        //     const couponRow = document.getElementById('couponRow');
+        //     const couponValueEl = document.getElementById('couponValue');
+        //     const adjustedSubtotalEl = document.getElementById('adjustedSubtotal');
+
+        //     if (couponDiscount > 0) {
+        //         couponRow.style.display = 'flex';
+        //         couponValueEl.innerText = 'රු ' + couponDiscount.toFixed(2);
+        //     } else {
+        //         couponRow.style.display = 'none';
+        //         couponValueEl.innerText = 'රු 0.00';
+        //     }
+
+        //     // Calculate VAT
+        //     const vat = adjustedSubtotal * 0.18;
+
+        //     // Total with delivery
+        //     let totalWithDelivery = adjustedSubtotal;
+        //     if (subtotal < 10000 && deliveryRadio.checked) {
+        //         totalWithDelivery += deliveryCharge;
+        //     }
+        //     totalWithDelivery += vat;
+
+        //     // Update Adjusted Subtotal
+        //     adjustedSubtotalEl.innerText = 'රු ' + adjustedSubtotal.toFixed(2);
+
+        //     // Update total
+        //     orderTotalEl.innerText = 'රු ' + totalWithDelivery.toFixed(2);
+        // }
 
         deliveryRadio.addEventListener('change', updateTotal);
         pickupRadio.addEventListener('change', updateTotal);
