@@ -6,14 +6,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Category extends Model {
+class Category extends Model
+{
     use HasFactory, SoftDeletes;
-
+    protected $connection = 'tenant';
     protected $table = 'categories';
     protected $fillable = [
         'name',
         'description',
-        'type',
         'image_url',
         'created_by',
         'updated_by',
@@ -22,18 +22,28 @@ class Category extends Model {
 
     public function modifiers()
     {
-        return $this->belongsToMany(Modifier::class,'modifiers_categories','category_id','modifier_id');
+        return $this->belongsToMany(Modifier::class, 'modifiers_categories', 'category_id', 'modifier_id');
     }
 
-    public function createdBy() {
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'category_products')
+            ->using(CategoryProduct::class);
+    }
+
+
+    public function createdBy()
+    {
         return $this->hasOne(User::class, 'id', 'created_by');
     }
 
-    public function updatedBy() {
+    public function updatedBy()
+    {
         return $this->hasOne(User::class, 'id', 'updated_by');
     }
 
-    public function deletedBy() {
+    public function deletedBy()
+    {
         return $this->hasOne(User::class, 'id', 'deleted_by');
     }
 }

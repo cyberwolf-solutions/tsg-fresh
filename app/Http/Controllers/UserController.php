@@ -10,12 +10,14 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
 
-class UserController extends Controller {
+class UserController extends Controller
+{
 
     /**
      * Display a listing of the resource.
      */
-    public function index() {
+    public function index()
+    {
         $title = 'Users';
 
         $breadcrumbs = [
@@ -23,13 +25,14 @@ class UserController extends Controller {
             ['label' => $title, 'url' => '', 'active' => true],
         ];
         $data = User::all();
-        return view('users.index', compact('title', 'breadcrumbs', 'data'));
+        return view('pos.users.index', compact('title', 'breadcrumbs', 'data'));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create() {
+    public function create()
+    {
         $title = 'Users';
 
         $breadcrumbs = [
@@ -41,18 +44,21 @@ class UserController extends Controller {
 
         $is_edit = false;
 
-        return view('users.create-edit', compact('title', 'breadcrumbs', 'roles', 'is_edit'));
+        return view('pos.users.create-edit', compact('title', 'breadcrumbs', 'roles', 'is_edit'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
         // Validate the incoming data
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
             'password' => 'required',
+            'cname' => 'required|string',
+            'contact' => 'required|unique:users,contact',
             'role' => 'required',
         ]);
         if ($validator->fails()) {
@@ -71,6 +77,8 @@ class UserController extends Controller {
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
+                'company_name' => $request->cname,
+                'contact' => $request->contact,
                 'created_by' => Auth::user()->id
             ];
 
@@ -98,14 +106,16 @@ class UserController extends Controller {
     /**
      * Display the specified resource.
      */
-    public function show(string $id) {
+    public function show(string $id)
+    {
         //
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id) {
+    public function edit(string $id)
+    {
         $title = 'Users';
 
         $breadcrumbs = [
@@ -119,18 +129,21 @@ class UserController extends Controller {
 
         $is_edit = true;
 
-        return view('users.create-edit', compact('title', 'breadcrumbs', 'data', 'roles', 'is_edit'));
+        return view('pos.users.create-edit', compact('title', 'breadcrumbs', 'data', 'roles', 'is_edit'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id) {
+    public function update(Request $request, string $id)
+    {
         // Validate the incoming data
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email|unique:users,email,' . $id,
             'role' => 'required',
+            'cname' => 'required|string',
+            'contact' => 'required|unique:users,contact',
         ]);
         if ($validator->fails()) {
             $all_errors = null;
@@ -147,6 +160,8 @@ class UserController extends Controller {
             $data = [
                 'name' => $request->name,
                 'email' => $request->email,
+                'company_name' => $request->cname,
+                'contact' => $request->contact,
                 'updated_by' => Auth::user()->id
             ];
 
@@ -167,14 +182,16 @@ class UserController extends Controller {
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id) {
+    public function destroy(string $id)
+    {
         //
     }
 
     /**
      * Change Dark Mode for Specific User.
      */
-    public function changeMode() {
+    public function changeMode()
+    {
         try {
             if (Auth::user()) {
                 $id = Auth::user()->id;
@@ -196,7 +213,8 @@ class UserController extends Controller {
     /**
      * Change Active Status for Specific User.
      */
-    public function status(Request $request) {
+    public function status(Request $request)
+    {
         $id = $request->id;
         $status = $request->status;
         try {
@@ -213,7 +231,8 @@ class UserController extends Controller {
     /**
      * Reset Password for Specific User.
      */
-    public function resetPassword(Request $request) {
+    public function resetPassword(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'id' => 'required|exists:users,id',
             'password' => 'required|min:8|confirmed',
@@ -244,11 +263,13 @@ class UserController extends Controller {
         }
     }
 
-    public function profile() {
-        return view('auth.profile');
+    public function profile()
+    {
+        return view('pos.auth.profile');
     }
 
-    public function profileUpdate(Request $request) {
+    public function profileUpdate(Request $request)
+    {
         // Validate the incoming data
         $validator = Validator::make($request->all(), [
             'name' => 'required',
@@ -279,7 +300,8 @@ class UserController extends Controller {
             return json_encode(['success' => false, 'message' => 'Something went wrong!' . $th]);
         }
     }
-    public function imageUpdate(Request $request) {
+    public function imageUpdate(Request $request)
+    {
         // Validate the incoming data
         $validator = Validator::make($request->all(), [
             'image' => 'required',
@@ -325,7 +347,8 @@ class UserController extends Controller {
             return json_encode(['success' => false, 'message' => 'Something went wrong!' . $th]);
         }
     }
-    public function coverUpdate(Request $request) {
+    public function coverUpdate(Request $request)
+    {
         // Validate the incoming data
         $validator = Validator::make($request->all(), [
             'image' => 'required',
@@ -369,7 +392,8 @@ class UserController extends Controller {
             return json_encode(['success' => false, 'message' => 'Something went wrong!' . $th]);
         }
     }
-    public function passwordUpdate(Request $request) {
+    public function passwordUpdate(Request $request)
+    {
         // Validate the incoming data
         $validator = Validator::make($request->all(), [
             'oldpasswordInput' => 'required', // Adjust the minimum length as needed
@@ -406,7 +430,8 @@ class UserController extends Controller {
     }
 
 
-    public function userReport(){
+    public function userReport()
+    {
         $title = 'Users Report';
 
         $breadcrumbs = [
@@ -416,6 +441,6 @@ class UserController extends Controller {
         // $data = User::all();
         $data = User::with('roles')->get();
 
-        return view ('reports.UserReports' , compact('data'));
+        return view('reports.UserReports', compact('data'));
     }
 }

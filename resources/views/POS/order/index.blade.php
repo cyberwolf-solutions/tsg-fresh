@@ -58,28 +58,65 @@
                     <table class="table align-middle" id="example">
                         <thead class="table-light">
                             <th>#</th>
+                            <th>Order ID</th>
+                            {{-- <th>Guest Name</th> --}}
                             <th>Guest</th>
-                            <th>Date</th>
-                            {{-- <th>Total</th> --}}
-                            <th>Status</th>
-                            <th>Table Status</th>
+                            {{-- <th>Phone</th> --}}
+                            <th>Items</th>
+                            <th>Subtotal</th>
+                            <th>Discount</th>
+                            <th>VAT</th>
+                            <th>Total</th>
+                            {{-- <th>Delivery Method</th> --}}
+                            <th>Payment Method</th>
+                            <th>Payment Status</th>
+                            <th>Order Status</th>
                             <th>Action</th>
                         </thead>
                         <tbody>
                             @foreach ($data as $key => $item)
                                 <tr>
+
+
+                                    <td>{{ $loop->iteration }}</td>
+
                                     <td>#{{ $settings->invoice($item->id) }}</td>
                                     @if ($item->customer_id == 0)
                                         <td>Walking Customer</td>
                                     @else
                                         <td>{{ $item->customer->name }}</td>
                                     @endif
-                                    <td>{{ \Carbon\Carbon::parse($item->order_date)->format($settings->date_format) }}</td>
+                                    {{-- <td>{{ \Carbon\Carbon::parse($item->order_date)->format($settings->date_format) }}</td> --}}
                                     {{-- <td>{{ $settings->currency }}
                                         {{ number_format($item->payment ? $item->payment->total : 0, 2) }}
                                     </td> --}}
+
+                                    <td>
+                                        @foreach ($item->items as $i)
+                                            {{ $i->product->name ?? '' }}
+                                            @if ($i->variant)
+                                                ({{ $i->variant->variant_name }})
+                                            @endif
+                                            x{{ $i->quantity }}<br>
+                                        @endforeach
+                                    </td>
+                                    <td>{{ number_format($item->subtotal, 2) }}</td>
+                                    <td>{{ number_format($item->discount, 2) }}</td>
+                                    <td>{{ number_format($item->vat, 2) }}</td>
+                                    <td>{{ number_format($item->total, 2) }}</td>
                                     <td>{{ $item->status }}</td>
-                                    <td>{{ $item->table_id != 0 ? $item->table->availability : 'No Table' }}</td>
+
+                                    <td>
+                                        <select class="form-select order-status" data-id="{{ $item->id }}" style="width:150px">
+                                            @foreach ($item->nextStatuses() as $status)
+                                                <option value="{{ $status }}"
+                                                    {{ $item->status == $status ? 'selected' : '' }}>
+                                                    {{ $status }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                    {{-- <td>{{ $item->table_id != 0 ? $item->table->availability : 'No Table' }}</td> --}}
                                     <td>
                                         @can('view orders')
                                             <a href="javascript:void(0)" data-url="{{ route('orders.show', [$item->id]) }}"
@@ -93,14 +130,7 @@
                                             title="Print">
                                             <i class="mdi mdi-printer"></i>
                                         </a>
-                                        @if ($item->table_id != 0)
-                                            <a href="javascript:void(0)" data-url="{{ route('order.complete') }}"
-                                                data-data='{"id":{{ $item->id }}}'
-                                                class="btn btn-sm btn-soft-success ms-1 send-post-ajax"
-                                                data-bs-toggle="tooltip" title="Complete">
-                                                <i class="mdi mdi-check"></i>
-                                            </a>
-                                        @endif
+
                                     </td>
                                 </tr>
                             @endforeach
@@ -110,4 +140,39 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.order-status').forEach(select => {
+                select.addEventListener('change', function() {
+                    let orderId = this.dataset.id;
+                    let newStatus = this.value;
+
+                    fetch("{{ route('orders.updateStatus') }}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                            },
+                            body: JSON.stringify({
+                                id: orderId,
+                                status: newStatus
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert('Status updated successfully!');
+                            } else {
+                                alert('Failed to update status!');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Something went wrong!');
+                        });
+                });
+            });
+        });
+    </script>
 @endsection

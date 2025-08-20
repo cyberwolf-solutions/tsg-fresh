@@ -5,7 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Settings extends Model {
+class Settings extends Model
+{
     use HasFactory;
     protected $fillable = [
         'currency',
@@ -27,19 +28,24 @@ class Settings extends Model {
         'otherpurchase_prefix'
     ];
 
-    public function supplier($id) {
+    public function supplier($id)
+    {
         return $this->supplier_prefix  . str_pad($id, 5, '0', STR_PAD_LEFT);
     }
-    public function purchase($id) {
+    public function purchase($id)
+    {
         return $this->bill_prefix  . str_pad($id, 5, '0', STR_PAD_LEFT);
     }
-    public function invoice($id) {
+    public function invoice($id)
+    {
         return $this->invoice_prefix  . str_pad($id, 5, '0', STR_PAD_LEFT);
     }
-    public function ingredients($id) {
+    public function ingredients($id)
+    {
         return $this->ingredients_prefix  . str_pad($id, 5, '0', STR_PAD_LEFT);
     }
-    public function otherpurchase($id) {
+    public function otherpurchase($id)
+    {
         return $this->otherpurchase_prefix  . str_pad($id, 5, '0', STR_PAD_LEFT);
     }
 }

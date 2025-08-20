@@ -45,7 +45,7 @@
     <div class="container-fluid">
         <div class="row justify-content-center text-center">
             <img src="{{ asset('storage/' . $settings->logo_dark) }}" class="logo img-fluid" >
-            <div class="resort-name">Ging Oya Resort</div>
+            <div class="resort-name">TSG fresh Resort</div>
         </div>
         <hr>
         <div class="row customer-report">

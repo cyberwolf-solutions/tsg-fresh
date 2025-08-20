@@ -2,411 +2,388 @@
 
 namespace App\Http\Controllers;
 
-use Dompdf\Dompdf;
-use App\Models\Room;
+use App\Models\Cart;
 use App\Models\Order;
-use App\Models\Booking;
-use App\Models\checkout;
-use App\Models\Customer;
-use App\Models\Settings;
+use App\Models\Product;
+use App\Models\Inventory;
 use App\Models\OrderItem;
-use App\Models\OrderPayment;
+use App\Models\WebCustomer;
 use Illuminate\Http\Request;
-use App\Models\RoomFacilities;
-use App\Services\EmailService;
-use App\Models\checkincheckout;
-use App\Models\AdditionalPayment;
+use App\Models\BillingAddress;
+use App\Models\DeliveryCharge;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
-
+use App\Http\Controllers\Controller;
+use App\Models\Coupon;
+use Illuminate\Support\Facades\Auth;
 
 class CheckoutController extends Controller
 {
+    //
+    // public function index()
+    // {
+    //     $tenant = tenant();
 
+    //     if (!$tenant) {
+    //         Log::error('Tenant not found');
+    //         abort(404, 'Tenant not found');
+    //     }
 
-    protected $emailService;
+    //     $branch = $tenant->id;
+    //     $domain = $tenant->domains()->first()?->domain;
 
-    public function __construct(EmailService $emailService)
-    {
-        $this->emailService = $emailService;
-    }
+    //     if (!$domain) {
+    //         Log::error('Domain not found for tenant', ['tenant_id' => $tenant->id]);
+    //         abort(404, 'Domain not found for the tenant');
+    //     }
 
+    //     Log::info('Loading single product view for tenant and product', [
+    //         'branch' => $branch,
+    //         'domain' => $domain,
 
+    //     ]);
+
+    //     return view('Landing-page.checkout', [
+    //         'tenant' => $tenant,
+    //         'branch' => $branch,
+    //         'domain' => $domain,
+    //     ]);
+    // }
 
     public function index()
     {
+        $tenant = tenant();
 
-        $title = 'Customer Checkout';
-
-        $breadcrumbs = [
-            // ['label' => 'First Level', 'url' => '', 'active' => false],
-            ['label' => $title, 'url' => '', 'active' => true],
-        ];
+        // Use customer guard
+        $customer = Auth::guard('customer')->check()
+            ? WebCustomer::with('billingAddress')->find(Auth::guard('customer')->id())
+            : null;
 
 
-        $data = checkincheckout::where('status', 'CheckedInANDCheckedOut')
-            ->where('type', 'customer')
-            ->get();
 
-        return view('bookings.checkout', compact('title', 'breadcrumbs', 'data'));
-    }
+        $customerId = $customer?->id;
+        $sessionId  = session()->getId();
 
-    public function create()
-    {
-
-        $title = 'Customer Checkout';
-        $is_edit = true;
-
-        $breadcrumbs = [
-            // ['label' => 'First Level', 'url' => '', 'active' => false],
-            ['label' => $title, 'url' => '', 'active' => true],
-        ];
-
-        $data = checkincheckout::where('status', 'CheckedIn')
-            ->where('type', 'customer')
-            ->get();
-
-        $customers = Customer::where('type', 'customer')->get();
-        $items = AdditionalPayment::all();
-
-        return view('bookings.addcheckout', compact('title', 'breadcrumbs', 'is_edit', 'data', 'customers', 'items'));
-    }
-    public function getBookingPaymentDetails($bookingId)
-    {
-        // Retrieve paid and due amounts for the selected booking
-        // $bookingPaymentDetails = CheckinCheckout::where('booking_id', $bookingId)->first();
-        $bookingPaymentDetails = CheckinCheckout::with('customer.currency')
-            ->where('booking_id', $bookingId)
+        $cart = Cart::with('items.product', 'items.variant')
+            ->where(function ($q) use ($customerId, $sessionId) {
+                if ($customerId) {
+                    $q->where('customer_id', $customerId);
+                } else {
+                    $q->where('session_id', $sessionId);
+                }
+            })
             ->first();
 
-        $currency = $bookingPaymentDetails?->customer?->currency->name;
+        $subtotal = 0;
+        $totalQty = 0;
 
-        return response()->json([
-            'payed' => $bookingPaymentDetails->paid_amount,
-            'due' => $bookingPaymentDetails->due_amount,
-            'total_amount' => $bookingPaymentDetails->total_amount,
-            'currencytype' => $currency
-        ]);
-    }
-
-    public function getCustomerOrders($customerId)
-    {
-        // Fetch orders for the specified customer ID where type = RoomDelivery
-        $orders = Order::where('customer_id', $customerId)
-            ->where('type', 'RoomDelivery')
-            ->get();
-
-
-        $orderIds = $orders->pluck('id');
-
-        $unpaidOrders = OrderPayment::whereIn('order_id', $orderIds)
-            ->where('payment_status', 'Unpaid')
-            ->get();
-
-        return response()->json([
-            'orders' => $orders,
-            'orderIds' => $orderIds,
-            'unpaidOrders' => $unpaidOrders,
-        ]);
-    }
-    public function getBookingRooms(Request $request)
-    {
-        $id = $request['id'];
-        $booking = Booking::find($id);
-
-        $settings = Settings::latest()->first();
-
-        $html = '<table class="table" cellspacing="0" cellpadding="0">';
-        $html .= '<tr>';
-        $html .= '<th>Room Name</th>';
-        $html .= '<th>Room No</th>';
-        $html .= '<th>Room Type</th>';
-        $html .= '<th>Room Capacity</th>';
-        $html .= '<th>Room Price</th>';
-        $html .= '</tr>';
-
-        foreach ($booking->rooms as $room) {
-            $html .= '<tr>';
-            $html .= '<td>' . $room->name . '</td>';
-            $html .= '<td>' . $room->room_no . '</td>';
-            $html .= '<td>' . $room->types->name . '</td>';
-            $html .= '<td>' . $room->capacity . '</td>';
-            $html .= '<td>' . $settings->currency . ' ' . number_format($room->price, 2) . '</td>';
-            $html .= '</tr>';
+        if ($cart && $cart->items) {
+            foreach ($cart->items as $item) {
+                $price = $item->variant ? $item->variant->final_price : $item->product->final_price;
+                $subtotal += $price * $item->quantity;
+                $totalQty += $item->quantity;
+            }
         }
 
-        $html .= '</table>';
+        // Apply discount if subtotal > 12500
+        $discount = ($subtotal > 12500) ? $subtotal * 0.05 : 0;
+        $total = $subtotal - $discount;
 
-        return response()->json([$html]);
+        $deliveryCharge = DeliveryCharge::where('tenant_id', $tenant->id)
+            ->first()?->charge ?? 0;
+
+        // Fetch billing address
+        $billingAddress = $customer?->billingAddress;
+
+        return view('Landing-page.checkout', compact(
+            'cart',
+            'subtotal',
+            'discount',
+            'total',
+            'deliveryCharge',
+            'customer',
+            'billingAddress'
+        ));
     }
 
-    // public function getcheckoutRooms(Request $request)
-    // {
-    //     $id = $request['id'];
-    //     $booking = Booking::find($id);
-
-    //     $settings = Settings::latest()->first();
-
-    //     $html = '<table class="table" cellspacing="0" cellpadding="0">';
-    //     $html .= '<tr>';
-    //     $html .= '<th>Room Name</th>';
-    //     $html .= '<th>Room No</th>';
-    //     $html .= '<th>Room Type</th>';
-    //     $html .= '<th>Room Capacity</th>';
-    //     $html .= '<th>Room Price</th>';
-    //     $html .= '</tr>';
-
-    //     foreach ($booking->rooms as $room) {
-    //         $html .= '<tr>';
-    //         $html .= '<td>' . $room->name . '</td>';
-    //         $html .= '<td>' . $room->room_no . '</td>';
-    //         $html .= '<td>' . $room->types->name . '</td>';
-    //         $html .= '<td>' . $room->capacity . '</td>';
-    //         $html .= '<td>' . $settings->currency . ' ' . number_format($room->price, 2) . '</td>';
-    //         $html .= '</tr>';
-    //     }
-
-    //     $html .= '</table>';
-
-    //     return response()->json([$html]);
-    // }
-
-    // public function getcheckoutRooms($customerId)
-    // {
-    //     // $customer = Customer::with('bookings.rooms')->findOrFail($customerId);
-
-    //     // return response()->json($customer->bookings);
-    //     $customer = Customer::with(['checkinCheckouts' => function($query) {
-    //         $query->where('status', 'checked in');
-    //     }])->findOrFail($customerId);
-
-    //     // Get only the checkin-checkout records with status 'checked in'
-    //     $checkinCheckouts = $customer->checkinCheckouts->where('status', 'checked in');
-
-    //     // Return the data as a JSON response
-    //     return response()->json($checkinCheckouts);
-    // }
-
-    public function getCheckinCheckoutId(Request $request)
+    public function placeOrder(Request $request)
     {
-
-        $customerId = $request->input('customer_id');
-        $bookingId = $request->input('booking_id');
-        $roomNo = $request->input('roomno');
-
-
-        // $checkinCheckoutId = CheckinCheckout::where('customer_id', $customerId)
-        //     ->where('booking_id', $bookingId)
-        //     ->value('id');
-        $checkinCheckoutId = CheckinCheckout::where('customer_id', $customerId)
-            ->where('booking_id', $bookingId)
-            ->where('room_no', $roomNo)
-            ->value('id');
+        Log::info('--- Start placeOrder ---');
+        Log::info($request);
+        $customer = null;
+        $oldSessionId = session()->getId();
 
 
-        return response()->json(['checkincheckout_id' => $checkinCheckoutId]);
-    }
 
-    public function store(Request $request)
-    {
-        $tableData = json_decode($request->input('table_data'), true);
+        // 1. If user is not authenticated, create a new customer
+        if (!Auth::guard('customer')->check()) {
+            Log::info('User not authenticated, validating input for new customer.');
 
-        $validator = Validator::make($request->all(), [
-            'additional' => 'required',
-            'tot' => 'required',
-            'booking_id' => 'required',
-            'ftot' => 'required',
-            'room_no' => 'required',
-            'email' => 'required'
-        ]);
+            $request->validate([
+                'first_name' => 'required|string|max:255',
+                'last_name'  => 'nullable|string|max:255',
+                'email'      => 'required|email|unique:central.web_customers,email',
+                'password'   => 'required|string|min:6',
+                'address1'   => 'required|string',
+                'city'       => 'required|string',
+                'phone'      => 'required|string',
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()->all()
+                'delivery_date' => 'required|date_format:d/m/Y|after_or_equal:' . now()->format('d/m/Y'),
             ]);
+
+            $deliveryDate = $request->delivery_date
+                ? \Carbon\Carbon::createFromFormat('d/m/Y', $request->delivery_date)->format('Y-m-d')
+                : null;
+
+            // Create new customer
+            $customer = WebCustomer::create([
+                'first_name' => $request->first_name,
+                'last_name'  => $request->last_name,
+                'email'      => $request->email,
+                'password'   => bcrypt($request->password),
+            ]);
+
+            Log::info('New customer created', ['customer_id' => $customer->id]);
+
+            // Create billing address
+            $billing = BillingAddress::create([
+                'customer_id'    => $customer->id,
+                'first_name'     => $request->first_name,
+                'last_name'      => $request->last_name,
+                'street_address' => $request->address1,
+                'town'           => $request->city,
+                'phone'          => $request->phone,
+                'email'          => $request->email,
+            ]);
+
+            Log::info('Billing address created', ['billing_id' => $billing->id]);
+
+            // Login the new customer
+            Auth::guard('customer')->login($customer);
+            session()->regenerate(); // new session id
+            $newSessionId = session()->getId();
+
+            Log::info('Customer logged in', [
+                'customer_id'    => $customer->id,
+                'old_session_id' => $oldSessionId,
+                'new_session_id' => $newSessionId,
+            ]);
+
+            // Transfer cart from guest session to customer
+            $sessionCart = Cart::with('items.product', 'items.variant')
+                ->where('session_id', $oldSessionId)
+                ->first();
+
+            if ($sessionCart) {
+                $sessionCart->update([
+                    'customer_id' => $customer->id,
+                    'session_id'  => $newSessionId, // update to new session
+                ]);
+
+                Log::info('Cart transferred to customer', [
+                    'cart_id'     => $sessionCart->id,
+                    'customer_id' => $customer->id
+                ]);
+            }
+        } else {
+            // Already authenticated customer
+            $customer = Auth::guard('customer')->user();
+            Log::info('Authenticated user found', ['customer_id' => $customer->id]);
         }
 
-        $rid = $request->booking_room_id;
-        $id = $request->checkincheckout_id;
-        $room_no = $request->room_no;
+        // 2. Retrieve customer cart
+        $cart = Cart::with('items.product', 'items.variant')
+            ->where('customer_id', $customer->id)
+            ->first();
 
-        $checkout = checkincheckout::where('id', $id)->where('room_no', $room_no)->first();
-        $room = Room::find($rid);
-        $full_payed_amount = $request->payed + $request->fd;
+        if (!$cart || $cart->items->isEmpty()) {
+            Log::warning('Cart is empty', ['customer_id' => $customer->id ?? null]);
+            return redirect()->back()->with('error', 'Cart is empty.');
+        }
 
+        Log::info('Cart retrieved', [
+            'cart_id'     => $cart->id,
+            'items_count' => $cart->items->count()
+        ]);
+
+
+        // 3. Calculate totals
+        $subtotal = $discount = $vat = $total = 0;
+        foreach ($cart->items as $item) {
+            $price = $item->variant ? $item->variant->final_price : $item->product->final_price;
+            $subtotal += $price * $item->quantity;
+        }
+        $discount = ($subtotal > 12500) ? $subtotal * 0.05 : 0;
+        $vat      = ($subtotal - $discount) * 0.18;
+        $total    = $subtotal - $discount + $vat;
+
+        Log::info('Totals calculated', compact('subtotal', 'discount', 'vat', 'total'));
+
+        // Apply coupon if available
+        $couponSession = session('coupon');
+        $couponDiscount = 0;
+
+        if ($couponSession) {
+            if ($couponSession['type'] === 'percent') {
+                $couponDiscount = $subtotal * ($couponSession['value'] / 100);
+            } else { // fixed value
+                $couponDiscount = $couponSession['value'];
+            }
+        }
+
+        // add normal discount (like 5% over 12500)
+        $discount = ($subtotal > 12500) ? $subtotal * 0.05 : 0;
+        $discount += $couponDiscount;  // include coupon
+
+        $vat   = ($subtotal - $discount) * 0.18;
+        $total = $subtotal - $discount + $vat;
+
+        Log::info('Totals calculated', compact('subtotal', 'discount', 'vat', 'total'));
+
+        // Parse delivery date before order creation
+        $deliveryDate = $request->delivery_date
+            ? \Carbon\Carbon::createFromFormat('d/m/Y', $request->delivery_date)->format('Y-m-d')
+            : null;
+        DB::beginTransaction();
         try {
-            if ($checkout && $room) {
-                $checkout->update([
-                    'additional_payment' => $request->input('additional'),
-                    'note' => $request->input('note'),
-                    'full_payment' => $request->input('tot'),
-                    'status' => 'CheckedInANDCheckedOut',
-                    'full_payed_amount' => $full_payed_amount,
-                    'final_full_total' => $request->input('ftot'),
-                    'additional_services' => json_encode($tableData)
+            // 4. Create order
+            $order = Order::create([
+                'web_customer_id'  => $customer->id,
+                'order_date'       => now(),
+                'status'           => 'Pending',
+                'subtotal'         => $subtotal,
+                'total'            => $total,
+                'discount'         => $discount,
+                'vat'              => $vat,
+                'source'           => 'WEB',
+                'delivery_method'  => $request->delivery_method,
+                'payment_method'   => $request->payment_method,
+                'delivery_address' => $request->delivery_address,
+                'delivery_date'   => $deliveryDate,
+                'delivery_fee'  => $request->delivery_charge,
+                'coupon_id'       => $couponSession['id'] ?? null,
+                'coupon_code'     => $couponSession['code'] ?? null,
+                'coupon_value'    => $couponSession['value'] ?? null,
+                'coupon_type'     => $couponSession['type'] ?? null,
+                'created_by'       => $customer->id,
+            ]);
+
+            Log::info('Order created', ['order_id' => $order->id]);
+
+            if ($couponSession) {
+                Coupon::where('id', $couponSession['id'])->increment('used_count');
+                session()->forget('coupon'); // clear coupon after use
+            }
+
+            // 5. Create order items & reduce stock
+            foreach ($cart->items as $item) {
+                $price = $item->variant ? $item->variant->final_price : $item->product->final_price;
+
+                OrderItem::create([
+                    'order_id'     => $order->id,
+                    'product_id'   => $item->product_id,
+                    'variant_id'   => $item->variant_id,
+                    'inventory_id' => $item->inventory_id,
+                    'price'        => $price,
+                    'quantity'     => $item->quantity,
+                    'total'        => $price * $item->quantity,
+                    'created_by'   => $customer->id,
                 ]);
 
-                $room->update([
-                    'status' => 'Cleaning'
-                ]);
-
-                // Update unpaid orders to paid
-                $customerId = $checkout->customer_id;
-                $orders = Order::where('customer_id', $customerId)
-                    ->where('type', 'RoomDelivery')
-                    ->get();
-
-                $orderIds = $orders->pluck('id');
-
-                OrderPayment::whereIn('order_id', $orderIds)
-                    ->where('payment_status', 'Unpaid')
-                    ->update(['payment_status' => 'Paid']);
-
-                $booking = Booking::findOrFail($request->booking_id);
-                $booking->status = 'Complete';
-                $booking->save();
-
-                // Prepare invoice view data
-                $viewData = [
-                    'data' => $checkout,
-                ];
-
-                $body = view('bookings.invoice', $viewData)->render();
-
-                // Send email
-                $to = $request->input('email');
-                $subject = "Invoice";
-                $result = $this->emailService->sendEmail($to, $subject, $body);
-
-                if ($result) {
-                    return response()->json([
-                        'success' => true,
-                        'message' => 'Checkout data has been saved successfully.',
-                        'redirect' => route('checkout.invoice', [$request->checkincheckout_id])
+                // Decrement stock
+                if ($item->inventory_id) {
+                    Inventory::where('id', $item->inventory_id)
+                        ->decrement('quantity', $item->quantity);
+                    Log::info('Inventory decremented', [
+                        'inventory_id' => $item->inventory_id,
+                        'quantity'     => $item->quantity
                     ]);
                 } else {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Failed to send E-bill'
+                    Product::where('id', $item->product_id)
+                        ->decrement('stock_qty', $item->quantity);
+                    Log::info('Product stock decremented', [
+                        'product_id' => $item->product_id,
+                        'quantity'   => $item->quantity
                     ]);
                 }
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Checkout or Room not found.'
-                ]);
             }
-        } catch (\Throwable $th) {
-            // Log detailed error
-            Log::error('Checkout Error', [
-                'error' => $th->getMessage(),
-                'line' => $th->getLine(),
-                'file' => $th->getFile(),
-                'trace' => $th->getTraceAsString(),
-            ]);
 
-            // Return detailed error in response (dev only)
-            return response()->json([
-                'success' => false,
-                'message' => 'Something went wrong!',
-                'error' => $th->getMessage(),
-                'line' => $th->getLine(),
-                'file' => $th->getFile()
+            // 6. Clear cart
+            $cart->items()->delete();
+            Log::info('Cart cleared', ['cart_id' => $cart->id]);
+
+            DB::commit();
+            // Clear applied coupon from session
+            session()->forget('coupon');
+
+            Log::info('--- Order placement successful ---', ['order_id' => $order->id]);
+            return redirect()->route('checkout.success', $order->id)
+                ->with('success', 'Order placed successfully.');
+            // Log::info('--- Order placement successful ---', ['order_id' => $order->id]);
+
+            // return redirect()->route('order.print', $order->id)
+            //     ->with('success', 'Order placed successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Order placement failed', [
+                'message' => $e->getMessage(),
+                'trace'   => $e->getTraceAsString()
             ]);
+            return redirect()->back()->with('error', 'Failed to place order. Please try again.');
         }
     }
 
-
-
-    public function invoice(string $checkincheckout_id)
+    public function applyCoupon(Request $request)
     {
+        $request->validate(['code' => 'required|string']);
 
-        $data = checkincheckout::find($checkincheckout_id);
-
-        $additionalPayments = json_decode($data->additional_services, true);
-
-        // $totalAdditionalPayment = 0;
-
-        // // Sum up the prices of additional services
-        // foreach ($additionalPayments as $payment) {
-        //     $totalAdditionalPayment += (float) $payment['price'];
-        // }
-
-
-
-        $totalAdditionalPayment = 0;
-
-
-        if (is_array($additionalPayments)) {
-
-            foreach ($additionalPayments as $payment) {
-                $totalAdditionalPayment += (float) $payment['price'];
-            }
-        }
-
-
-        return view('bookings.invoice', compact('data', 'totalAdditionalPayment'));
-    }
-
-
-    public function additionalInvoice($customerId, $checkoutDate)
-    {
-
-        $cid = $customerId;
-
-        $checkinCheckout = CheckinCheckout::where('customer_id', $customerId)
-            ->whereDate('checkout', $checkoutDate)
+        $coupon = Coupon::where('code', $request->code)
+            ->where('active', 1)
+            ->where(function ($q) {
+                $q->whereNull('expiry_date')->orWhere('expiry_date', '>=', now());
+            })
             ->first();
 
-        $updatedAt = $checkinCheckout ? $checkinCheckout->updated_at->format('Y-m-d') : null;
-
-        if ($checkinCheckout) {
-
-            $updatedAt = $checkinCheckout->updated_at->format('Y-m-d');
-
-            $customerId = $checkinCheckout->customer_id;
-
-
-            $orders = Order::where('customer_id', $customerId)
-                ->where('type', 'RoomDelivery')
-                ->get();
-
-            $orderIds = $orders->pluck('id');
-
-            $orderItems = OrderItem::whereIn('order_id', $orderIds)->get();
-
-
-            $data = OrderPayment::whereDate('updated_at', $updatedAt)->get();
+        if (!$coupon) {
+            return response()->json(['success' => false, 'message' => 'Invalid or expired coupon.']);
         }
 
-
-
-
-
-
-
-        return view('bookings.additional', compact('data', 'checkinCheckout', 'orders', 'orderItems', 'cid'));
-    }
-
-    public function additionalServiceInvoice($customerId, $checkoutDate)
-    {
-
-        $cid = $customerId;
-
-        $checkinCheckout = CheckinCheckout::where('customer_id', $customerId)
-            ->whereDate('checkout', $checkoutDate)
+        // Get subtotal from current cart
+        $cart = Cart::with('items.product', 'items.variant')
+            ->where('session_id', session()->getId())
             ->first();
 
-        $updatedAt = $checkinCheckout ? $checkinCheckout->updated_at->format('Y-m-d') : null;
+        if (!$cart || $cart->items->isEmpty()) {
+            return response()->json(['success' => false, 'message' => 'Cart is empty.']);
+        }
 
-        $additionalServices = $checkinCheckout ? json_decode($checkinCheckout->additional_services, true) : [];
+        // Calculate subtotal
+        $subtotal = 0;
+        foreach ($cart->items as $item) {
+            $price = $item->variant ? $item->variant->final_price : $item->product->final_price;
+            $subtotal += $price * $item->quantity;
+        }
 
+        // Calculate discount amount
+        if ($coupon->type == 'fixed') {
+            $discountValue = $coupon->value;
+        } else { // percent
+            $discountValue = $subtotal * ($coupon->value / 100);
+        }
 
+        // Save coupon in session
+        session(['coupon' => [
+            'id' => $coupon->id,
+            'code' => $coupon->code,
+            'type' => $coupon->type,
+            'value' => $coupon->value,
+            'discount' => $discountValue
+        ]]);
 
-
-
-
-        return view('bookings.additionalservice', compact('checkinCheckout', 'additionalServices'));
+        return response()->json([
+            'success' => true,
+            'message' => 'Coupon applied successfully.',
+            'discount' => $discountValue
+        ]);
     }
 }

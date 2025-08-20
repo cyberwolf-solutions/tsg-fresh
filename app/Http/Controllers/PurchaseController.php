@@ -27,7 +27,7 @@ class PurchaseController extends Controller
             ['label' => $title, 'url' => '', 'active' => true],
         ];
         $data = Purchases::all();
-        return view('purchases.index', compact('title', 'breadcrumbs', 'data'));
+        return view('pos.purchases.index', compact('title', 'breadcrumbs', 'data'));
     }
 
     /**
@@ -46,7 +46,8 @@ class PurchaseController extends Controller
         $is_edit = false;
 
         $suppliers = Supplier::all();
-        $products = Ingredient::all();
+        $products = Product::all();
+
 
         $latest = Purchases::latest()->first();
 
@@ -58,7 +59,13 @@ class PurchaseController extends Controller
 
         $latest++;
 
-        return view('purchases.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'suppliers', 'products', 'latest'));
+        $settings = Settings::first();
+        if (!$settings->exists) {
+            $settings->currency = '$';
+            $settings->date_format = 'Y-m-d';
+        }
+
+        return view('pos.purchases.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'suppliers', 'products', 'latest', 'settings'));
     }
 
     /**
@@ -162,7 +169,7 @@ class PurchaseController extends Controller
         ];
 
 
-        return view('purchases.show', compact('title', 'breadcrumbs', 'data'));
+        return view('pos.purchases.show', compact('title', 'breadcrumbs', 'data'));
     }
 
     /**
@@ -185,7 +192,7 @@ class PurchaseController extends Controller
 
         $data = Purchases::find($id);
 
-        return view('purchases.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data', 'suppliers', 'products'));
+        return view('pos.purchases.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data', 'suppliers', 'products'));
     }
 
     /**
@@ -349,7 +356,7 @@ class PurchaseController extends Controller
 
         $is_edit = false;
 
-        return view('purchases.payment', compact('data', 'is_edit', 'due'));
+        return view('pos.purchases.payment', compact('data', 'is_edit', 'due'));
     }
 
     public function viewPayments(string $id)
@@ -357,7 +364,7 @@ class PurchaseController extends Controller
         // Assuming you want to fetch all payments related to a specific purchase
         $data = PurchasePayment::where('purchase_id', $id)->get();
 
-        return view('purchases.payments-modal', compact('data'));
+        return view('pos.purchases.payments-modal', compact('data'));
     }
 
     public function addPayment(Request $request)
@@ -456,6 +463,6 @@ class PurchaseController extends Controller
         ];
         // $data = Purchases::all();
         $data = Purchases::with(['supplier', 'items.product', 'payments'])->get();
-        return view('reports.purchaseReports', compact('data'));
+        return view('pos.reports.purchaseReports', compact('data'));
     }
 }

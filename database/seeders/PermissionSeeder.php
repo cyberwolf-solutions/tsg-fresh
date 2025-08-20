@@ -8,11 +8,13 @@ use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 
-class PermissionSeeder extends Seeder {
+class PermissionSeeder extends Seeder
+{
     /**
      * Run the database seeds.
      */
-    public function run(): void {
+    public function run(): void
+    {
         $data = [
             ['name' => 'manage users', 'guard_name' => 'web'],
             ['name' => 'create users', 'guard_name' => 'web'],
@@ -49,6 +51,13 @@ class PermissionSeeder extends Seeder {
             ['name' => 'view categories', 'guard_name' => 'web'],
             ['name' => 'edit categories', 'guard_name' => 'web'],
             ['name' => 'delete categories', 'guard_name' => 'web'],
+
+               ['name' => 'manage brands', 'guard_name' => 'web'],
+            ['name' => 'create brands', 'guard_name' => 'web'],
+            ['name' => 'view brands', 'guard_name' => 'web'],
+            ['name' => 'edit brands', 'guard_name' => 'web'],
+            ['name' => 'delete brands', 'guard_name' => 'web'],
+
             ['name' => 'manage units', 'guard_name' => 'web'],
             ['name' => 'create units', 'guard_name' => 'web'],
             ['name' => 'view units', 'guard_name' => 'web'],
@@ -62,19 +71,7 @@ class PermissionSeeder extends Seeder {
             ['name' => 'view-payments purchases', 'guard_name' => 'web'],
             ['name' => 'delete purchases', 'guard_name' => 'web'],
             ['name' => 'manage Pos', 'guard_name' => 'web'],
-            ['name' => 'manage kitchen', 'guard_name' => 'web'],
-            ['name' => 'manage bar', 'guard_name' => 'web'],
-            ['name' => 'manage tables', 'guard_name' => 'web'],
-            ['name' => 'create tables', 'guard_name' => 'web'],
-            ['name' => 'view tables', 'guard_name' => 'web'],
-            ['name' => 'edit tables', 'guard_name' => 'web'],
-            ['name' => 'delete tables', 'guard_name' => 'web'],
-            ['name' => 'manage table arrangements', 'guard_name' => 'web'],
-            ['name' => 'manage meals', 'guard_name' => 'web'],
-            ['name' => 'create meals', 'guard_name' => 'web'],
-            ['name' => 'view meals', 'guard_name' => 'web'],
-            ['name' => 'edit meals', 'guard_name' => 'web'],
-            ['name' => 'delete meals', 'guard_name' => 'web'],
+         
             ['name' => 'manage ingredients', 'guard_name' => 'web'],
             ['name' => 'create ingredients', 'guard_name' => 'web'],
             ['name' => 'view ingredients', 'guard_name' => 'web'],
@@ -85,16 +82,7 @@ class PermissionSeeder extends Seeder {
             ['name' => 'create modifiers', 'guard_name' => 'web'],
             ['name' => 'edit modifiers', 'guard_name' => 'web'],
             ['name' => 'delete modifiers', 'guard_name' => 'web'],
-            ['name' => 'manage rooms', 'guard_name' => 'web'],
-            ['name' => 'create rooms', 'guard_name' => 'web'],
-            ['name' => 'view rooms', 'guard_name' => 'web'],
-            ['name' => 'edit rooms', 'guard_name' => 'web'],
-            ['name' => 'delete rooms', 'guard_name' => 'web'],
-            ['name' => 'manage bookings', 'guard_name' => 'web'],
-            ['name' => 'create bookings', 'guard_name' => 'web'],
-            ['name' => 'view bookings', 'guard_name' => 'web'],
-            ['name' => 'edit bookings', 'guard_name' => 'web'],
-            ['name' => 'delete bookings', 'guard_name' => 'web'],
+         
             ['name' => 'manage customers', 'guard_name' => 'web'],
             ['name' => 'create customers', 'guard_name' => 'web'],
             ['name' => 'view customers', 'guard_name' => 'web'],
@@ -117,7 +105,7 @@ class PermissionSeeder extends Seeder {
             ['name' => 'manage Inventory', 'guard_name' => 'web'],
             ['name' => 'Stock Inventory', 'guard_name' => 'web'],
 
-            ['name' => 'manage housekeeping', 'guard_name' => 'web'],
+       
 
 
 

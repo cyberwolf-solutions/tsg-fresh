@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class OtherPurchase extends Model
 {
     use HasFactory, SoftDeletes;
-
+    protected $connection = 'tenant';
     protected $table = 'other_purchase';
 
     protected $fillable = [
@@ -27,31 +27,37 @@ class OtherPurchase extends Model
         'deleted_by'
     ];
 
-    public function supplier() {
+    public function supplier()
+    {
         return $this->hasOne(Supplier::class, 'id', 'supplier_id');
     }
-    public function items() {
-        return $this->hasMany(InventoryPurchaseItem::class, 'purchase_id', 'id');
+    public function items()
+    {
+        return $this->hasMany(PurchaseItem::class, 'purchase_id');
     }
 
     // public function payments() {
     //     return $this->hasMany(PurchasePayment::class, 'purchase_id', 'id');
     // }
-    public function payments() {
+    public function payments()
+    {
         return $this->hasMany(InventoryPurchasePayment::class, 'purchase_id', 'id');
     }
 
-    public function paymentSum() {
+    public function paymentSum()
+    {
 
         return $this->payments()->sum('amount');
     }
 
-    public function calculateDueAmount() {
+    public function calculateDueAmount()
+    {
 
         return $this->total - $this->payments()->sum('amount');
     }
 
-    public function product() {
+    public function product()
+    {
         return $this->belongsTo(Product::class);
     }
     // public function purchaseItems()

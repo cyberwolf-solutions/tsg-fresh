@@ -46,41 +46,7 @@
                         @method('PATCH')
                     @endif
                     <div class="row">
-                        <div class="col-md-6 mb-3 required">
-                            <label for="" class="form-label">Name</label>
-                            <input type="text" name="name" id="" class="form-control"
-                                value="{{ $is_edit ? $data->name : '' }}" placeholder="Enter Name" required />
-                        </div>
-                        <div class="col-md-6 mb-3 required">
-                            <label for="" class="form-label">Category</label>
-                            <select name="category" class="form-control js-example-basic-single" id="" required>
-                                <option value="">Select...</option>
-                                @foreach ($categories as $item)
-                                    <option value="{{ $item->id }}"
-                                        {{ $is_edit ?? $data->category_id == $item->id ? 'selected' : '' }}>
-                                        {{ $item->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3 required">
-                            <label for="" class="form-label">Unit Price(LKR)</label>
-                            <input type="text" name="unit_price" id="" class="form-control"
-                                value="{{ $is_edit ? $data->unit_price_lkr : '' }}" placeholder="Enter Unit Price" required />
-                        </div>
-                        <div class="col-md-6 mb-3 required">
-                            <label for="" class="form-label">Unit Price(USD)</label>
-                            <input type="text" name="unit_price_usd" id="" class="form-control"
-                                value="{{ $is_edit ? $data->unit_price_usd : '' }}" placeholder="Enter Unit Price" required />
-                        </div>
-                        <div class="col-md-6 mb-3 required">
-                            <label for="" class="form-label">Unit Price(EURO)</label>
-                            <input type="text" name="unit_price_eu" id="" class="form-control"
-                                value="{{ $is_edit ? $data->unit_price_eu : '' }}" placeholder="Enter Unit Price" required />
-                        </div>
-                        
-                        <div class="col-md-6 mb-3 required">
+                        {{-- <div class="col-md-4 mb-3 required">
                             <label for="" class="form-label">Type</label>
                             <select name="type" class="form-control js-example-basic-single" id="" required>
                                 <option value="">Select...</option>
@@ -93,81 +59,375 @@
                                         {{ $item }}</option>
                                 @endforeach
                             </select>
+                        </div> --}}
+
+                        <div class="col-md-4 mb-3 required">
+                            <label for="" class="form-label">Product Name</label>
+                            <input type="text" name="name" id="" class="form-control"
+                                value="{{ $is_edit ? $data->name : '' }}" required />
                         </div>
+
+                        <div class="col-md-4 mb-3 required">
+                            <label for="" class="form-label">Product Code</label>
+                            <input type="text" name="pcode" id="" class="form-control"
+                                value="{{ $is_edit ? $data->product_code : '' }}" placeholder="" required />
+                        </div>
+
                     </div>
                     <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="" class="form-label">Image</label>
-                            <input type="file" accept="image/png, image/jpeg, image/gif" class="form-control"
-                                name="image">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="" class="form-label">Description</label>
-                            <textarea class="form-control" name="description" id="" rows="1" placeholder="Enter Description">{{ $is_edit ? $data->description : '' }}</textarea>
-                        </div>
-                    </div>
-                    <div class="required mt-2">
-                        <label for="">Ingredients</label>
-                        <div class="row mb-4">
-                            <select name="ingredient" id="ingredient" class="form-control js-example-basic-single">
-                                <option value="">Select...</option>
-                                @foreach ($ingredients as $item)
-                                    <option value="{{ $item->id }}">{{ $item->name }}</option>
+
+                        <div class="col-md-4 mb-3 required">
+                            <label for="" class="form-label">Barcode symbology</label>
+                            <select name="barcode" class="form-control js-example-basic-single" id="" required>
+                                <option value="">Nothing selected</option>
+                                @foreach ($categories as $item)
+                                    <option value="{{ $item->id }}"
+                                        {{ $is_edit ?? $data->category_id == $item->id ? 'selected' : '' }}>
+                                        {{ $item->name }}</option>
                                 @endforeach
                             </select>
                         </div>
-                        <div class="row mb-4 px-3">
-                            <table class="table table-hover align-middle" id="ingredient_tbl">
-                                <thead class="table-light">
-                                    <th>Name</th>
 
-                                    <th>Available Qty</th>
-                                    <th>Consumption Qty</th>
-                                    <th width="5%"></th>
-                                    <th>Unit Price</th>
-                                    <th>Cost</th>
-                                    <th width="5%"></th>
-                                    <th width="5%"></th>
-                                </thead>
-                                <tbody>
-                                    @if ($is_edit)
-                                        @for ($x = 0; $x < count($ing_array); $x++)
-                                            <tr>
+                        <div class="col-md-4 mb-3 required">
+                            <label for="" class="form-label">Brand</label>
+                            <select name="brand" class="form-control js-example-basic-single" id="" required>
+                                <option value="">Nothing selected</option>
+                                @foreach ($ingredients as $item)
+                                    <option value="{{ $item->id }}"
+                                        {{ $is_edit ?? $data->brand_id == $item->id ? 'selected' : '' }}>
+                                        {{ $item->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                                                <td><span class="iname">{{ $ing_array[$x]['name'] }}</span></td>
-                                                <td>{{ $ing_array[$x]['avl_qty'] }} {{ $ing_array[$x]['unit'] }}</td>
-                                                <td>
-                                                    <input type="number" step="any"
-                                                        class="form-control bg-transparent consumption_qty " id="quantity"
-                                                        name="quantity[]" value="{{ $ing_array[$x]['cons_qty'] }}">  
-                                                </td>
-                                                <td>{{ $ing_array[$x]['unit'] }}</td>
-                                                <td>{{ $ing_array[$x]['currency'] }} <span
-                                                        class="uprice">{{ $ing_array[$x]['unit_price'] }}</span></td>
-                                                <td>{{ $ing_array[$x]['currency'] }} <span
-                                                        class="cost">{{ $ing_array[$x]['cost'] }}</span></td>
-                                                <td><button class="btn bg-transparent border-0 text-danger remove_row"><i
-                                                            class="ri-delete-bin-2-line"></i></button></td>
-                                                <td><input type="hidden" step="any"
-                                                        class="form-control bg-transparent ing_id"
-                                                        value="{{ $ing_array[$x]['id'] }}" name="ing_id[]"></td>
-                                            </tr>
-                                            
-                                        @endfor
-                                    @endif
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <th colspan="4"></th>
-                                        <th>Total</th>
-                                        <th>{{ $settings->currency }} <span
-                                                class="total">{{ $is_edit ? $total : '0.00' }}</span></th>
-                                        <th colspan="2">&nbsp;</th>
-                                    </tr>
-                                </tfoot>
-                            </table>
+                        {{-- <div class="col-md-4 mb-3 required">
+                            <label for="" class="form-label">Category</label>
+                            <select name="category" class="form-control js-example-basic-single" id="" required>
+                                <option value="">Nothing selected</option>
+                                @foreach ($categories as $item)
+                                    <option value="{{ $item->id }}"
+                                        {{ $is_edit ?? $data->category_id == $item->id ? 'selected' : '' }}>
+                                        {{ $item->name }}</option>
+                                @endforeach
+                            </select>
+                        </div> --}}
+
+                        <div class="col-md-4 mb-3 required">
+                            <label class="form-label">Categories</label>
+                            <div class="dropdown">
+                                <button class="form-control text-start dropdown-toggle" type="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false" id="categoryDropdown">
+                                    Select Categories
+                                </button>
+                                <ul class="dropdown-menu" style="width: 100%; max-height: 300px; overflow-y: auto;">
+                                    @foreach ($categories as $category)
+                                        <li class="px-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input category-checkbox" type="checkbox"
+                                                    name="categories[]" value="{{ $category->id }}"
+                                                    id="cat_{{ $category->id }}"
+                                                    {{ isset($data) && in_array($category->id, $data->category_ids ?? []) ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="cat_{{ $category->id }}">
+                                                    {{ $category->name }}
+                                                </label>
+                                            </div>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 mb-3 required">
+                            <label for="" class="form-label">Product Unit</label>
+                            <select name="punit" class="form-control js-example-basic-single" id="" required>
+                                <option value="">Nothing selected</option>
+                                @foreach ($unit as $item)
+                                    <option value="{{ $item->id }}"
+                                        {{ $is_edit ?? $data->category_id == $item->id ? 'selected' : '' }}>
+                                        {{ $item->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+
+                        {{-- <div class="col-md-4 mb-3 required">
+                            <label for="" class="form-label">Sale Unit</label>
+                            <select name="sunit" class="form-control js-example-basic-single" id="" required>
+                                <option value="">Nothing selected</option>
+                                @foreach ($categories as $item)
+                                    <option value="{{ $item->id }}"
+                                        {{ $is_edit ?? $data->category_id == $item->id ? 'selected' : '' }}>
+                                        {{ $item->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-md-4 mb-3 required">
+                            <label for="" class="form-label">Purchase Unit</label>
+                            <select name="purchaseunit" class="form-control js-example-basic-single" id=""
+                                required>
+                                <option value="">Nothing selected</option>
+                                @foreach ($categories as $item)
+                                    <option value="{{ $item->id }}"
+                                        {{ $is_edit ?? $data->category_id == $item->id ? 'selected' : '' }}>
+                                        {{ $item->name }}</option>
+                                @endforeach
+                            </select>
+                        </div> --}}
+
+
+
+                        <div class="col-md-4 mb-3 required">
+                            <label for="" class="form-label">Product Cost</label>
+                            <input type="text" name="cost" id="" class="form-control"
+                                value="{{ $is_edit ? $data->cost : '' }}" placeholder="Enter Unit Price" required />
+                        </div>
+                        <div class="col-md-4 mb-3 required">
+                            <label for="" class="form-label">Product Price</label>
+                            <input type="text" name="pprice" id="" class="form-control"
+                                value="{{ $is_edit ? $data->product_price : '' }}" placeholder="Enter Unit Price"
+                                required />
+                        </div>
+
+                        <div class="col-md-4 mb-3 required">
+                            <label for="" class="form-label">Alert Quantity</label>
+                            <input type="text" name="qty" id="" class="form-control"
+                                value="{{ $is_edit ? $data->qty : '' }}" placeholder="Enter Unit Price" required />
+                        </div>
+
+
+
+
+
+                    </div>
+                    <hr class="mt-5 mb-5" style="border: none; border-top: 1px solid #666; margin: 1rem 0;">
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3 required">
+                            <label for="" class="form-label">Product tax</label>
+                            <input type="text" name="tax" id="" class="form-control"
+                                value="{{ $is_edit ? $data->tax : '' }}" placeholder="Enter Unit Price" required />
+                        </div>
+
+                        <!-- Tax Method -->
+                        <div class="col-md-4 mb-3 required">
+                            <label for="" class="form-label">Tax Method</label>
+                            <select name="taxmethod" class="form-control js-example-basic-single" required>
+                                <option value="">Nothing selected</option>
+                                <option value="exclusive"
+                                    {{ $is_edit && $data->tax_method === 'exclusive' ? 'selected' : '' }}>Exclusive
+                                </option>
+                                <option value="inclusive"
+                                    {{ $is_edit && $data->tax_method === 'inclusive' ? 'selected' : '' }}>Inclusive
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Tax Status -->
+                        <div class="col-md-4 mb-3 required">
+                            <label for="" class="form-label">Tax Status</label>
+                            <select name="taxstatus" class="form-control js-example-basic-single" required>
+                                <option value="">Nothing selected</option>
+                                <option value="taxable"
+                                    {{ $is_edit && $data->tax_status === 'taxable' ? 'selected' : '' }}>Taxable</option>
+                                <option value="non-taxable"
+                                    {{ $is_edit && $data->tax_status === 'non-taxable' ? 'selected' : '' }}>Non-Taxable
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Tax Class -->
+                        <div class="col-md-4 mb-3 required">
+                            <label for="" class="form-label">Tax Class</label>
+                            <select name="taxclass" class="form-control js-example-basic-single" required>
+                                <option value="">Nothing selected</option>
+                                <option value="standard"
+                                    {{ $is_edit && $data->tax_class === 'standard' ? 'selected' : '' }}>Standard</option>
+                                <option value="reduced"
+                                    {{ $is_edit && $data->tax_class === 'reduced' ? 'selected' : '' }}>Reduced</option>
+                                <option value="zero" {{ $is_edit && $data->tax_class === 'zero' ? 'selected' : '' }}>
+                                    Zero</option>
+                            </select>
                         </div>
                     </div>
+                    <hr class="mt-5 mb-5" style="border: none; border-top: 1px solid #666; margin: 1rem 0;">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="finalPrice" class="form-label">Final Price</label>
+                            <input type="text" id="finalPrice" class="form-control" readonly>
+                        </div>
+                    </div>
+
+                    <hr class="mt-5 mb-5" class="mt-5 mb-5"
+                        style="border: none; border-top: 1px solid #666; margin: 1rem 0;">
+
+
+                    {{-- image --}}
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="" class="form-label">Product image</label>
+
+                            <div id="dropZone" onclick="document.getElementById('imageInput').click();"
+                                ondragover="event.preventDefault(); this.style.backgroundColor='#e6f7ff'; this.style.borderColor='#4099ff';"
+                                ondragleave="this.style.backgroundColor='#f9f9f9'; this.style.borderColor='#ccc';"
+                                ondrop="handleDrop(event)"
+                                style="border: 2px dashed #ccc; border-radius: 10px; padding: 30px; text-align: center; cursor: pointer; background-color: #f9f9f9;">
+                                <p>Drag & drop an image here, or <span
+                                        style="color: blue; text-decoration: underline;">click to select</span></p>
+                                <input type="file" id="imageInput" name="image" accept="image/*"
+                                    onchange="handleFile(this.files[0])" style="display: none;">
+                                <img id="previewImage" src="#" alt="Preview"
+                                    style="display: none; margin-top: 10px; max-width: 100%; border-radius: 10px;">
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label for="" class="form-label">Product description</label>
+                            <textarea name="productDetails" id="editor"
+                                style="width:100%; height:300px; border-radius: 8px; border: 1px solid #ccc; padding:10px;">{{ $is_edit ? $data->description : '' }}</textarea>
+                        </div>
+
+
+                        <hr class="mt-5 mb-5" style="border: none; border-top: 1px solid #666; margin: 1rem 0;">
+
+
+                        {{-- variable product --}}
+                        <div class="col-md-12 col-12 mb-3 required">
+                            <div class="row">
+                                <div class="col-12 col-md-3 col-lg-3">
+                                    <label for="" class="form-label">Product type</label>
+                                    <select name="ptype" class="form-control js-example-basic-single" id="ptype"
+                                        required>
+                                        <option value="">Nothing selected</option>
+                                        <option value="simple"
+                                            {{ isset($data) && $data->product_type === 'simple' ? 'selected' : '' }}>Simple
+                                            product</option>
+                                        <option value="grouped"
+                                            {{ isset($data) && $data->product_type === 'grouped' ? 'selected' : '' }}>
+                                            Grouped product</option>
+                                        <option value="variable"
+                                            {{ isset($data) && $data->product_type === 'variable' ? 'selected' : '' }}>
+                                            Variable product</option>
+                                    </select>
+
+                                </div>
+                            </div>
+
+                            <div id="variant-group" style="display: none;">
+                                <div id="variant-container">
+                                    @if (isset($pvdata) && $pvdata->product_type === 'variable' && $pvdata->variants)
+                                        @foreach ($pvdata->variants as $index => $variant)
+                                            <div class="row variant-row">
+                                                <div class="col-12 col-md-3 col-lg-3">
+                                                    <label class="form-label">Type name</label>
+                                                    <input type="text" name="tname[]"
+                                                        value="{{ $variant->variant_name }}" class="form-control"
+                                                        required>
+                                                </div>
+                                                <div class="col-12 col-md-3 col-lg-3">
+                                                    <label class="form-label">Type price</label>
+                                                    <input type="text" name="tprice[]"
+                                                        value="{{ $variant->variant_price }}" class="form-control"
+                                                        required>
+                                                </div>
+                                                <div class="col-12 col-md-3 col-lg-3">
+                                                    <label class="form-label">Final price</label>
+                                                    <input type="text" name="tfprice[]"
+                                                        value="{{ $variant->final_price }}" class="form-control" required
+                                                        readonly>
+                                                </div>
+                                                <div class="col-12 col-md-2 col-lg-2 d-flex align-items-end">
+                                                    <button type="button"
+                                                        class="btn btn-danger remove-row">Remove</button>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        {{-- default blank row if not editing --}}
+                                        <div class="row variant-row">
+                                            <div class="col-12 col-md-3 col-lg-3">
+                                                <label class="form-label">Type name</label>
+                                                <input type="text" name="tname[]" class="form-control"
+                                                    placeholder="Enter Type Name" required>
+                                            </div>
+                                            <div class="col-12 col-md-3 col-lg-3">
+                                                <label class="form-label">Type price</label>
+                                                <input type="text" name="tprice[]" class="form-control"
+                                                    placeholder="Enter Type Price" required>
+                                            </div>
+                                            <div class="col-12 col-md-3 col-lg-3">
+                                                <label class="form-label">Final price</label>
+                                                <input type="text" name="tfprice[]" class="form-control"
+                                                    placeholder="Auto-calculated" required disabled>
+                                            </div>
+                                            <div class="col-12 col-md-2 col-lg-2 d-flex align-items-end">
+                                                <button type="button" class="btn btn-danger remove-row">Remove</button>
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12 mt-2">
+                                        <button type="button" class="btn btn-primary" id="add-variant">+ Add
+                                            Variant</button>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        <hr class="mt-5 mb-5" style="border: none; border-top: 1px solid #666; margin: 1rem 0;">
+
+
+
+                        <div class="col-12">
+                            <div class="col-md-4 mb-3 required">
+
+                                <div class="form-check mt-4">
+                                    <input class="form-check-input" type="checkbox" name="status" value="private"
+                                        id="checkDefault">
+                                    <label class="form-check-label" for="checkDefault">
+                                        Make product private
+                                    </label>
+                                </div>
+
+                            </div>
+                            <div class="form-check mt-3">
+                                <input class="form-check-input" type="checkbox" value="" id="checkDefault">
+                                <label class="form-check-label" for="checkDefault">
+                                    This product has different price for different warehouses
+                                </label>
+                            </div>
+                            <div class="form-check mt-3">
+                                <input class="form-check-input" type="checkbox" value="" id="checkDefault">
+                                <label class="form-check-label" for="checkDefault">
+                                    This product has batch and expire dates
+                                </label>
+                            </div>
+                            <div class="form-check mt-3">
+                                <input class="form-check-input" type="checkbox" value="" id="checkDefault">
+                                <label class="form-check-label" for="checkDefault">
+                                    This product has varient
+                                </label>
+                            </div>
+                            <div class="form-check mt-3">
+                                <input class="form-check-input" type="checkbox" value="" id="checkDefault">
+                                <label class="form-check-label" for="checkDefault">
+                                    Add promotional price
+                                </label>
+                            </div>
+
+                            <div class="form-check mt-3">
+                                <input class="form-check-input" type="checkbox" value="" id="checkDefault">
+                                <label class="form-check-label" for="checkDefault">
+                                    Limit purchase to 1 item per order
+                                </label>
+                            </div>
+
+                        </div>
+                    </div>
+
                     <div class="row mb-3">
                         <div class="col-12 text-end">
                             <button type="button" class="btn btn-light me-2"
@@ -176,12 +436,10 @@
                                 onclick="collectTableData()">{{ $is_edit ? 'Update' : 'Create' }}</button> --}}
                             <button class="btn btn-primary"
                                 onclick="sendDataToServer()">{{ $is_edit ? 'Update' : 'Create' }}</button>
-                                
-
                         </div>
                     </div>
 
-                    
+
                     <input type="hidden" id="table_data_input" name="table_data">
 
                 </form>
@@ -191,7 +449,175 @@
 @endsection
 
 @section('script')
+    <!-- Load CKEditor 5 CDN -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.0.0/classic/ckeditor.js"></script>
+
+    <!-- Initialize -->
     <script>
+        ClassicEditor
+            .create(document.querySelector('#editor'))
+            .catch(error => {
+                console.error(error);
+            });
+    </script>
+    <script>
+        $(document).ready(function() {
+            function toggleVariantSection() {
+                if ($('#ptype').val() === 'variable') {
+                    $('#variant-group').show();
+                } else {
+                    $('#variant-group').hide();
+                }
+            }
+
+            // On load
+            toggleVariantSection();
+
+            // On change
+            $('#ptype').on('change', function() {
+                toggleVariantSection();
+            });
+        });
+    </script>
+
+    <script>
+        function calculateFinalPrice() {
+            const price = parseFloat(document.querySelector('[name="pprice"]').value) || 0;
+            const tax = parseFloat(document.querySelector('[name="tax"]').value) || 0;
+            const taxStatus = document.querySelector('[name="taxstatus"]').value;
+            const taxMethod = document.querySelector('[name="taxmethod"]').value;
+
+            let finalPrice = price;
+
+            if (taxStatus === 'taxable') {
+                if (taxMethod === 'exclusive') {
+                    finalPrice = price + (price * tax / 100);
+                } else if (taxMethod === 'inclusive') {
+                    finalPrice = price; // already includes tax
+                }
+            } else if (taxStatus === 'non-taxable') {
+                finalPrice = price;
+            }
+
+            document.getElementById('finalPrice').value = finalPrice.toFixed(2);
+        }
+
+        // ✅ For variants
+        function calculateVariantFinalPrices() {
+            const tax = parseFloat(document.querySelector('[name="tax"]').value) || 0;
+            const taxStatus = document.querySelector('[name="taxstatus"]').value;
+            const taxMethod = document.querySelector('[name="taxmethod"]').value;
+
+            document.querySelectorAll('.variant-row').forEach(function(row) {
+                const priceInput = row.querySelector('[name="tprice[]"]');
+                const finalInput = row.querySelector('[name="tfprice[]"]');
+
+                if (!priceInput || !finalInput) return;
+
+                const price = parseFloat(priceInput.value) || 0;
+                let finalPrice = price;
+
+                if (taxStatus === 'taxable') {
+                    if (taxMethod === 'exclusive') {
+                        finalPrice = price + (price * tax / 100);
+                    } else if (taxMethod === 'inclusive') {
+                        finalPrice = price; // already includes tax
+                    }
+                } else {
+                    finalPrice = price;
+                }
+
+                finalInput.value = finalPrice.toFixed(2);
+            });
+        }
+
+        // Attach event listeners
+        document.querySelector('[name="pprice"]').addEventListener('input', calculateFinalPrice);
+        document.querySelector('[name="tax"]').addEventListener('input', calculateFinalPrice);
+        document.querySelector('[name="taxstatus"]').addEventListener('change', calculateFinalPrice);
+        document.querySelector('[name="taxmethod"]').addEventListener('change', calculateFinalPrice);
+        // Attach events to variant price inputs dynamically
+        document.addEventListener('input', function(e) {
+            if (e.target.matches('[name="tprice[]"]')) {
+                calculateVariantFinalPrices();
+            }
+        });
+
+        // Initial calc
+        document.addEventListener('DOMContentLoaded', () => {
+            calculateFinalPrice();
+            calculateVariantFinalPrices();
+        });
+        // // Initial calculation
+        // document.addEventListener('DOMContentLoaded', calculateFinalPrice);
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            // Toggle visibility based on product type
+            $('#ptype').on('change', function() {
+                if ($(this).val() === 'variable') {
+                    $('#variant-group').show();
+                    $('#variant-group input').prop('required', true);
+                } else {
+                    $('#variant-group').hide();
+                    $('#variant-group input').prop('required', false);
+                }
+            });
+
+            // Add new variant row
+            $('#add-variant').click(function() {
+                const row = `
+                <div class="row variant-row">
+                    <div class="col-12 col-md-3 col-lg-3">
+                        <input type="text" name="tname[]" class="form-control mt-2" placeholder="Enter Type Name" required>
+                    </div>
+                    <div class="col-12 col-md-3 col-lg-3">
+                        <input type="text" name="tprice[]" class="form-control mt-2" placeholder="Enter Type Price" required>
+                    </div>
+                    <div class="col-12 col-md-3 col-lg-3">
+                      <input type="text" name="tfprice[]"
+                                                       class="form-control" required
+                                                        disabled>
+                                                </div>
+                    <div class="col-12 col-md-2 col-lg-2 d-flex align-items-end">
+                        <button type="button" class="btn btn-danger mt-2 remove-row">Remove</button>
+                    </div>
+
+                </div>`;
+                $('#variant-container').append(row);
+            });
+
+            // Remove variant row
+            $(document).on('click', '.remove-row', function() {
+                $(this).closest('.variant-row').remove();
+            });
+        });
+    </script>
+
+    <script>
+        function handleDrop(event) {
+            event.preventDefault();
+            const file = event.dataTransfer.files[0];
+            if (file && file.type.startsWith("image/")) {
+                document.getElementById('imageInput').files = event.dataTransfer.files;
+                handleFile(file);
+            }
+            event.currentTarget.style.backgroundColor = '#f9f9f9';
+            event.currentTarget.style.borderColor = '#ccc';
+        }
+
+        function handleFile(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById("previewImage");
+                img.src = e.target.result;
+                img.style.display = "block";
+            };
+            reader.readAsDataURL(file);
+        }
+
+
         $("#ingredient").change(function(e) {
             e.preventDefault();
             var el = $(this);
@@ -253,9 +679,6 @@
 
         function sendDataToServer() {
 
-
-
-
             var tableData = [];
             $('#ingredient_tbl tbody tr').each(function(index, row) {
 
@@ -290,8 +713,7 @@
 
 
         }
-
-
-       
-    </script>
+  
+  
+  </script>
 @endsection

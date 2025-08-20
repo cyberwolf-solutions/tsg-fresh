@@ -6,40 +6,90 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Order extends Model {
+class Order extends Model
+{
     use HasFactory, SoftDeletes;
+    protected $connection = 'tenant';
     protected $fillable = [
         'customer_id',
-        'room_id',
-        'table_id',
-        'orderable_id',
-        'orderable_type',
+        'web_customer_id',
         'order_date',
-        'note',
         'type',
-        'progress',
         'status',
+        'payment_status',
+        'discount',
+        'vat',
+        'total',
+        'subtotal',
+        'coupon_id',
+        'coupon_code',
+        'coupon_value',
+        'coupon_type',
+        'source',
+        'delivery_method',
+        'payment_method',
+        'delivery_address',
+        'delivery_date',
+        'delivery_fee',
         'created_by',
         'updated_by',
-        'deleted_by',
+        'deleted_by'
     ];
 
-    public function customer() {
-        return $this->hasOne(Customer::class, 'id', 'customer_id');
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
     }
-    public function user() {
-        return $this->hasOne(User::class, 'id', 'created_by');
+    public function webCustomer()
+    {
+        // just define the relationship
+        return $this->belongsTo(WebCustomer::class, 'web_customer_id');
     }
-    public function table() {
-        return $this->hasOne(Table::class, 'id', 'table_id');
+
+
+    public function nextStatuses(): array
+    {
+        // Normalize values (optional, depends on how you save them)
+        $source = strtoupper($this->source);
+        $delivery = strtolower($this->delivery_method);
+
+        return match ($source) {
+            'POS' => ['Pending', 'Complete'],
+
+            'WEB' => match ($delivery) {
+                'pickup' => ['Pending', 'Confirmed', 'Packed', 'Complete'],
+                'shipping', 'delivery' => ['Pending', 'Confirmed', 'Packed', 'Out for Delivery', 'Complete'],
+                default => ['Pending', 'Complete'],
+            },
+
+            default => ['Pending', 'Complete'],
+        };
     }
-    public function room() {
-        return $this->hasOne(Room::class, 'id', 'room_id');
+
+
+    public function items()
+    {
+        return $this->hasMany(OrderItem::class);
     }
-    public function payment() {
-        return $this->hasOne(OrderPayment::class, 'order_id', 'id');
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
-    public function items() {
-        return $this->hasMany(OrderItem::class, 'order_id', 'id');
+
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function deletedBy()
+    {
+        return $this->belongsTo(User::class, 'deleted_by');
+    }
+
+
+    public function payments()
+    {
+        return $this->hasMany(OrderPayment::class);
     }
 }

@@ -171,7 +171,7 @@
                 printWindow.document.write(
                     '<img src="{{ asset('storage/' . $settings->logo_dark) }}" class="logo img-fluid">'
                     );
-                printWindow.document.write('<div class="resort-name">Ging Oya Resort</div>');
+                printWindow.document.write('<div class="resort-name">TSG fresh Resort</div>');
                 printWindow.document.write('<hr>');
                 printWindow.document.write(document.getElementById('example').outerHTML);
                 printWindow.document.write('</div>');

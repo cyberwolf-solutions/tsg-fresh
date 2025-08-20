@@ -28,7 +28,7 @@ class SettingsController extends Controller {
         $data = Settings::first();
         $mail = MailConfig::first();
 
-        return view('settings.index', compact('title', 'breadcrumbs', 'data', 'mail'));
+     return view('pos.settings.index', compact('title', 'breadcrumbs', 'data', 'mail'));
     }
 
     public function updateSettings(Request $request) {

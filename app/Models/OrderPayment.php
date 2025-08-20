@@ -5,9 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class OrderPayment extends Model {
+class OrderPayment extends Model
+{
     use HasFactory;
-
+    protected $connection = 'tenant';
     protected $table = 'orders_payments';
 
     protected $fillable = [
@@ -20,12 +21,14 @@ class OrderPayment extends Model {
         'payment_type',
         'description',
         'payment_status',
+        'receipt_no',
         'created_by',
         'updated_by',
         'deleted_by',
     ];
 
-    public function purchase() {
+    public function purchase()
+    {
         return $this->belongsTo(Purchases::class, 'purchase_id');
     }
 }

@@ -9,6 +9,7 @@ use Cassandra\Custom;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class CustomerController extends Controller
@@ -26,7 +27,7 @@ class CustomerController extends Controller
             ['label' => $title, 'url' => '', 'active' => true],
         ];
         $data = Customer::all();
-        return view('customers.index', compact('title', 'breadcrumbs', 'data'));
+        return view('pos.customers.index', compact('title', 'breadcrumbs', 'data'));
     }
 
     /**
@@ -45,12 +46,60 @@ class CustomerController extends Controller
         $is_edit = false;
         $currencies = Currency::all();
 
-        return view('customers.create-edit', compact('title', 'breadcrumbs', 'is_edit' , 'currencies'));
+        return view('pos.customers.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'currencies'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
+
+    //   public function search(Request $request)
+    // {
+    //     $term = $request->get('q');
+
+    //     $customers = Customer::where('name', 'LIKE', "%{$term}%")
+    //         ->orWhere('contact', 'LIKE', "%{$term}%")
+    //         ->orWhere('email', 'LIKE', "%{$term}%")
+    //         ->limit(10)
+    //         ->get();
+
+    //     return response()->json($customers->map(function($customer){
+    //         return [
+    //             'id' => $customer->id,
+    //             'text' => $customer->name . ' (' . $customer->contact . ')',
+    //             'name' => $customer->name
+    //         ];
+    //     }));
+    // }
+
+
+public function search(Request $request)
+{
+    $term = $request->get('q');
+
+Log::info("Customer search called", ['q' => $term]);
+
+    $customers = Customer::where('name', 'LIKE', "%{$term}%")
+        ->orWhere('contact', 'LIKE', "%{$term}%")
+        ->orWhere('email', 'LIKE', "%{$term}%")
+        ->limit(10)
+        ->get();
+
+    Log::info("Customers found", $customers->toArray());
+
+    return response()->json(
+        $customers->map(function ($customer) {
+            return [
+                'id' => $customer->id,
+                'vat'=>$customer->vat,
+                'text' => $customer->name . ' (' . $customer->contact . ')',
+            ];
+        })
+    );
+}
+
+
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -58,12 +107,13 @@ class CustomerController extends Controller
             'contact' => 'required|unique:customers,contact',
             'email' => 'nullable|email|unique:customers,email',
             'address' => 'nullable',
-            'image' => 'nullable|image|max:5000',
-            'p_no' => 'nullable',
-            'n_destination' => 'nullable',
-            'nationality' => 'nullable',
-            'type' => 'required',
-            'signature' => 'nullable|string', 
+            'companyname' => 'required|string',
+            'vat' => 'required|string',
+            'city' => 'required|string',
+            'state' => 'required|string',
+            'postal' => 'required|string',
+            'country' => 'required|string',
+            'cgroup' => 'required|string',
 
         ]);
 
@@ -94,14 +144,15 @@ class CustomerController extends Controller
                 'contact' => $request->contact,
                 'email' => $request->email,
                 'address' => $request->address,
-                'passport_no'=>$request->p_no,
-                'next_destination'=>$request->n_destination,
-                'nationality'=>$request->nationality,
-                'image_url' => $image_url,
-                'currency_id'=>$request->currency, 
-                'type'=>$request->type, 
+                'company_name' => $request->companyname,
+                'vat' => $request->vat,
+                'city' => $request->city,
+                'state' => $request->state,
+                'postalcode' => $request->postal,
+                'country' => $request->country,
+                'group' => $request->cgroup,
                 'created_by' => Auth::user()->id,
-                'signature' => $request->signature,
+
             ];
 
             $customer = Customer::create($data);
@@ -125,41 +176,41 @@ class CustomerController extends Controller
         $html = '<table class="table" cellspacing="0" cellpadding="0">';
         $html .= '<tr>';
         $html .= '<td>Name: </td>';
-        $html .= '<td>' . $data->name . '</td>';
-        $html .= '</tr>';
-        $html .= '<tr>';
-        $html .= '<td>Contact </td>';
-        $html .= '<td>' . $data->contact . '</td>';
-        $html .= '</tr>';
-        $html .= '<tr>';
-        $html .= '<td>Passport Number </td>';
-        $html .= '<td>' . $data->passport_no . '</td>';
-        $html .= '</tr>';
-        $html .= '<tr>';
-        $html .= '<td>Next Destination </td>';
-        $html .= '<td>' . $data->next_destination . '</td>';
-        $html .= '</tr>';
-        $html .= '<tr>';
-        $html .= '<td>Nationality </td>';
-        $html .= '<td>' . $data->nationality . '</td>';
-        $html .= '</tr>';
-        $html .= '<tr>';
-        $html .= '<td>Email: </td>';
-        $html .= '<td>' . $data->email . '</td>';
-        $html .= '</tr>';
-        $html .= '<tr>';
-        $html .= '<td>Address: </td>';
-        $html .= '<td>' . $data->address . '</td>';
-        $html .= '</tr>';
-        $html .= '<tr>';
-        $html .= '<td>Created By: </td>';
-        $html .= '<td>' . $data->createdBy->name . '</td>';
-        $html .= '</tr>';
-        $html .= '<tr>';
-        $html .= '<td>Created Date: </td>';
-        $html .= '<td>' . date_format(new DateTime('@' . strtotime($data->created_at)), $settings->date_format) . '</td>';
-        $html .= '</tr>';
-        $html .= '</table>';
+        // $html .= '<td>' . $data->name . '</td>';
+        // $html .= '</tr>';
+        // $html .= '<tr>';
+        // $html .= '<td>Contact </td>';
+        // $html .= '<td>' . $data->contact . '</td>';
+        // $html .= '</tr>';
+        // $html .= '<tr>';
+        // $html .= '<td>Passport Number </td>';
+        // $html .= '<td>' . $data->state . '</td>';
+        // $html .= '</tr>';
+        // $html .= '<tr>';
+        // $html .= '<td>Next Destination </td>';
+        // $html .= '<td>' . $data->group . '</td>';
+        // $html .= '</tr>';
+        // $html .= '<tr>';
+        // $html .= '<td>Nationality </td>';
+        // $html .= '<td>' . $data->country . '</td>';
+        // $html .= '</tr>';
+        // $html .= '<tr>';
+        // $html .= '<td>Email: </td>';
+        // $html .= '<td>' . $data->email . '</td>';
+        // $html .= '</tr>';
+        // $html .= '<tr>';
+        // $html .= '<td>Address: </td>';
+        // $html .= '<td>' . $data->address . '</td>';
+        // $html .= '</tr>';
+        // $html .= '<tr>';
+        // $html .= '<td>Created By: </td>';
+        // $html .= '<td>' . $data->createdBy->name . '</td>';
+        // $html .= '</tr>';
+        // $html .= '<tr>';
+        // $html .= '<td>Created Date: </td>';
+        // $html .= '<td>' . date_format(new DateTime('@' . strtotime($data->created_at)), $settings->date_format) . '</td>';
+        // $html .= '</tr>';
+        // $html .= '</table>';
 
         return response()->json([$html]);
     }
@@ -181,7 +232,7 @@ class CustomerController extends Controller
         $data = Customer::find($id);
         $currencies = Currency::all();
 
-        return view('customers.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data','currencies'));
+        return view('pos.customers.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data', 'currencies'));
     }
 
     /**
@@ -194,10 +245,13 @@ class CustomerController extends Controller
             'contact' => 'required|unique:customers,contact,' . $id,
             'email' => 'nullable|email|unique:customers,email,' . $id,
             'address' => 'nullable',
-            'image' => 'nullable|image|max:5000',
-            'p_no' => 'nullable',
-            'n_destination' => 'nullable',
-            'nationality' => 'nullable',
+             'companyname' => 'required|string',
+            'vat' => 'required|string',
+            'city' => 'required|string',
+            'state' => 'required|string',
+            'postal' => 'required|string',
+            'country' => 'required|string',
+            'cgroup' => 'required|string',
         ]);
 
         if ($validator->fails()) {
@@ -220,26 +274,28 @@ class CustomerController extends Controller
             if ($image_url && file_exists(public_path('uploads/guests/' . $image_url))) {
                 unlink(public_path('uploads/guests/' . $image_url));
             }
-    
+
             $preferred_name = trim($request->name);
             $image_url = $preferred_name . '.' . $request['image']->extension();
-    
+
             // Move the new image
             $request['image']->move(public_path('uploads/guests'), $image_url);
         }
 
         try {
             $data = [
-                'name' => $request->name,
+                  'name' => $request->name,
                 'contact' => $request->contact,
                 'email' => $request->email,
                 'address' => $request->address,
+                'company_name' => $request->companyname,
+                'vat' => $request->vat,
+                'city' => $request->city,
+                'state' => $request->state,
+                'postalcode' => $request->postal,
+                'country' => $request->country,
+                'group' => $request->cgroup,
                 'updated_by' => Auth::user()->id,
-                'next_destination'=>$request->n_destination,
-                'nationality'=>$request->nationality,
-                'image_url' => $image_url, 
-                'currency_id'=>$request->currency, 
-                'created_by' => Auth::user()->id,
             ];
 
             $customer = Customer::find($id)->update($data);
@@ -278,6 +334,6 @@ class CustomerController extends Controller
         ];
         $data = Customer::all();
 
-        return view('reports.customerReports', compact('data'));
+        return view('pos.reports.customerReports', compact('data'));
     }
 }

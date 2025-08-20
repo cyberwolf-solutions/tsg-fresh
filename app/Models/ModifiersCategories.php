@@ -6,8 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ModifiersCategories extends Model {
+class ModifiersCategories extends Model
+{
     use HasFactory;
+    protected $connection = 'tenant';
 
     protected $table = 'modifiers_categories';
 
@@ -18,7 +20,8 @@ class ModifiersCategories extends Model {
         'updated_by',
     ];
 
-    public function modifier() {
+    public function modifier()
+    {
         return $this->hasOne(Modifier::class, 'id', 'modifier_id');
     }
 }

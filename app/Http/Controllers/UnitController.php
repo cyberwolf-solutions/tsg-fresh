@@ -21,7 +21,7 @@ class UnitController extends Controller {
             ['label' => $title, 'url' => '', 'active' => true],
         ];
         $data = Unit::all();
-        return view('units.index', compact('title', 'breadcrumbs', 'data'));
+     return view('pos.units.index', compact('title', 'breadcrumbs', 'data'));
     }
 
     /**
@@ -38,7 +38,7 @@ class UnitController extends Controller {
 
         $is_edit = false;
 
-        return view('units.create-edit', compact('title', 'breadcrumbs', 'is_edit'));
+     return view('pos.units.create-edit', compact('title', 'breadcrumbs', 'is_edit'));
     }
 
     /**
@@ -122,7 +122,7 @@ class UnitController extends Controller {
 
         $data = Unit::find($id);
 
-        return view('units.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data'));
+     return view('pos.units.create-edit', compact('title', 'breadcrumbs', 'is_edit', 'data'));
     }
 
     /**

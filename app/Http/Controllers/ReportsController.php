@@ -26,7 +26,7 @@ class ReportsController extends Controller
         $data = User::with('roles')->get();
 
 
-        return view ('reports.Userindex' , compact('title', 'breadcrumbs' , 'data'));
+        return view ('POS.reports.Userindex' , compact('title', 'breadcrumbs' , 'data'));
     }
 
     public function customer(){
@@ -53,18 +53,18 @@ class ReportsController extends Controller
 
         return view ('reports.employeeindex' , compact('title', 'breadcrumbs' , 'data'));
     }
-    public function supplier(){
-        $title = 'Supplier Report';
+    // public function supplier(){
+    //     $title = 'Supplier Report';
 
-        $breadcrumbs = [
-            // ['label' => 'First Level', 'url' => '', 'active' => false],
-            ['label' => $title, 'url' => '', 'active' => true],
-        ];
-        $data = Supplier::all();
+    //     $breadcrumbs = [
+    //         // ['label' => 'First Level', 'url' => '', 'active' => false],
+    //         ['label' => $title, 'url' => '', 'active' => true],
+    //     ];
+    //     $data = Supplier::all();
 
 
-        return view ('reports.supplierindex' , compact('title', 'breadcrumbs' , 'data'));
-    }
+    //     return view ('reports.supplierindex' , compact('title', 'breadcrumbs' , 'data'));
+    // }
     public function purchase(){
         $title = 'Purchase Report';
 
@@ -105,7 +105,7 @@ class ReportsController extends Controller
     //     // Merge the two collections
     //     $data = $purchases->merge($otherPurchases);
     
-    //     return view('reports.purchaseindex', compact('title', 'breadcrumbs', 'data'));
+    //  return view('pos.reports.purchaseindex', compact('title', 'breadcrumbs', 'data'));
     // }
     
 
@@ -171,7 +171,7 @@ class ReportsController extends Controller
         $data = Order::all();
 
 
-        return view('reports.orderindex' ,compact('title', 'breadcrumbs','data') );
+     return view('pos.reports.orderindex' ,compact('title', 'breadcrumbs','data') );
 
 
 
@@ -189,7 +189,7 @@ class ReportsController extends Controller
         $data = Order::all();
 
 
-        return view('reports.tacheckout' ,compact('title', 'breadcrumbs','data') );
+     return view('pos.reports.tacheckout' ,compact('title', 'breadcrumbs','data') );
 
 
 

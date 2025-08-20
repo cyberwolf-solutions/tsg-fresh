@@ -69,23 +69,17 @@
                                                 'suppliers',
                                                 'products',
                                                 'categories',
+                                                'brands',
                                                 'units',
                                                 'purchases',
-                                                'Pos',
-                                                'kitchen',
-                                                'bar',
-                                                'tables',
-                                                // 'table arrangements',
+                                                'Pos',                                            
                                                 'meals',
-                                                'ingredients',
-                                                'modifiers',
-                                                'rooms',
+                                                'ingredients',                                          
                                                 'bookings',
                                                 'orders',
                                                 'report',
                                                 'settings',
-                                                'Inventory',
-                                                'housekeeping'
+                                                'Inventory',                                      
                                             ];
                                         @endphp
                                         @foreach ($main as $moduleName)

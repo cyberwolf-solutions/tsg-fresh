@@ -1,30 +1,34 @@
 @extends('landing-page.layouts.app')
 
 @section('content')
-    <div class="container-fluid"
+    <div class="container-fluid  text-secondary "
         style="background: url('{{ asset('build/images/bg.jpg') }}') no-repeat center center;
         ;background-color:whitesmoke; background-size: cover; padding: 60px 15px;
-    margin-top:50px">
+    margin-top:100px">
 
         <!-- Heading -->
-        <h2 class="text-center fw-bold mb-4" style="font-size: 28px;">Welcome to Taprobane Seafood (Pvt) Ltd.</h2>
+        <h2 class="text-center fw-semibold mb-4" style="font-size: 28px;">Welcome to Taprobane Seafood (Pvt) Ltd.</h2>
 
         <!-- Vision and Mission -->
         <div class="row text-center mb-4">
             <div class="col-md-6">
-                <h4 class="fw-bold mb-2">VISION</h4>
-                <p style="font-style: italic;">“To Be The Global Leader In Sustainable & Socially Responsible Seafood”</p>
+                <h4 class="fw-semibold mb-2">VISION</h4>
+                <p style="font-style: " class="fw-semibold">“To Be The Global Leader In Sustainable & Socially Responsible
+                    <br>
+                    Seafood”
+                </p>
             </div>
             <div class="col-md-6">
-                <h4 class="fw-bold mb-2">MISSION</h4>
-                <p style="font-style: italic;">“Create A Premium Quality Seafood Products For Iconic Brands, Sourced
+                <h4 class="fw-semibold mb-2">MISSION</h4>
+                <p style="font-style: " class="fw-semibold">“Create A Premium Quality Seafood Products For Iconic
+                    Brands,<br> Sourced
                     Responsibly From Sustainable Managed (Sri Lankan) Fisheries”</p>
             </div>
         </div>
 
         <!-- Values -->
         <h5 class="text-center fw-semibold mb-4">Our Values</h5>
-        <p class="text-center" style="color: #333;">
+        <p class="text-center text-secondary fw-semibold" style="color: #333;">
             ✔ High Quality Standards &nbsp;&nbsp; ✔ Social Responsibility &nbsp;&nbsp;
             ✔ Sustainability &nbsp;&nbsp; ✔ Integrity &nbsp;&nbsp; ✔ Success
         </p>
@@ -49,11 +53,11 @@
         </div>
 
         <!-- Company Description -->
-        <div class="mt-4"
-            style="max-width: 900px; margin: auto; font-size: 14px; color: #444; line-height: 1.8; text-align: justify;">
-            <p>Taprobane Seafood Private Limited is Sri Lanka’s leading seafood company founded in 2011 by Mr Timothy O’
-                Reilly and Mr Dilan Fernando, whose shared vision for producing seafood of impeccable freshness and quality
-                has helped it become a US$25 million dollar company.</p>
+        <div
+            style="max-width: 1100px; margin: 60px auto; font-size: 16px;  line-height: 1.9; text-align: center; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+            <p>Taprobane Seafood Private Limited is Sri Lanka’s leading seafood company founded in 2011 by Mr Timothy
+                O’Reilly and Mr Dilan Fernando, whose shared vision for producing seafood of impeccable freshness and
+                quality has helped it become a US$25 million dollar company.</p>
 
             <p>TSG has ten state-of-the-art processing facilities throughout north and north western province employing over
                 1500 people. TSG has seen extraordinary growth, and winner of the highest foreign exchange earner 2014/2015
@@ -73,5 +77,6 @@
                 both employers and workers can mutually benefit from a system that incorporates fair sustainable practices.
             </p>
         </div>
+
     </div>
 @endsection

@@ -5,21 +5,33 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>@yield('title') | Ging Oya Resort Waikkal</title>
+    <title>@yield('title') | TSG fresh Resort Waikkal</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="Ging Oya  Resort Waikkal" name="description" />
+    <meta content="TSG fresh  Resort Waikkal" name="description" />
     <meta content="CyberWolf Solutions (Pvt) Ltd." name="author" />
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <!-- Toastr CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
     <!-- Toastr JS (after jQuery) -->
- 
+
 
 
     <!-- App favicon -->
     <link rel="shortcut icon" href="{{ URL::asset('build/images/favicon.ico') }}">
     @include('layouts.head-css')
+
+    <style>.btn-purple {
+    background-color: #6f42c1;
+    color: #fff;
+    border: none;
+}
+
+.btn-purple:hover {
+    background-color: #5a35a4;
+    color: #fff;
+}
+</style>
 </head>
 
 @section('body')
