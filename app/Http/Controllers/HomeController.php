@@ -8,18 +8,22 @@ use App\Models\Employee;
 use App\Models\Ingredient;
 use App\Models\Inventory;
 use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Supplier;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
-class HomeController extends Controller {
+class HomeController extends Controller
+{
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->middleware('auth');
     }
 
@@ -28,11 +32,12 @@ class HomeController extends Controller {
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index() {
+    public function index()
+    {
 
 
         $totalOrders = Order::all()->count();
-      
+
 
         // Get today's date
         $todayDate = Carbon::now()->toDateString();
@@ -41,7 +46,7 @@ class HomeController extends Controller {
         $todayOrders = Order::whereDate('created_at', $todayDate)->get();
 
         // Get today's bookings 
-    //    ÷ $todayBookings = Booking::whereDate('created_at', $todayDate)->get();
+        //    ÷ $todayBookings = Booking::whereDate('created_at', $todayDate)->get();
         // dd($todayBookings);
 
         $customers = Customer::all();
@@ -56,22 +61,59 @@ class HomeController extends Controller {
 
 
         // Labels for cash flow by month or date
-$cashFlowLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+        $cashFlowLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
 
-// Corresponding data arrays for payments received and sent
-$paymentsReceived = [50000, 70000, 65000, 80000, 72000, 90000];
-$paymentsSent = [30000, 45000, 40000, 55000, 50000, 60000];
+        // Corresponding data arrays for payments received and sent
+        $paymentsReceived = [50000, 70000, 65000, 80000, 72000, 90000];
+        $paymentsSent = [30000, 45000, 40000, 55000, 50000, 60000];
 
-// Pie chart data
-$monthlyCashLabels = ['Cash', 'Credit', 'Others'];
-$monthlyCashData = [55, 35, 10];
+        // Pie chart data
+        $monthlyCashLabels = ['Cash', 'Credit', 'Others'];
+        $monthlyCashData = [55, 35, 10];
 
 
-     return view('home', compact('totalOrders', 
-       'cashFlowLabels', 
-        'paymentsReceived', 
-        'paymentsSent', 
-        'monthlyCashLabels', 
-        'monthlyCashData', 'todayOrders' ,'customers' , 'employees' ,'suppliers' , 'Products' ,'Products1'));
+        return view('home', compact(
+            'totalOrders',
+            'cashFlowLabels',
+            'paymentsReceived',
+            'paymentsSent',
+            'monthlyCashLabels',
+            'monthlyCashData',
+            'todayOrders',
+            'customers',
+            'employees',
+            'suppliers',
+            'Products',
+            'Products1'
+        ));
+    }
+
+    public function footerData()
+    {
+        // 1. Latest Products (in stock)
+        $latestProducts = Product::whereHas('variants.inventory', function ($q) {
+            $q->where('quantity', '>', 0);
+        })
+            ->orderBy('created_at', 'desc')
+            ->take(4)
+            ->get();
+
+        // 2. Best Selling Products (in stock)
+        $bestSellingProducts = OrderItem::select('product_id', DB::raw('SUM(quantity) as total_sold'))
+            ->groupBy('product_id')
+            ->orderByDesc('total_sold')
+            ->take(4)
+            ->with('product') // eager load product
+            ->get()
+            ->pluck('product') // return only product models
+            ->filter(function ($product) {
+                // check stock
+                return $product && $product->variants->flatMap->inventory->sum('quantity') > 0;
+            });
+
+        // 3. Top Rated (later - for now empty)
+        $topRatedProducts = collect();
+
+        return view('Landing-page.partials.products', compact('latestProducts', 'bestSellingProducts', 'topRatedProducts'));
     }
 }

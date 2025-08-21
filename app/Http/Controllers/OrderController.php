@@ -157,7 +157,7 @@ class OrderController extends Controller
     }
 
 
-public function payment(Request $request)
+    public function payment(Request $request)
     {
         $request->validate([
             'order_id'      => 'required|integer',
@@ -167,7 +167,7 @@ public function payment(Request $request)
             'discount'      => 'nullable|numeric',
             'total'         => 'required|numeric',
             'payment_type'  => 'required|in:Cash,Card',
-            'payment_status'=> 'required|in:Unpaid,Partially Paid,Paid',
+            'payment_status' => 'required|in:Unpaid,Partially Paid,Paid',
         ]);
 
         $payment = OrderPayment::create([
@@ -179,7 +179,7 @@ public function payment(Request $request)
             'total'         => $request->total,
             'payment_type'  => $request->payment_type,
             'description'   => $request->description,
-            'payment_status'=> $request->payment_status,
+            'payment_status' => $request->payment_status,
             'created_by'    => Auth::id(),
         ]);
 
@@ -193,6 +193,12 @@ public function payment(Request $request)
     {
         $data = Order::find($id);
         return view('pos.order.print', compact('data'));
+    }
+
+     public function printtax(string $id)
+    {
+        $data = Order::find($id);
+        return view('pos.order.printtax', compact('data'));
     }
 
     /**
@@ -209,4 +215,24 @@ public function payment(Request $request)
      * Remove the specified resource from storage.
      */
     public function destroy(string $id) {}
+
+    public function invoice(Request $request)
+    {
+        $orderId = $request->id;
+
+        $order = Order::with(['items.product', 'items.variant', 'customer'])->findOrFail($orderId);
+
+        $settings = Settings::latest()->first();
+        $data = $order;
+
+        return view('pos.order.print', compact('data', 'settings'));
+    }
+
+
+    // Example helper inside controller
+    // protected function getBankDetails()
+    // {
+    //     return BankDetail::first(); // adapt as per your structure
+    // }
+
 }

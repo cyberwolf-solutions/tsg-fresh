@@ -27,7 +27,7 @@ return new class extends Migration {
             $table->float('product_price')->default(0);
             $table->float('qty')->default(0);
 
-            $table->float('tax')->nullable();
+            $table->float('tax')->default(0);
             $table->string('tax_method')->nullable();
             $table->string('tax_status')->nullable();
             $table->string('tax_class')->nullable();

@@ -202,18 +202,16 @@
                     </div>
                     <hr class="mt-5 mb-5" style="border: none; border-top: 1px solid #666; margin: 1rem 0;">
 
-                    <div class="row">
-                        <div class="col-md-4 mb-3 required">
-                            <label for="" class="form-label">Product tax</label>
-                            <input type="text" name="tax" id="" class="form-control"
-                                value="{{ $is_edit ? $data->tax : '' }}" placeholder="Enter Unit Price" required />
-                        </div>
+                    <div class="row" style="display: none;">
+                        <input type="text" name="tax" class="form-control"
+                            value="{{ $is_edit ? $data->tax : 0 }}" placeholder="Enter Unit Price" required />
+
 
                         <!-- Tax Method -->
-                        <div class="col-md-4 mb-3 required">
+                        <div class="col-md-4 mb-3 ">
                             <label for="" class="form-label">Tax Method</label>
                             <select name="taxmethod" class="form-control js-example-basic-single" required>
-                                <option value="">Nothing selected</option>
+                                <option value="exclusive">Nothing selected</option>
                                 <option value="exclusive"
                                     {{ $is_edit && $data->tax_method === 'exclusive' ? 'selected' : '' }}>Exclusive
                                 </option>
@@ -224,10 +222,10 @@
                         </div>
 
                         <!-- Tax Status -->
-                        <div class="col-md-4 mb-3 required">
+                        <div class="col-md-4 mb-3 ">
                             <label for="" class="form-label">Tax Status</label>
                             <select name="taxstatus" class="form-control js-example-basic-single" required>
-                                <option value="">Nothing selected</option>
+                                <option value="taxable">Nothing selected</option>
                                 <option value="taxable"
                                     {{ $is_edit && $data->tax_status === 'taxable' ? 'selected' : '' }}>Taxable</option>
                                 <option value="non-taxable"
@@ -237,10 +235,10 @@
                         </div>
 
                         <!-- Tax Class -->
-                        <div class="col-md-4 mb-3 required">
+                        <div class="col-md-4 mb-3 ">
                             <label for="" class="form-label">Tax Class</label>
                             <select name="taxclass" class="form-control js-example-basic-single" required>
-                                <option value="">Nothing selected</option>
+                                <option value="standard">Nothing selected</option>
                                 <option value="standard"
                                     {{ $is_edit && $data->tax_class === 'standard' ? 'selected' : '' }}>Standard</option>
                                 <option value="reduced"
@@ -713,7 +711,5 @@
 
 
         }
-  
-  
-  </script>
+    </script>
 @endsection
