@@ -74,10 +74,6 @@ class ProductController extends Controller
             'cost' => 'required',
             'pprice' => 'required',
             'qty' => 'required',
-            'tax' => 'required',
-            'taxmethod' => 'required',
-            'taxstatus' => 'required',
-            'taxclass' => 'required',
             'ptype' => 'required',
             'productDetails' => 'required',
             'image' => 'nullable|max:5000',
@@ -109,21 +105,22 @@ class ProductController extends Controller
             $status = $request->has('status') ? 'private' : 'public';
 
             $product_price = $request->pprice;
-            $tax = $request->tax;
-            $tax_status = $request->taxstatus; // This could be 'taxable' or 'non-taxable'
-            $tax_method = $request->taxmethod; // This could be 'exclusive' or 'inclusive'
 
-            // Default final price is product price
-            $finalPrice = $product_price;
+            // $tax = $request->tax;
+            // $tax_status = $request->taxstatus; // This could be 'taxable' or 'non-taxable'
+            // $tax_method = $request->taxmethod; // This could be 'exclusive' or 'inclusive'
 
-            if ($tax_status === 'taxable') {
-                if ($tax_method === 'exclusive') {
-                    $finalPrice = $product_price + ($product_price * $tax / 100);
-                } elseif ($tax_method === 'inclusive') {
-                    $finalPrice = $product_price; // Already includes tax
-                }
-            }
+            // // Default final price is product price
+            // $finalPrice = $product_price;
 
+            // if ($tax_status === 'taxable') {
+            //     if ($tax_method === 'exclusive') {
+            //         $finalPrice = $product_price + ($product_price * $tax / 100);
+            //     } elseif ($tax_method === 'inclusive') {
+            //         $finalPrice = $product_price; // Already includes tax
+            //     }
+            // }
+            $finalPrice =  $product_price;
 
             // Store product
             $data = [
@@ -136,10 +133,10 @@ class ProductController extends Controller
                 'product_price' => $request->pprice,
                 'final_price' => $finalPrice,
                 'qty' => $request->qty,
-                'tax' => $request->tax,
-                'tax_method' => $request->taxmethod,
-                'tax_status' => $request->taxstatus,
-                'tax_class' => $request->taxclass,
+                'tax' => 0,
+                'tax_method' => null,
+                'tax_status' =>  null,
+                'tax_class' =>  null,
                 'product_type' => $request->ptype,
                 'description' => $request->productDetails,
                 'image_url' => $image_url,
@@ -318,7 +315,7 @@ class ProductController extends Controller
     public function update(Request $request, string $id)
     {
 
-         dd($request->all());
+        dd($request->all());
         $tableData = json_decode($request->input('table_data'), true);
 
         $validator = Validator::make($request->all(), [
@@ -340,14 +337,14 @@ class ProductController extends Controller
             'force_error' => 'required',
         ]);
 
-      if ($validator->fails()) {
-    $errors = $validator->errors()->all();
-    Log::error('Validation failed', $errors);
-    return response()->json([
-        'success' => false,
-        'errors' => $errors
-    ], 422);
-}
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+            Log::error('Validation failed', $errors);
+            return response()->json([
+                'success' => false,
+                'errors' => $errors
+            ], 422);
+        }
 
         if ($request->file('image') != null) {
             $preferred_name = trim($request->name);

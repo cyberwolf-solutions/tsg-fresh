@@ -581,7 +581,12 @@
                         </tbody>
                     </table>
 
-                    <a href="#" class="btn btn-invoice">TAX INVOICE</a>
+                    {{-- <a href="#" class="btn btn-invoice">TAX INVOICE</a> --}}
+                    <a href="{{ route('invoice.print', $order->id) }}" class="btn btn-invoice" target="_blank">
+                        INVOICE
+                    </a>
+
+
 
                     <p class="mt-3"><strong>Delivery Date:</strong>
                         {{ \Carbon\Carbon::parse($order->delivery_date)->format('d F, Y') }}
@@ -618,132 +623,13 @@
             </div>
         </div>
 
-        <footer class="footer">
-            <div class="container">
-                <div class="row">
-                    <!-- Latest Products -->
-                    <div class="col-md-4">
-                        <div class="footer-widget">
-                            <h5>Latest</h5>
+        @include('Landing-Page.partials.products')
 
-                            <div class="footer-product">
-                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                    alt="Clean Jumbo Prawns">
-                                <div class="footer-product-info">
-                                    <h6>Clean Jumbo Prawns 500g</h6>
-                                    <p class="price">Rs 2,450.00</p>
-                                </div>
-                            </div>
-
-                            <div class="footer-product">
-                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                    alt="Squid">
-                                <div class="footer-product-info">
-                                    <h6>Squid</h6>
-                                    <p class="price">From: Rs 1,525.00</p>
-                                </div>
-                            </div>
-
-                            <div class="footer-product">
-                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                    alt="Kochi Bites 500g">
-                                <div class="footer-product-info">
-                                    <h6>Kochi Bites 500g</h6>
-                                    <p class="price">Rs 2,530.00</p>
-                                </div>
-                            </div>
-
-                            <div class="footer-product">
-                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                    alt="Kochi Bites 240g">
-                                <div class="footer-product-info">
-                                    <h6>Kochi Bites 240g</h6>
-                                    <p class="price">Rs 1,330.00</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Best Selling -->
-                    <div class="col-md-4">
-                        <div class="footer-widget">
-                            <h5>Best Selling</h5>
-
-                            <div class="footer-product">
-                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                    alt="Clean Prawns 1kg">
-                                <div class="footer-product-info">
-                                    <h6>Clean Prawns 1kg</h6>
-                                    <p class="price">From: Rs 3,400.00</p>
-                                </div>
-                            </div>
-
-                            <div class="footer-product">
-                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                    alt="Crab Meat">
-                                <div class="footer-product-info">
-                                    <h6>Crab Meat</h6>
-                                    <p class="price">From: Rs 2,360.00</p>
-                                </div>
-                            </div>
-
-                            <div class="footer-product">
-                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                    alt="Seer Fish">
-                                <div class="footer-product-info">
-                                    <h6>Seer Fish</h6>
-                                    <p class="price">From: Rs 750.00</p>
-                                </div>
-                            </div>
-
-                            <div class="footer-product">
-                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                    alt="Whole Prawns">
-                                <div class="footer-product-info">
-                                    <h6>Whole Prawns</h6>
-                                    <p class="price">From: Rs 2,065.00</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Top Rated -->
-                    <div class="col-md-4">
-                        <div class="footer-widget">
-                            <h5>Top Rated</h5>
-
-                            <div class="footer-product">
-                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                    alt="Handella (Anchovies) 500g">
-                                <div class="footer-product-info">
-                                    <h6>Handella (Anchovies) 500g</h6>
-                                    <p class="rating">★★★★★</p>
-                                    <p class="price">Rs 1,121.00</p>
-                                </div>
-                            </div>
-
-                            <div class="footer-product">
-                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                    alt="Pak Choi & Mushroom Dumplings">
-                                <div class="footer-product-info">
-                                    <h6>Pak Choi & Mushroom Dumplings [10 Pieces]</h6>
-                                    <p class="rating">★★★★★</p>
-                                    <p class="price">Rs 1,500.00</p>
-                                </div>
-                            </div>
-
-                            <div class="footer-product">
-                                <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                    alt="Atlantic Cod Steak 500g">
-                                <div class="footer-product-info">
-                                    <h6>Atlantic Cod Steak (500g)</h6>
-                                    <p class="rating">★★★★★</p>
-                                    <p class="price">Rs 1,475.00</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </footer>
+        <script>
+            document.getElementById('taxInvoiceBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                const url = "{{ route('invoice.print', $order->id) }}";
+                window.open(url, '_blank');
+            });
+        </script>
     @endsection

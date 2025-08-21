@@ -127,13 +127,25 @@
                         <tr>
                             <th>No</th>
                             <th>Product Description</th>
-                            <th>Price</th>
+                            <th>Price (without 18% vat)</th>
                             <th>Qty</th>
                             <th>Total Price</th>
                         </tr>
                     </thead>
                     <tbody>
+                        @php
+                            $vatRate = 18; // 18%
+                        @endphp
+
                         @foreach ($data->items as $key => $item)
+                            @php
+                                $priceWithVat = $item->price;
+                                $priceWithoutVat = $priceWithVat / (1 + $vatRate / 100);
+                                $vatAmount = $priceWithVat - $priceWithoutVat;
+                                $totalWithoutVat = $priceWithoutVat * $item->quantity;
+                                $totalVat = $vatAmount * $item->quantity;
+                                $totalWithVat = $priceWithVat * $item->quantity;
+                            @endphp
                             <tr>
                                 <td>{{ $key + 1 }}</td>
                                 <td>
@@ -141,51 +153,48 @@
                                     @if ($item->variant)
                                         - {{ $item->variant->variant_name }}
                                     @endif
-                                    <br>
-                                    <small class="text-muted">
-                                        {{-- MFD: {{ $item->product->manufacture_date ? \Carbon\Carbon::parse($item->manufacture_date)->format('Y-m-d') : 'N/A' }}
-                                        | EXP: {{ $item->product->expiry_date ? \Carbon\Carbon::parse($item->product->expiry_date)->format('Y-m-d') : 'N/A' }} --}}
-                                        {{-- <br> --}}
-                                        Categories:
-                                        @foreach ($item->product->categories as $category)
-                                            {{ $category->name }}@if (!$loop->last)
-                                                ,
-                                            @endif
-                                        @endforeach
-                                    </small>
                                 </td>
-                                <td>{{ number_format($item->price, 2) }}</td>
+                                <td>{{ number_format($priceWithoutVat, 2) }}</td>
                                 <td>{{ $item->quantity }}</td>
-                                <td>{{ number_format($item->total, 2) }}</td>
+                                <td>{{ number_format($totalWithoutVat, 2) }}</td>
                             </tr>
                         @endforeach
+
                     </tbody>
+                    @php
+                        $subTotalWithoutVat = $data->items->sum(function ($item) use ($vatRate) {
+                            return ($item->price / 1.18) * $item->quantity;
+                        });
+
+                        $totalVatAmount = $data->items->sum(function ($item) use ($vatRate) {
+                            return $item->price - ($item->price / 1.18) * $item->quantity;
+                        });
+
+                        $grandTotalWithVat = $data->total; // Already stored in DB
+                    @endphp
+
                     <tfoot>
                         <tr>
                             <td colspan="3"></td>
-                            <td>Sub Total</td>
-                            <td>Rs. {{ number_format($data->subtotal ?? 0, 2) }}</td>
+                            <td>Sub Total (Excl. VAT)</td>
+                            <td>Rs. {{ number_format($subTotalWithoutVat, 2) }}</td>
                         </tr>
                         <tr>
                             <td colspan="3"></td>
-                            <td>Discount</td>
-                            <td>Rs. {{ number_format($data->discount ?? 0, 2) }}</td>
-                        </tr>
-                        <tr>
-                            <td colspan="3"></td>
-                            <td>Customer VAT</td>
-                            <td>Rs. {{ number_format($data->vat ?? 0, 2) }} </td>
+                            <td>Total VAT (18%)</td>
+                            <td>Rs. {{ number_format($totalVatAmount, 2) }}</td>
                         </tr>
                         <tr>
                             <td colspan="3"></td>
                             <td>
-                                <h5>Grand Total</h5>
+                                <h5>Total (Incl. VAT)</h5>
                             </td>
                             <td>
-                                <h5>Rs. {{ number_format($data->total ?? 0, 2) }}</h5>
+                                <h5>Rs. {{ number_format($grandTotalWithVat, 2) }}</h5>
                             </td>
                         </tr>
                     </tfoot>
+
                 </table>
             </div>
         </div>

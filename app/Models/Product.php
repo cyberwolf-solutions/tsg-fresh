@@ -28,21 +28,25 @@ class Product extends Model
         'tax_class',
         'product_type',
         'status',
-        'final_price'
-,        'created_by',
+        'final_price',
+        'created_by',
         'updated_by',
         'deleted_by'
     ];
 
 
-   
 
-public function categories()
-{
-    return $this->belongsToMany(Category::class, 'category_products')
-        ->using(CategoryProduct::class);
-}
 
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'category_products')
+            ->using(CategoryProduct::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(ProductReview::class);
+    }
 
 
     public function brand()

@@ -71,7 +71,9 @@
                             <th>Payment Method</th>
                             <th>Payment Status</th>
                             <th>Order Status</th>
-                            <th>Action</th>
+                            <th>view</th>
+                            <th>Print invoice</th>
+                            <th>Print VAT invoice</th>
                         </thead>
                         <tbody>
                             @foreach ($data as $key => $item)
@@ -104,10 +106,12 @@
                                     <td>{{ number_format($item->discount, 2) }}</td>
                                     <td>{{ number_format($item->vat, 2) }}</td>
                                     <td>{{ number_format($item->total, 2) }}</td>
+                                    <td>{{ ($item->payment_method) }}</td>
                                     <td>{{ $item->status }}</td>
 
                                     <td>
-                                        <select class="form-select order-status" data-id="{{ $item->id }}" style="width:150px">
+                                        <select class="form-select order-status" data-id="{{ $item->id }}"
+                                            style="width:150px">
                                             @foreach ($item->nextStatuses() as $status)
                                                 <option value="{{ $status }}"
                                                     {{ $item->status == $status ? 'selected' : '' }}>
@@ -125,12 +129,21 @@
                                                 class="btn btn-sm btn-light"><i class="mdi mdi-eye"></i>
                                             </a>
                                         @endcan
+                                    </td>
+                                    <td>
                                         <a href="{{ route('order.print', [$item->id]) }}" target="__blank"
-                                            class="btn btn-sm btn-soft-warning ms-1" data-bs-toggle="tooltip"
+                                            class="btn btn-sm btn-soft-success ms-1" data-bs-toggle="tooltip"
                                             title="Print">
                                             <i class="mdi mdi-printer"></i>
                                         </a>
+                                    </td>
+                                    <td>
 
+                                        <a href="{{ route('ordertax.print', [$item->id]) }}" target="__blank"
+                                            class="btn btn-sm btn-soft-danger ms-1" data-bs-toggle="tooltip"
+                                            title="Print">
+                                            <i class="mdi mdi-printer"></i>
+                                        </a>
                                     </td>
                                 </tr>
                             @endforeach

@@ -57,6 +57,7 @@ use App\Http\Controllers\CartController;
 
 use App\Http\Controllers\TableArrangementsController;
 use App\Http\Controllers\EmployeeDesignationsController;
+use App\Http\Controllers\HomeController;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
@@ -145,6 +146,7 @@ Route::middleware([
         return Tenant::all()->toArray();
     });
 
+        Route::get('invoice/print/{id}', [OrderController::class, 'invoice'])->name('invoice.print');
 
 
     Route::get('/force-tenant', function () {
@@ -175,6 +177,8 @@ Route::middleware([
 
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    // routes/web.php
+    Route::get('/footer-data', [HomeController::class, 'footerData']);
 
 
     Route::middleware(['guest'])->group(function () {
@@ -270,6 +274,7 @@ Route::middleware([
         Route::post('/restaurant/checkout', [RestaurantController::class, 'checkout'])->name('restaurant.checkout');
         Route::resource('orders', OrderController::class)->middleware('can:manage orders');
         Route::get('order/print/{id}', [OrderController::class, 'print'])->middleware('can:manage orders')->name('order.print');
+        Route::get('order/printtax/{id}', [OrderController::class, 'printtax'])->middleware('can:manage orders')->name('ordertax.print');
         Route::get('order/show/{id}', [OrderController::class, 'show'])->middleware('can:manage orders')->name('orders.show');
         Route::get('get-ingredients', [IngredientsController::class, 'getIngredients'])->name('get-ingredients');
         Route::get('get-product-ingredients', [IngredientsController::class, 'getProductIngredients'])->name('get-product-ingredients');

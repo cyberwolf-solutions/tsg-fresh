@@ -307,6 +307,7 @@ class RestaurantController extends Controller
                 'coupon_code'   => $couponCode,
                 'coupon_value'  => $couponValue,
                 'coupon_type'   => $couponType,
+                'payment_method' => $request->ptype,
                 'created_by'    => Auth::id(),
             ]);
 

@@ -645,7 +645,7 @@
                             <!-- Cart Items -->
                             @foreach ($cart->items as $item)
                                 @php
-                                    $price = $item->variant ? $item->variant->final_price : $item->product->price;
+                                    $price = $item->variant ? $item->variant->final_price : $item->product->final_price;
                                 @endphp
                                 <div class="d-flex justify-content-between align-items-center text-secondary small mb-2">
                                     <div class="d-flex align-items-center" style="gap:10px;">
@@ -747,7 +747,7 @@
                                     {{ number_format($total, 2) }}</span>
                             </div>
                             <div class="text-end">
-                                <small class="text-muted" style="font-size: 12px">(includes VAT)</small>
+                                <small class="text-muted" style="font-size: 12px">(includes 18% VAT)</small>
                             </div>
 
                             <hr>

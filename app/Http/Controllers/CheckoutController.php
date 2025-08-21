@@ -215,7 +215,8 @@ class CheckoutController extends Controller
             $subtotal += $price * $item->quantity;
         }
         $discount = ($subtotal > 12500) ? $subtotal * 0.05 : 0;
-        $vat      = ($subtotal - $discount) * 0.18;
+        // $vat      = ($subtotal - $discount) * 0.18;
+        $vat      = 0;
         $total    = $subtotal - $discount + $vat;
 
         Log::info('Totals calculated', compact('subtotal', 'discount', 'vat', 'total'));
@@ -236,7 +237,8 @@ class CheckoutController extends Controller
         $discount = ($subtotal > 12500) ? $subtotal * 0.05 : 0;
         $discount += $couponDiscount;  // include coupon
 
-        $vat   = ($subtotal - $discount) * 0.18;
+        $vat   = 0;
+        // $vat   = ($subtotal - $discount) * 0.18;
         $total = $subtotal - $discount + $vat;
 
         Log::info('Totals calculated', compact('subtotal', 'discount', 'vat', 'total'));
