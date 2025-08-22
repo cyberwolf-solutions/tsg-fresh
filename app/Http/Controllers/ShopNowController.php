@@ -56,7 +56,10 @@ class ShopNowController extends Controller
         $categories = Category::withCount('products')->get();
 
         // Base query
-        $query = Product::with(['variants', 'categories']);
+        $query = Product::with(['variants', 'categories', 'inventory'])
+            ->where('status', 'Public');
+
+
 
         // Category filter
         if ($request->has('category_id') && !empty($request->category_id)) {

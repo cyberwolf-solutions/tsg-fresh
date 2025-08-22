@@ -3,25 +3,27 @@
         <div class="col-md-3 col-sm-4 mb-4">
             <a href="{{ route('single.index', ['product' => $product->id]) }}" class="text-decoration-none text-dark">
 
-
-
                 <div class="card product-card mb-0">
                     <div class="image-wrapper" style="position: relative; display: inline-block;">
                         <img src="{{ asset('uploads/products/' . $product->image_url) }}" class="card-img-top"
                             alt="{{ $product->name }}" style="height: 215px; object-fit: cover;">
 
+                        <!-- OUT OF STOCK Banner -->
+                        @if ($product->is_out_of_stock)
+                            <div class="out-of-stock-banner">OUT OF STOCK</div>
+                        @endif
 
                         <!-- Logo overlay -->
                         <img src="{{ asset('build/images/landing/flogo.png') }}" alt="Logo"
                             style="
-                position: absolute;
-                bottom: 5px;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 70px; /* adjust size */
-                height: auto;
-                opacity: 0.9;
-             ">
+                                position: absolute;
+                                bottom: 5px;
+                                left: 50%;
+                                transform: translateX(-50%);
+                                width: 70px;
+                                height: auto;
+                                opacity: 0.9;
+                            ">
                     </div>
 
                     <div class="card-body text-center">
@@ -41,8 +43,8 @@
                             </span>
                         </p>
                     </div>
-
                 </div>
+
             </a>
         </div>
     @empty
@@ -50,7 +52,30 @@
     @endforelse
 </div>
 
+
 <style>
+    .out-of-stock-banner {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        /* span full image width */
+        background: rgba(255, 255, 255, 0.8);
+        /* white with transparency */
+        color: #000;
+        /* black text */
+        font-size: 18px;
+        font-weight: 50px;
+        padding: 12px 0;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        /* nice spacing */
+        z-index: 10;
+    }
+
+
     .product-card {
         background: #fff;
         border: 1px solid #ddd;

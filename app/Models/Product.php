@@ -73,4 +73,15 @@ class Product extends Model
     {
         return $this->hasOne(User::class, 'id', 'deleted_by');
     }
+
+    public function inventory()
+    {
+        return $this->hasOne(Inventory::class, 'product_id');
+    }
+
+    // Helper attribute to check availability
+    public function getIsOutOfStockAttribute()
+    {
+        return optional($this->inventory)->quantity <= 0;
+    }
 }
