@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('customer_id')->nullable()->default(null);
             $table->unsignedBigInteger('web_customer_id')->nullable()->default(null);
             $table->dateTime('order_date');
-            $table->enum('payment_status', ['Pending', 'InProgress', 'Complete'])->default('Pending');
+            $table->enum('payment_status', ['Pending', 'InProgress', 'Complete', 'Payment Failed'])->default('Pending');
             $table->enum('status', [
                 'Pending',
                 'Confirmed',
@@ -24,7 +24,8 @@ return new class extends Migration {
                 'Out for Delivery',
                 'Delivered',
                 'Issued',
-                'Complete'
+                'Complete',
+                'Payment Failed'
             ])->default('Pending');
             $table->foreign('customer_id')->references('id')->on('customers');
             $table->decimal('discount', 10, 2)->default(0);

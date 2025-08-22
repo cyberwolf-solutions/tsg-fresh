@@ -612,7 +612,7 @@
 
 
                         <!-- Coupon -->
-                        <div class="mt-3">
+                        {{-- <div class="mt-3">
                             <label class="form-label text-secondary small fw-bold">Coupon</label>
                             <hr style="height:2px; margin-top:0; margin-bottom:0;" class="mb-3">
                             <input type="text" class="form-control text-secondary small" placeholder="Coupon code">
@@ -625,7 +625,7 @@
 
 
 
-                        </div>
+                        </div> --}}
 
 
                     </div>
@@ -637,7 +637,7 @@
     </div>
     <hr>
     <!-- Footer -->
-       @include('Landing-Page.partials.products')
+    @include('Landing-Page.partials.products')
 
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>

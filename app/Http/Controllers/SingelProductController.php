@@ -57,49 +57,57 @@ class SingelProductController extends Controller
     // }
 
     public function index($productId)
-{
-    $tenant = tenant(); // current tenant
+    {
+        $tenant = tenant(); // current tenant
 
-    if (!$tenant) {
-        Log::error('Tenant not found');
-        abort(404, 'Tenant not found');
+        if (!$tenant) {
+            Log::error('Tenant not found');
+            abort(404, 'Tenant not found');
+        }
+
+        $branch = $tenant->id;
+        $domain = $tenant->domains()->first()?->domain;
+
+        if (!$domain) {
+            Log::error('Domain not found for tenant', ['tenant_id' => $tenant->id]);
+            abort(404, 'Domain not found for the tenant');
+        }
+        $cat = Category::all();
+        $product = Product::with([
+            'categories',  // all categories
+            'brand',       // brand info
+            'variants',    // product variants
+            'createdBy',   // user who created
+            'updatedBy'    // user who updated
+        ])->find($productId);
+
+
+        $query = Product::with(['variants', 'categories', 'inventory'])
+            ->where('status', 'Public')
+            ->latest()
+            ->take(6)
+            ->get();
+
+
+
+        if (!$product) {
+            Log::error('Product not found', ['product_id' => $productId]);
+            abort(404, 'Product not found');
+        }
+
+        Log::info('Loading single product view for tenant and product', [
+            'branch' => $branch,
+            'domain' => $domain,
+            'product_id' => $productId,
+        ]);
+
+        return view('Landing-page.singleView', [
+            'tenant' => $tenant,
+            'branch' => $branch,
+            'domain' => $domain,
+            'product' => $product,
+            'cat',
+            'query' => $query
+        ]);
     }
-
-    $branch = $tenant->id;
-    $domain = $tenant->domains()->first()?->domain;
-
-    if (!$domain) {
-        Log::error('Domain not found for tenant', ['tenant_id' => $tenant->id]);
-        abort(404, 'Domain not found for the tenant');
-    }
-$cat= Category::all();
-    $product = Product::with([
-        'categories',  // all categories
-        'brand',       // brand info
-        'variants',    // product variants
-        'createdBy',   // user who created
-        'updatedBy'    // user who updated
-    ])->find($productId);
-
-    if (!$product) {
-        Log::error('Product not found', ['product_id' => $productId]);
-        abort(404, 'Product not found');
-    }
-
-    Log::info('Loading single product view for tenant and product', [
-        'branch' => $branch,
-        'domain' => $domain,
-        'product_id' => $productId,
-    ]);
-
-    return view('Landing-page.singleView', [
-        'tenant' => $tenant,
-        'branch' => $branch,
-        'domain' => $domain,
-        'product' => $product,
-        'cat'
-    ]);
 }
-
-}
-

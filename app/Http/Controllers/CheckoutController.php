@@ -114,8 +114,6 @@ class CheckoutController extends Controller
         $customer = null;
         $oldSessionId = session()->getId();
 
-
-
         // 1. If user is not authenticated, create a new customer
         if (!Auth::guard('customer')->check()) {
             Log::info('User not authenticated, validating input for new customer.');
@@ -207,19 +205,12 @@ class CheckoutController extends Controller
             'items_count' => $cart->items->count()
         ]);
 
-
         // 3. Calculate totals
         $subtotal = $discount = $vat = $total = 0;
         foreach ($cart->items as $item) {
             $price = $item->variant ? $item->variant->final_price : $item->product->final_price;
             $subtotal += $price * $item->quantity;
         }
-        $discount = ($subtotal > 12500) ? $subtotal * 0.05 : 0;
-        // $vat      = ($subtotal - $discount) * 0.18;
-        $vat      = 0;
-        $total    = $subtotal - $discount + $vat;
-
-        Log::info('Totals calculated', compact('subtotal', 'discount', 'vat', 'total'));
 
         // Apply coupon if available
         $couponSession = session('coupon');
@@ -238,101 +229,193 @@ class CheckoutController extends Controller
         $discount += $couponDiscount;  // include coupon
 
         $vat   = 0;
-        // $vat   = ($subtotal - $discount) * 0.18;
         $total = $subtotal - $discount + $vat;
 
         Log::info('Totals calculated', compact('subtotal', 'discount', 'vat', 'total'));
 
-        // Parse delivery date before order creation
+        // Parse delivery date
         $deliveryDate = $request->delivery_date
             ? \Carbon\Carbon::createFromFormat('d/m/Y', $request->delivery_date)->format('Y-m-d')
             : null;
-        DB::beginTransaction();
-        try {
-            // 4. Create order
-            $order = Order::create([
-                'web_customer_id'  => $customer->id,
-                'order_date'       => now(),
-                'status'           => 'Pending',
-                'subtotal'         => $subtotal,
-                'total'            => $total,
-                'discount'         => $discount,
-                'vat'              => $vat,
-                'source'           => 'WEB',
-                'delivery_method'  => $request->delivery_method,
-                'payment_method'   => $request->payment_method,
-                'delivery_address' => $request->delivery_address,
-                'delivery_date'   => $deliveryDate,
-                'delivery_fee'  => $request->delivery_charge,
-                'coupon_id'       => $couponSession['id'] ?? null,
-                'coupon_code'     => $couponSession['code'] ?? null,
-                'coupon_value'    => $couponSession['value'] ?? null,
-                'coupon_type'     => $couponSession['type'] ?? null,
-                'created_by'       => $customer->id,
-            ]);
 
-            Log::info('Order created', ['order_id' => $order->id]);
-
-            if ($couponSession) {
-                Coupon::where('id', $couponSession['id'])->increment('used_count');
-                session()->forget('coupon'); // clear coupon after use
-            }
-
-            // 5. Create order items & reduce stock
-            foreach ($cart->items as $item) {
-                $price = $item->variant ? $item->variant->final_price : $item->product->final_price;
-
-                OrderItem::create([
-                    'order_id'     => $order->id,
-                    'product_id'   => $item->product_id,
-                    'variant_id'   => $item->variant_id,
-                    'inventory_id' => $item->inventory_id,
-                    'price'        => $price,
-                    'quantity'     => $item->quantity,
-                    'total'        => $price * $item->quantity,
-                    'created_by'   => $customer->id,
+        // For online payments, we'll create a temporary order record
+        if ($request->payment_method === 'Card') {
+            DB::beginTransaction();
+            try {
+                // Create a temporary order with pending payment status
+                $order = Order::create([
+                    'web_customer_id'  => $customer->id,
+                    'order_date'       => now(),
+                    'status'           => 'Pending',
+                    'payment_status'   => 'InProgress',
+                    'subtotal'         => $subtotal,
+                    'total'            => $total,
+                    'discount'         => $discount,
+                    'vat'              => $vat,
+                    'source'           => 'WEB',
+                    'delivery_method'  => $request->delivery_method,
+                    'payment_method'   => $request->payment_method,
+                    'delivery_address' => $request->delivery_address,
+                    'delivery_date'    => $deliveryDate,
+                    'delivery_fee'     => $request->delivery_charge,
+                    'coupon_id'        => $couponSession['id'] ?? null,
+                    'coupon_code'      => $couponSession['code'] ?? null,
+                    'coupon_value'     => $couponSession['value'] ?? null,
+                    'coupon_type'      => $couponSession['type'] ?? null,
+                    'created_by'       => $customer->id,
                 ]);
 
-                // Decrement stock
-                if ($item->inventory_id) {
-                    Inventory::where('id', $item->inventory_id)
-                        ->decrement('quantity', $item->quantity);
-                    Log::info('Inventory decremented', [
+                Log::info('Temporary order created for online payment', ['order_id' => $order->id]);
+
+                // Create order items but DON'T reduce stock yet
+                foreach ($cart->items as $item) {
+                    $price = $item->variant ? $item->variant->final_price : $item->product->final_price;
+
+                    OrderItem::create([
+                        'order_id'     => $order->id,
+                        'product_id'   => $item->product_id,
+                        'variant_id'   => $item->variant_id,
                         'inventory_id' => $item->inventory_id,
-                        'quantity'     => $item->quantity
-                    ]);
-                } else {
-                    Product::where('id', $item->product_id)
-                        ->decrement('stock_qty', $item->quantity);
-                    Log::info('Product stock decremented', [
-                        'product_id' => $item->product_id,
-                        'quantity'   => $item->quantity
+                        'price'        => $price,
+                        'quantity'     => $item->quantity,
+                        'total'        => $price * $item->quantity,
+                        'created_by'   => $customer->id,
                     ]);
                 }
+
+                DB::commit();
+
+                // Generate hash for payment gateway
+                $hash = strtoupper(
+                    md5(
+                        $_ENV['PAYHERE_MERCHANT_ID'] .
+                            $order->id .
+                            number_format($order->total, 2, '.', '') .
+                            'LKR' .
+                            strtoupper(md5($_ENV['PAYHERE_MERCHANT_SECRET']))
+                    )
+                );
+
+                // Build PayHere payload
+                $payhereData = [
+                    'merchant_id'   => $_ENV['PAYHERE_MERCHANT_ID'],
+                    'return_url'    => route('checkout.success', $order->id),
+                    'cancel_url'    => route('checkout.cancel', $order->id),
+                    'notify_url'    => route('checkout.notify'),
+                    'order_id'      => $order->id,
+                    'items'         => 'Order #' . $order->id,
+                    'currency'      => 'LKR',
+                    'amount'        => number_format($order->total, 2, '.', ''),
+                    'first_name'    => $customer->first_name,
+                    'last_name'     => $customer->last_name,
+                    'email'         => $customer->billingAddress->email ?? $customer->email,
+                    'phone'         => $customer->billingAddress->phone,
+                    'address'       => $customer->billingAddress->street_address,
+                    'city'          => $customer->billingAddress->town,
+                    'country'       => 'Sri Lanka',
+                    'hash'          => $hash,
+                ];
+
+                // Redirect to PayHere with auto-submit form
+                return response()->view('Landing-Page.payhere.redirect', [
+                    'payhereUrl' => $_ENV['PAYHERE_URL'],
+                    'data' => $payhereData
+                ]);
+            } catch (\Exception $e) {
+                DB::rollBack();
+                Log::error('Temporary order creation failed', [
+                    'message' => $e->getMessage(),
+                    'trace'   => $e->getTraceAsString()
+                ]);
+                return redirect()->back()->with('error', 'Failed to initiate payment. Please try again.');
             }
+        } else {
+            // For non-online payments (cash, etc.), process immediately
+            DB::beginTransaction();
+            try {
+                // Create order with complete payment status
+                $order = Order::create([
+                    'web_customer_id'  => $customer->id,
+                    'order_date'       => now(),
+                    'status'           => 'Pending',
+                    'payment_status'   => $request->payment_method === 'Card' ? 'Complete' : 'Pending',
+                    'subtotal'         => $subtotal,
+                    'total'            => $total,
+                    'discount'         => $discount,
+                    'vat'              => $vat,
+                    'source'           => 'WEB',
+                    'delivery_method'  => $request->delivery_method,
+                    'payment_method'   => $request->payment_method,
+                    'delivery_address' => $request->delivery_address,
+                    'delivery_date'    => $deliveryDate,
+                    'delivery_fee'     => $request->delivery_charge,
+                    'coupon_id'        => $couponSession['id'] ?? null,
+                    'coupon_code'      => $couponSession['code'] ?? null,
+                    'coupon_value'     => $couponSession['value'] ?? null,
+                    'coupon_type'      => $couponSession['type'] ?? null,
+                    'created_by'       => $customer->id,
+                ]);
 
-            // 6. Clear cart
-            $cart->items()->delete();
-            Log::info('Cart cleared', ['cart_id' => $cart->id]);
+                Log::info('Order created', ['order_id' => $order->id]);
 
-            DB::commit();
-            // Clear applied coupon from session
-            session()->forget('coupon');
+                if ($couponSession) {
+                    Coupon::where('id', $couponSession['id'])->increment('used_count');
+                    session()->forget('coupon'); // clear coupon after use
+                }
 
-            Log::info('--- Order placement successful ---', ['order_id' => $order->id]);
-            return redirect()->route('checkout.success', $order->id)
-                ->with('success', 'Order placed successfully.');
-            // Log::info('--- Order placement successful ---', ['order_id' => $order->id]);
+                // Create order items & reduce stock
+                foreach ($cart->items as $item) {
+                    $price = $item->variant ? $item->variant->final_price : $item->product->final_price;
 
-            // return redirect()->route('order.print', $order->id)
-            //     ->with('success', 'Order placed successfully.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Order placement failed', [
-                'message' => $e->getMessage(),
-                'trace'   => $e->getTraceAsString()
-            ]);
-            return redirect()->back()->with('error', 'Failed to place order. Please try again.');
+                    OrderItem::create([
+                        'order_id'     => $order->id,
+                        'product_id'   => $item->product_id,
+                        'variant_id'   => $item->variant_id,
+                        'inventory_id' => $item->inventory_id,
+                        'price'        => $price,
+                        'quantity'     => $item->quantity,
+                        'total'        => $price * $item->quantity,
+                        'created_by'   => $customer->id,
+                    ]);
+
+                    // Decrement stock
+                    if ($item->inventory_id) {
+                        Inventory::where('id', $item->inventory_id)
+                            ->decrement('quantity', $item->quantity);
+                        Log::info('Inventory decremented', [
+                            'inventory_id' => $item->inventory_id,
+                            'quantity'     => $item->quantity
+                        ]);
+                    } else {
+                        Product::where('id', $item->product_id)
+                            ->decrement('stock_qty', $item->quantity);
+                        Log::info('Product stock decremented', [
+                            'product_id' => $item->product_id,
+                            'quantity'   => $item->quantity
+                        ]);
+                    }
+                }
+
+                // Clear cart
+                $cart->items()->delete();
+                Log::info('Cart cleared', ['cart_id' => $cart->id]);
+
+                DB::commit();
+                // Clear applied coupon from session
+                session()->forget('coupon');
+
+                Log::info('--- Order placement successful ---', ['order_id' => $order->id]);
+
+                return redirect()->route('checkout.success', $order->id)
+                    ->with('success', 'Order placed successfully.');
+            } catch (\Exception $e) {
+                DB::rollBack();
+                Log::error('Order placement failed', [
+                    'message' => $e->getMessage(),
+                    'trace'   => $e->getTraceAsString()
+                ]);
+                return redirect()->back()->with('error', 'Failed to place order. Please try again.');
+            }
         }
     }
 
@@ -415,5 +498,93 @@ class CheckoutController extends Controller
             'message' => 'Coupon applied successfully.',
             'discount' => $discountValue
         ]);
+    }
+
+    public function notify(Request $request)
+    {
+        $orderId = $request->order_id;
+        $statusCode = $request->status_code; // 2 = success
+        $paymentId = $request->payment_id;
+
+        DB::beginTransaction();
+        try {
+            $order = Order::with('items')->find($orderId);
+
+            if ($statusCode == 2) { // Payment success
+                // Update order status and payment status
+                $order->update([
+                    'status' => 'Paid',
+                    'payment_status' => 'Complete',
+                    'payment_reference' => $paymentId
+                ]);
+
+                // Reduce stock only after successful payment
+                foreach ($order->items as $item) {
+                    if ($item->inventory_id) {
+                        Inventory::where('id', $item->inventory_id)
+                            ->decrement('quantity', $item->quantity);
+                    } else {
+                        Product::where('id', $item->product_id)
+                            ->decrement('stock_qty', $item->quantity);
+                    }
+                }
+
+                Log::info('Payment successful, stock reduced', ['order_id' => $orderId]);
+            } else {
+                // Payment failed - update status but don't reduce stock
+                $order->update([
+                    'status' => 'Payment Failed',
+                    'payment_status' => 'Failed'
+                ]);
+
+                Log::info('Payment failed', ['order_id' => $orderId]);
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Payment notification processing failed', [
+                'order_id' => $orderId,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+        }
+    }
+
+    public function cancel($orderId)
+    {
+        DB::beginTransaction();
+        try {
+            $order = Order::find($orderId);
+
+            // Only delete if payment is still pending
+            if ($order->payment_status === 'Pending') {
+                // Delete order items
+                OrderItem::where('order_id', $orderId)->delete();
+
+                // Delete the order
+                $order->delete();
+
+                Log::info('Order cancelled and deleted', ['order_id' => $orderId]);
+            } else {
+                Log::info('Order cancellation requested but payment status is not pending', [
+                    'order_id' => $orderId,
+                    'payment_status' => $order->payment_status
+                ]);
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Order cancellation failed', [
+                'order_id' => $orderId,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+        }
+
+        // Redirect back to cart with a message
+        return redirect()->route('cart.index')
+            ->with('error', 'Your payment was cancelled. Please try again.');
     }
 }

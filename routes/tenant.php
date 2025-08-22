@@ -146,7 +146,7 @@ Route::middleware([
         return Tenant::all()->toArray();
     });
 
-        Route::get('invoice/print/{id}', [OrderController::class, 'invoice'])->name('invoice.print');
+    Route::get('invoice/print/{id}', [OrderController::class, 'invoice'])->name('invoice.print');
 
 
     Route::get('/force-tenant', function () {
@@ -202,6 +202,12 @@ Route::middleware([
     // Checkout success page
     // Route::get('/checkout/success/{order}', [CheckoutController::class, 'checkoutSuccess'])->name('checkout.success');
     Route::post('/cart/update/{item}', [CartController::class, 'updateQuantity'])->name('cart.update');
+
+
+    //payhere
+    Route::post('/checkout/notify', [CheckoutController::class, 'notify'])->name('checkout.notify');
+    Route::get('/checkout/cancel/{order}', [CheckoutController::class, 'cancel'])->name('checkout.cancel');
+
 
     Route::middleware(['auth'])->group(function () {
         Route::get('/customers/search', [App\Http\Controllers\CustomerController::class, 'search'])

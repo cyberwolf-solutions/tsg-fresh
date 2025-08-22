@@ -116,10 +116,10 @@
 
         .account-buttons a:hover,
         /* .btn-primary:hover {
-                                                                    color: #ffffff;
-                                                                    background-color: rgb(44, 43, 43);
-                                                                    text-decoration: none;
-                                                                } */
+                                                                        color: #ffffff;
+                                                                        background-color: rgb(44, 43, 43);
+                                                                        text-decoration: none;
+                                                                    } */
 
         /* --- Form controls --- */
         .form-group label,
@@ -225,115 +225,5 @@
 
 
 
-        <footer class="footer bg-light py-4">
-            <div class="container ml-4 ">
-
-                <div class="row ml-4">
-                    <!-- LATEST -->
-                    <div class="col-md-4 mb-4">
-                        <h5 class="mb-3 text-secondary">LATEST</h5>
-                        <div class="product-item d-flex">
-                            <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg" alt="Clean Prawns"
-                                class="me-3" style="width: 60px; height: 60px; object-fit: cover;">
-                            <div>
-                                <p class="mb-1">CLEAN PRAWNS 31-40 m2 k</p>
-                                <p class="price">6,3850.00</p>
-                            </div>
-                        </div>
-                        <div class="product-item d-flex mt-3">
-                            <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg" alt="Whole Prawns"
-                                class="me-3" style="width: 60px; height: 60px; object-fit: cover;">
-                            <div>
-                                <p class="mb-1">WHOLE PRAWNS JUMBO-HEADLESS</p>
-                                <p class="price">6,3900.00</p>
-                            </div>
-                        </div>
-                        <div class="product-item d-flex mt-3">
-                            <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg"
-                                alt="Clean Prawns Small" class="me-3"
-                                style="width: 60px; height: 60px; object-fit: cover;">
-                            <div>
-                                <p class="mb-1">CLEAN PRAWNS SMALL 500G.</p>
-                                <p class="price">6,1700.00</p>
-                            </div>
-                        </div>
-                        <div class="product-item d-flex mt-3">
-                            <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg" alt="Whole Crab"
-                                class="me-3" style="width: 60px; height: 60px; object-fit: cover;">
-                            <div>
-                                <p class="mb-1">WHOLE CRAB 1KG</p>
-                                <p class="price">6,2360.00</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- BEST SELLING -->
-                    <div class="col-md-4 mb-4">
-                        <h5 class="mb-3 text-secondary">BEST SELLING</h5>
-                        <div class="product-item d-flex">
-                            <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg" alt="Clean Prawns"
-                                class="me-3" style="width: 60px; height: 60px; object-fit: cover;">
-                            <div>
-                                <p class="mb-1">CLEAN PRAWNS</p>
-                                <p class="price">From: 6,3400.00</p>
-                            </div>
-                        </div>
-                        <div class="product-item d-flex mt-3">
-                            <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg" alt="Squid"
-                                class="me-3" style="width: 60px; height: 60px; object-fit: cover;">
-                            <div>
-                                <p class="mb-1">SQUID</p>
-                                <p class="price">From: 6,1525.00</p>
-                            </div>
-                        </div>
-                        <div class="product-item d-flex mt-3">
-                            <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg"
-                                alt="Thalapath Fish" class="me-3"
-                                style="width: 60px; height: 60px; object-fit: cover;">
-                            <div>
-                                <p class="mb-1">THALAPATH FISH</p>
-                                <p class="price">From: 6,2006.00</p>
-                            </div>
-                        </div>
-                        <div class="product-item d-flex mt-3">
-                            <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg" alt="Tuna Cube"
-                                class="me-3" style="width: 60px; height: 60px; object-fit: cover;">
-                            <div>
-                                <p class="mb-1">Tuna Cube - 500G</p>
-                                <p class="price">6,1711.00</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- TOP RATED -->
-                    <div class="col-md-4 mb-4">
-                        <h5 class="mb-3 text-secondary">TOP RATED</h5>
-                        <div class="product-item d-flex">
-                            <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg" alt="Cooked PDTO"
-                                class="me-3" style="width: 60px; height: 60px; object-fit: cover;">
-                            <div>
-                                <p class="mb-1">COOKED PDTO SMALL 1KG</p>
-                                <p class="price">6,2500.00</p>
-                            </div>
-                        </div>
-                        <div class="product-item d-flex mt-3">
-                            <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg" alt="Red Snapper"
-                                class="me-3" style="width: 60px; height: 60px; object-fit: cover;">
-                            <div>
-                                <p class="mb-1">RED SNAPPER 500G</p>
-                                <p class="price">6,1180.00</p>
-                            </div>
-                        </div>
-                        <div class="product-item d-flex mt-3">
-                            <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg" alt="Red Snapper"
-                                class="me-3" style="width: 60px; height: 60px; object-fit: cover;">
-                            <div>
-                                <p class="mb-1">RED SNAPPER 1KG</p>
-                                <p class="price">6,2360.00</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </footer>
+        @include('Landing-Page.partials.products')
     @endsection

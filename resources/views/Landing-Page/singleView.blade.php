@@ -2,6 +2,71 @@
 
 @section('content')
     <style>
+        .carousel-container {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .carousel-slide {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+        }
+
+        .carousel-item {
+            position: relative;
+            min-width: 200px;
+            flex: 0 0 auto;
+        }
+
+        .carousel-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        /* Overlay for Out of Stock */
+        .carousel-item .overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.7);
+            color: #333;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 8px 20px;
+            text-transform: uppercase;
+            border-radius: 3px;
+            text-align: center;
+            width: 80%;
+        }
+
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #fff;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 10;
+            padding: 5px 10px;
+            border-radius: 50%;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .carousel-btn.prev {
+            left: 0;
+        }
+
+        .carousel-btn.next {
+            right: 0;
+        }
+
         /* Main Styles */
         body {
             font-family: 'Poppins', sans-serif;
@@ -677,34 +742,26 @@
             <div class="carousel-container mt-4">
                 <button class="carousel-btn prev">&lt;</button>
                 <div class="carousel-slide">
-                    <div class="carousel-item">
-                        <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                            alt="Giant Freshwater Shrimp">
-                        <div class="overlay">OUT OF STOCK</div>
-                        {{-- <p>Giant Freshwater Shrimp<br>₴2,500.00</p> --}}
-                    </div>
-                    <div class="carousel-item">
-                        <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                            alt="Prawn Bites">
-                        <div class="overlay">OUT OF STOCK</div>
-                        {{-- <p>Prawn Bites<br>₴1,639.70</p> --}}
-                    </div>
-                    <div class="carousel-item">
-                        <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                            alt="Kochi Prawn Bites">
-                        <div class="overlay">OUT OF STOCK</div>
-                        {{-- <p>Kochi Prawn Bites<br>₴861.32</p> --}}
-                    </div>
-                    <div class="carousel-item">
-                        <img src="https://images.pexels.com/photos/128388/pexels-photo-128388.jpeg?auto=compress&cs=tinysrgb&w=800"
-                            alt="Whole Prawns Jumbo-Headless">
-                        {{-- <p>Whole Prawns Jumbo-Headless<br>₴3,900.00</p> --}}
-                    </div>
+
+                    @foreach ($query as $related)
+                        <div class="carousel-item">
+                            <a href="{{ route('single.index', ['product' => $related->id]) }}">
+                                <img src="{{ asset('uploads/products/' . $related->image_url) }}"
+                                    alt="{{ $related->name }}">
+
+                                {{-- Out of stock overlay --}}
+                                @if ($related->is_out_of_stock)
+                                    <div class="overlay">OUT OF STOCK</div>
+                                @endif
+                            </a>
+                            {{-- <p>{{ $related->name }}<br>₴{{ $related->final_price ?? $related->product_price }}</p> --}}
+                        </div>
+                    @endforeach
+
                 </div>
                 <button class="carousel-btn next">&gt;</button>
             </div>
         </div>
-
     </div>
     @include('Landing-Page.partials.products')
 
@@ -788,7 +845,6 @@
         const slide = document.querySelector('.carousel-slide');
         const prevBtn = document.querySelector('.prev');
         const nextBtn = document.querySelector('.next');
-        let scrollAmount = 0;
 
         prevBtn.addEventListener('click', () => {
             slide.scrollLeft -= 220;
@@ -804,9 +860,8 @@
             } else {
                 slide.scrollLeft += 220;
             }
-        }, 3000); // every 3 seconds
+        }, 3000);
     </script>
-
     <script>
         function updatePrice() {
             const select = document.getElementById("priceOption");

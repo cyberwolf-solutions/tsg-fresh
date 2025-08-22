@@ -51,36 +51,33 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         view()->composer('*', function ($view) {
-            // Settings + Mode (already in your code)
+            // Settings + Mode (always from central)
             $settings = Settings::latest()->first();
             $mode = (Auth::check() && Auth::user()->is_dark) ? 'dark' : 'light';
 
-            // Latest Products (in stock)
-
-            $latestProducts = Product::latest()->take(4)->get();
-
-            // Best Selling Products (most sold, in stock)
-            // $bestSellingProducts = OrderItem::select('product_id', DB::raw('SUM(quantity) as total_sold'))
-            //     ->groupBy('product_id')
-            //     ->orderByDesc('total_sold')
-            //     ->take(4)
-            //     ->with('product')
-            //     ->get()
-            //     ->pluck('product')
-            //     ->filter(function ($product) {
-            //         return $product && $product->variants->flatMap->inventory->sum('quantity') > 0;
-            //     });
-
-            $bestSellingProducts = Product::select('products.*', DB::raw('SUM(order_items.quantity) as total_sold'))
-                ->join('order_items', 'order_items.product_id', '=', 'products.id')
-                ->groupBy('products.id')
-                ->orderByDesc('total_sold')
-                ->take(4)
-                ->get();
-            // Top Rated (placeholder until ratings are implemented)
+            // Default empty collections
+            $latestProducts = collect();
+            $bestSellingProducts = collect();
             $topRatedProducts = collect();
 
-            // Pass all variables
+            // ✅ Only load tenant products if a tenant is identified
+            if (tenant()) {
+                // Latest Products
+                $latestProducts = Product::latest()->take(4)->get();
+
+                // Best Selling
+                $bestSellingProducts = Product::select('products.*', DB::raw('SUM(order_items.quantity) as total_sold'))
+                    ->join('order_items', 'order_items.product_id', '=', 'products.id')
+                    ->groupBy('products.id')
+                    ->orderByDesc('total_sold')
+                    ->take(4)
+                    ->get();
+
+                // Top Rated (placeholder)
+                $topRatedProducts = collect();
+            }
+
+            // Pass to all views
             $view->with([
                 'mode' => $mode,
                 'settings' => $settings,
