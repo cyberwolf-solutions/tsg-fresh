@@ -48,6 +48,7 @@ use App\Http\Controllers\CheckinCheckoutController;
 use App\Http\Controllers\WebCustomerAuthController;
 use App\Http\Controllers\customer\AccountController;
 use App\Http\Controllers\AdditionalPaymentController;
+use App\Http\Controllers\AdminReview;
 use App\Http\Controllers\CustomerOrderController;
 use App\Http\Controllers\TableArrangementsController;
 use App\Http\Controllers\EmployeeDesignationsController;
@@ -98,8 +99,12 @@ foreach (config('tenancy.central_domains') as $domain) {
 
             Route::get('/dashboard', [AdminAuthController::class, 'dashboard'])->name('admin.dashboard');
             Route::get('/branches', [BranchController::class, 'index'])->name('admin.branches.index');
+            Route::get('/review', [AdminReview::class, 'index'])->name('admin.review.index');
             Route::get('/web/settings', [WebController::class, 'settings'])->name('admin.web.settings');
             Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
+            Route::post('/admin/reviews/{tenant}/{review}/approve', [AdminReview::class, 'approve'])->name('admin.reviews.approve');
+            Route::delete('/admin/reviews/{tenant}/{review}', [AdminReview::class, 'destroy'])->name('admin.reviews.destroy');
+
 
             Route::post('/items', [WebController::class, 'storeItem'])->name('store-item');
             Route::put('/items/{item}', [WebController::class, 'updateItem'])->name('update-item');

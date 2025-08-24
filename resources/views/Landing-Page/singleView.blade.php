@@ -723,199 +723,228 @@
                             <!-- Reviews Tab -->
                             <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
                                 <h5 style="font-weight: bold;">Reviews</h5>
-                                <p>There are no reviews yet.</p>
+
+                                @if ($reviews->isEmpty())
+                                    <p>There are no reviews yet.</p>
+                                @else
+                                    @foreach ($reviews as $review)
+                                        <div class="p-3 border rounded mb-2">
+                                            <p class="mb-1">
+                                                <strong>{{ $review->customer->first_name ?? 'Anonymous' }}</strong>
+                                            </p>
+                                            <p class="mb-1">{{ $review->review }}</p>
+                                            {{-- <small class="text-muted">Reviewed on
+                                                {{ $review->created_at->format('M d, Y') }}</small> --}}
+                                        </div>
+                                    @endforeach
+                                @endif
+
                                 <div class="mt-3" style="border: 2px solid #007bff; padding: 20px; color: gray;">
                                     Only logged in customers who have purchased this product may leave a review.
                                 </div>
+
+
+                                @if ($status)
+                                    @if ($canReview)
+                                        <div class="mt-3 p-3 border border-success">
+                                            <form action="{{ route('reviews.store', $product->id) }}" method="POST">
+                                                @csrf
+                                                <input type="text" name="review" class="form-control mb-2"
+                                                    placeholder="Write your review..." required>
+                                                <button type="submit" class="btn btn-primary">Save</button>
+                                            </form>
+                                        </div>
+                                    @endif
+                                @endif
+
                             </div>
+
+
                         </div>
-
-
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="carousel col-md-12" style="border-top: 2px solid #eaecee;">
+            <div class="carousel col-md-12" style="border-top: 2px solid #eaecee;">
 
-            <h4 style="color: #666;">RELATED PRODUCTS</h4>
-            <div class="carousel-container mt-4">
-                <button class="carousel-btn prev">&lt;</button>
-                <div class="carousel-slide">
+                <h4 style="color: #666;">RELATED PRODUCTS</h4>
+                <div class="carousel-container mt-4">
+                    <button class="carousel-btn prev">&lt;</button>
+                    <div class="carousel-slide">
 
-                    @foreach ($query as $related)
-                        <div class="carousel-item">
-                            <a href="{{ route('single.index', ['product' => $related->id]) }}">
-                                <img src="{{ asset('uploads/products/' . $related->image_url) }}"
-                                    alt="{{ $related->name }}">
+                        @foreach ($query as $related)
+                            <div class="carousel-item">
+                                <a href="{{ route('single.index', ['product' => $related->id]) }}">
+                                    <img src="{{ asset('uploads/products/' . $related->image_url) }}"
+                                        alt="{{ $related->name }}">
 
-                                {{-- Out of stock overlay --}}
-                                @if ($related->is_out_of_stock)
-                                    <div class="overlay">OUT OF STOCK</div>
-                                @endif
-                            </a>
-                            {{-- <p>{{ $related->name }}<br>₴{{ $related->final_price ?? $related->product_price }}</p> --}}
-                        </div>
-                    @endforeach
+                                    {{-- Out of stock overlay --}}
+                                    @if ($related->is_out_of_stock)
+                                        <div class="overlay">OUT OF STOCK</div>
+                                    @endif
+                                </a>
+                                {{-- <p>{{ $related->name }}<br>₴{{ $related->final_price ?? $related->product_price }}</p> --}}
+                            </div>
+                        @endforeach
 
+                    </div>
+                    <button class="carousel-btn next">&gt;</button>
                 </div>
-                <button class="carousel-btn next">&gt;</button>
             </div>
         </div>
-    </div>
-    @include('Landing-Page.partials.products')
+        @include('Landing-Page.partials.products')
 
 
 
-    {{-- OFFCNAVAS CART --}}
+        {{-- OFFCNAVAS CART --}}
 
-    @include('landing-page.partials.cart')
+        @include('landing-page.partials.cart')
 
-    <!-- Footer -->
+        <!-- Footer -->
 
-    <script>
-        function changeQty(amount) {
-            let qtyInput = document.getElementById("quantity");
-            let qty = parseInt(qtyInput.value) + amount;
-            if (qty < 1) qty = 1;
-            qtyInput.value = qty;
-        }
+        <script>
+            function changeQty(amount) {
+                let qtyInput = document.getElementById("quantity");
+                let qty = parseInt(qtyInput.value) + amount;
+                if (qty < 1) qty = 1;
+                qtyInput.value = qty;
+            }
 
-        function addToCart(productId) {
-            let qty = parseInt(document.getElementById("quantity").value);
+            function addToCart(productId) {
+                let qty = parseInt(document.getElementById("quantity").value);
 
-            let variantSelect = document.getElementById("priceOption");
-            let variantId = variantSelect ? variantSelect.value : null;
+                let variantSelect = document.getElementById("priceOption");
+                let variantId = variantSelect ? variantSelect.value : null;
 
-            fetch("{{ route('cart.add') }}", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                    },
-                    body: JSON.stringify({
-                        product_id: productId,
-                        variant_id: variantId,
-                        quantity: qty
+                fetch("{{ route('cart.add') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                        },
+                        body: JSON.stringify({
+                            product_id: productId,
+                            variant_id: variantId,
+                            quantity: qty
+                        })
                     })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        // ✅ Load cart items via AJAX
-                        loadCartItems();
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            // ✅ Load cart items via AJAX
+                            loadCartItems();
 
-                        // ✅ Open offcanvas
-                        var offcanvasEl = document.getElementById('offcanvasCart');
-                        var bsOffcanvas = new bootstrap.Offcanvas(offcanvasEl);
-                        bsOffcanvas.show();
-                    } else {
-                        alert("⚠️ " + data.message);
-                    }
-                })
-                .catch(err => console.error(err));
-        }
+                            // ✅ Open offcanvas
+                            var offcanvasEl = document.getElementById('offcanvasCart');
+                            var bsOffcanvas = new bootstrap.Offcanvas(offcanvasEl);
+                            bsOffcanvas.show();
+                        } else {
+                            alert("⚠️ " + data.message);
+                        }
+                    })
+                    .catch(err => console.error(err));
+            }
 
-        function loadCartItems() {
-            fetch("{{ route('cart.sidebar') }}")
-                .then(res => {
-                    if (!res.ok) throw new Error("Failed to load cart sidebar");
-                    return res.text();
-                })
-                .then(html => {
-                    document.getElementById('cartItems').innerHTML = html;
+            function loadCartItems() {
+                fetch("{{ route('cart.sidebar') }}")
+                    .then(res => {
+                        if (!res.ok) throw new Error("Failed to load cart sidebar");
+                        return res.text();
+                    })
+                    .then(html => {
+                        document.getElementById('cartItems').innerHTML = html;
 
-                    // ✅ Update subtotal after new HTML inserted
-                    let subtotalEl = document.getElementById("cartSubtotalValue");
-                    if (subtotalEl) {
-                        let subtotal = parseFloat(subtotalEl.dataset.subtotal || 0);
-                        document.getElementById('cartSubtotal').innerText =
-                            "Rs " + subtotal.toFixed(2);
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    document.getElementById('cartItems').innerHTML = '<p>Failed to load cart.</p>';
-                });
-        }
-    </script>
+                        // ✅ Update subtotal after new HTML inserted
+                        let subtotalEl = document.getElementById("cartSubtotalValue");
+                        if (subtotalEl) {
+                            let subtotal = parseFloat(subtotalEl.dataset.subtotal || 0);
+                            document.getElementById('cartSubtotal').innerText =
+                                "Rs " + subtotal.toFixed(2);
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        document.getElementById('cartItems').innerHTML = '<p>Failed to load cart.</p>';
+                    });
+            }
+        </script>
 
 
-    <script>
-        const slide = document.querySelector('.carousel-slide');
-        const prevBtn = document.querySelector('.prev');
-        const nextBtn = document.querySelector('.next');
+        <script>
+            const slide = document.querySelector('.carousel-slide');
+            const prevBtn = document.querySelector('.prev');
+            const nextBtn = document.querySelector('.next');
 
-        prevBtn.addEventListener('click', () => {
-            slide.scrollLeft -= 220;
-        });
-        nextBtn.addEventListener('click', () => {
-            slide.scrollLeft += 220;
-        });
-
-        // Auto loop
-        setInterval(() => {
-            if (slide.scrollLeft + slide.clientWidth >= slide.scrollWidth) {
-                slide.scrollLeft = 0;
-            } else {
+            prevBtn.addEventListener('click', () => {
+                slide.scrollLeft -= 220;
+            });
+            nextBtn.addEventListener('click', () => {
                 slide.scrollLeft += 220;
+            });
+
+            // Auto loop
+            setInterval(() => {
+                if (slide.scrollLeft + slide.clientWidth >= slide.scrollWidth) {
+                    slide.scrollLeft = 0;
+                } else {
+                    slide.scrollLeft += 220;
+                }
+            }, 3000);
+        </script>
+        <script>
+            function updatePrice() {
+                const select = document.getElementById("priceOption");
+                const selectedPrice = select.options[select.selectedIndex].value;
+                document.getElementById("priceDisplay").innerText = `Rs ${selectedPrice}`;
             }
-        }, 3000);
-    </script>
-    <script>
-        function updatePrice() {
-            const select = document.getElementById("priceOption");
-            const selectedPrice = select.options[select.selectedIndex].value;
-            document.getElementById("priceDisplay").innerText = `Rs ${selectedPrice}`;
-        }
 
-        function changeQty(delta) {
-            const qtyInput = document.getElementById("quantity");
-            let current = parseInt(qtyInput.value);
-            if (current + delta >= 1) {
-                qtyInput.value = current + delta;
+            function changeQty(delta) {
+                const qtyInput = document.getElementById("quantity");
+                let current = parseInt(qtyInput.value);
+                if (current + delta >= 1) {
+                    qtyInput.value = current + delta;
+                }
             }
-        }
-    </script>
-    <script>
-        function updatePrice() {
-            let selectedPrice = document.getElementById("priceOption").value;
-            let priceDisplay = document.getElementById("productPrice");
+        </script>
+        <script>
+            function updatePrice() {
+                let selectedPrice = document.getElementById("priceOption").value;
+                let priceDisplay = document.getElementById("productPrice");
 
-            if (priceDisplay) {
-                priceDisplay.textContent = "Rs " + Number(selectedPrice).toLocaleString('en-US', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                });
+                if (priceDisplay) {
+                    priceDisplay.textContent = "Rs " + Number(selectedPrice).toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                }
             }
-        }
-    </script>
-    <script>
-        const slide = document.querySelector('.carousel-slide');
-        const items = document.querySelectorAll('.carousel-item');
-        let currentIndex = 0;
-        const itemsPerPage = 4;
-        const itemWidth = 150; // Width of each item
-        const gap = 10; // Gap between items
+        </script>
+        <script>
+            const slide = document.querySelector('.carousel-slide');
+            const items = document.querySelectorAll('.carousel-item');
+            let currentIndex = 0;
+            const itemsPerPage = 4;
+            const itemWidth = 150; // Width of each item
+            const gap = 10; // Gap between items
 
-        function updateSlide() {
-            const offset = -(currentIndex * (itemWidth + gap * 2));
-            slide.style.transform = `translateX(${offset}px)`;
-        }
-
-        document.querySelector('.next').addEventListener('click', () => {
-            if (currentIndex < items.length - itemsPerPage) {
-                currentIndex++;
-                updateSlide();
+            function updateSlide() {
+                const offset = -(currentIndex * (itemWidth + gap * 2));
+                slide.style.transform = `translateX(${offset}px)`;
             }
-        });
 
-        document.querySelector('.prev').addEventListener('click', () => {
-            if (currentIndex > 0) {
-                currentIndex--;
-                updateSlide();
-            }
-        });
-    </script>
+            document.querySelector('.next').addEventListener('click', () => {
+                if (currentIndex < items.length - itemsPerPage) {
+                    currentIndex++;
+                    updateSlide();
+                }
+            });
 
-@endsection
+            document.querySelector('.prev').addEventListener('click', () => {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    updateSlide();
+                }
+            });
+        </script>
+
+    @endsection

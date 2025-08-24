@@ -209,6 +209,11 @@ Route::middleware([
     Route::get('/checkout/cancel/{order}', [CheckoutController::class, 'cancel'])->name('checkout.cancel');
 
 
+
+    Route::post('/products/{product}/reviews', [App\Http\Controllers\ProductReviewController::class, 'store'])
+        ->name('reviews.store');
+
+
     Route::middleware(['auth'])->group(function () {
         Route::get('/customers/search', [App\Http\Controllers\CustomerController::class, 'search'])
             ->name('customers.search');

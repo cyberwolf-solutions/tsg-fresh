@@ -214,6 +214,12 @@
                         <span>Bank Details</span>
                     </a>
                 </li>
+                <li class="{{ request()->is('admin/review*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.review.index') }}">
+                        <i class="fas fa-globe"></i>
+                        <span>Reviews</span>
+                    </a>
+                </li>
             </ul>
         </nav>
 
