@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('product_reviews', function (Blueprint $table) {
+        Schema::create('product_reviews', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
-            $table->foreignId('customer_id')->constrained('customers')->onDelete('cascade'); // adjust table if needed
+            $table->foreignId('customer_id')->constrained('web_customers')->onDelete('cascade');
+            $table->string('status')->default('active');
             $table->text('review')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
@@ -22,7 +23,6 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamps();
         });
-
     }
 
     /**

@@ -8,17 +8,20 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProductReview extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
     protected $connection = 'tenant';
     protected $table = 'product_reviews';
+
+    public $timestamps = false;
 
     protected $fillable = [
         'product_id',
         'customer_id',
         'review',
-        'created_by',
-        'updated_by',
-        'deleted_by'
+        'status',
+        // 'created_by',
+        // 'updated_by',
+        // 'deleted_by'
     ];
 
     public function product()
@@ -28,7 +31,8 @@ class ProductReview extends Model
 
     public function customer()
     {
-        return $this->belongsTo(Customer::class);
+        // just define the relationship
+        return $this->belongsTo(WebCustomer::class, 'web_customer_id');
     }
     public function createdBy()
     {

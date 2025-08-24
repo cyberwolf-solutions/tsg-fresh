@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
+use App\Models\Review;
 use App\Models\Product;
+use App\Models\Category;
 use Illuminate\Http\Request;
+
+use App\Models\ProductReview;
+
+
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-
-use App\Models\Category;
-
-
+use Illuminate\Support\Facades\Auth;
 use Stancl\Tenancy\Database\Models\Tenant;
 
 class SingelProductController extends Controller
@@ -60,6 +64,9 @@ class SingelProductController extends Controller
     {
         $tenant = tenant(); // current tenant
 
+
+        $status = Review::all()->first();
+
         if (!$tenant) {
             Log::error('Tenant not found');
             abort(404, 'Tenant not found');
@@ -101,13 +108,46 @@ class SingelProductController extends Controller
             'product_id' => $productId,
         ]);
 
+        // Check if logged in WebCustomer has purchased this product
+        $canReview = false;
+
+        if (Auth::guard('customer')->check()) {
+            $customerId = Auth::guard('customer')->id();
+
+            $hasPurchased = Order::where('web_customer_id', $customerId)
+                ->whereHas('items', function ($q) use ($productId) {
+                    $q->where('product_id', $productId);
+                })
+                ->where('status', 'issued')
+                ->exists();
+
+            $canReview = $hasPurchased;
+
+            // Log result
+            Log::info('Review check for product', [
+                'customer_id' => $customerId,
+                'product_id'  => $productId,
+                'can_review'  => $canReview
+            ]);
+        }
+
+        $reviews = ProductReview::where('product_id', $productId)
+            ->where('status', 'Approved')
+            ->orderBy('id', 'desc')
+            ->get();
+
+
+
         return view('Landing-page.singleView', [
             'tenant' => $tenant,
             'branch' => $branch,
             'domain' => $domain,
             'product' => $product,
             'cat',
-            'query' => $query
+            'query' => $query,
+            'status' => $status,
+            'canReview'  => $canReview,
+            'reviews'    => $reviews,
         ]);
     }
 }
