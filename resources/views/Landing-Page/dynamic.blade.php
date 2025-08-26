@@ -337,11 +337,12 @@
             </nav>
             <div class="col-md-12 mt-5 active mb-4 text-end">
                 <div class="sorting-options d-flex justify-content-end align-items-center gap-3">
-                    <p class="mb-0 text-secondary">
-                        Showing
-                        {{ ($products->currentPage() - 1) * $products->perPage() + 1 }}&ndash;{{ min($products->currentPage() * $products->perPage(), $products->total()) }}
-                        of {{ $products->total() }} results
-                    </p>
+                   <p class="mb-0 text-secondary d-none d-lg-block">
+    Showing
+    {{ ($products->currentPage() - 1) * $products->perPage() + 1 }}&ndash;{{ min($products->currentPage() * $products->perPage(), $products->total()) }}
+    of {{ $products->total() }} results
+</p>
+
                     <select class="form-select w-auto " style="font-size: 1em;">
                         <option>Default sorting</option>
                         <option>Sort by popularity</option>
@@ -354,10 +355,9 @@
             </div>
 
             <div class="row mt-4">
-                <div class="container">
-                </div>
 
-                <div class="col-lg-3 py-0">
+
+                {{-- <div class="col-lg-3 py-0">
 
                     <div class="sidebar-widget">
                         <h4 class="text-secondary">BROWSE</h4>
@@ -404,6 +404,123 @@
                     <div class="sidebar-widget p-0 border-0" style="box-shadow:none;">
                         <img src="{{ asset('build/images/image.png') }}" class="img-fluid" alt="Promotional Banner">
                     </div>
+                </div> --}}
+
+                <!-- DESKTOP SIDEBAR (Visible only on lg+) -->
+                <div class="col-lg-3 py-0 d-none d-lg-block">
+                    <div class="sidebar-widget">
+                        <h4 class="text-secondary">BROWSE</h4>
+                        <ul id="category-list" class="mb-3">
+                            @foreach ($categories as $category)
+                                <li>
+                                    <a class="text-dark" style="font-size: 1.2em;" href="#"
+                                        data-id="{{ $category->id }}">
+                                        {{ $category->name }}
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+
+                        <h4 class="text-secondary mt-4">FILTER BY PRICE</h4>
+                        <input type="range" class="price-slider" min="0" max="15400" value="5130">
+                        <div class="price-range">
+                            <button class="btn btn-filter fw-bold">FILTER</button>
+                            <span class="mt-3" style="font-size: 1.2em;">Price: රු5130 - රු15,400</span>
+                        </div>
+                    </div>
+
+                    <!-- Recently Viewed -->
+                    <div class="sidebar-widget">
+                        <h4>Recently Viewed</h4>
+                        <div class="footer-product">
+                            <img src="https://images.pexels.com/photos/128408/pexels-photo-128408.jpeg?auto=compress&cs=tinysrgb&w=800"
+                                alt="Lobster">
+                            <div class="footer-product-info">
+                                <h6>Lobster</h6>
+                                <p class="price">From: Rs 4,500.00</p>
+                            </div>
+                        </div>
+                        <div class="footer-product">
+                            <img src="https://images.pexels.com/photos/3296277/pexels-photo-3296277.jpeg?auto=compress&cs=tinysrgb&w=800"
+                                alt="Salmon Fillet">
+                            <div class="footer-product-info">
+                                <h6>Salmon Fillet</h6>
+                                <p class="price">From: Rs 2,250.00</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Banner -->
+                    <div class="sidebar-widget p-0 border-0" style="box-shadow:none;">
+                        <img src="{{ asset('build/images/image.png') }}" class="img-fluid" alt="Promotional Banner">
+                    </div>
+                </div>
+
+
+                <!-- MOBILE FILTER BUTTON (Hidden on Desktop) -->
+               <!-- Mobile Filter Button -->
+<div class="d-lg-none text-center mb-3">
+  <button class="btn btn-sm fw-bold text-secondary border-0 bg-transparent p-0 d-inline-flex align-items-center gap-1"
+          data-bs-toggle="offcanvas" data-bs-target="#filterOffcanvas">
+      <i class="bi bi-list fs-5"></i> Filters
+  </button>
+</div>
+
+
+
+                <!-- OFFCANVAS FILTER (MOBILE ONLY) -->
+                <div class="offcanvas offcanvas-start" tabindex="-1" id="filterOffcanvas">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title">Filters</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <!-- Same Sidebar Content -->
+                        <div class="sidebar-widget">
+                            <h4 class="text-secondary">BROWSE</h4>
+                            <ul id="category-list-mobile" class="mb-3">
+                                @foreach ($categories as $category)
+                                    <li>
+                                        <a class="text-dark" style="font-size: 1.2em;" href="#"
+                                            data-id="{{ $category->id }}">
+                                            {{ $category->name }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+
+                            <h4 class="text-secondary mt-4">FILTER BY PRICE</h4>
+                            <input type="range" class="price-slider" min="0" max="15400" value="5130">
+                            <div class="price-range">
+                                <button class="btn btn-filter fw-bold">FILTER</button>
+                                <span class="mt-3" style="font-size: 1.2em;">Price: රු5130 - රු15,400</span>
+                            </div>
+                        </div>
+
+                        <div class="sidebar-widget">
+                            <h4>Recently Viewed</h4>
+                            <div class="footer-product">
+                                <img src="https://images.pexels.com/photos/128408/pexels-photo-128408.jpeg?auto=compress&cs=tinysrgb&w=800"
+                                    alt="Lobster">
+                                <div class="footer-product-info">
+                                    <h6>Lobster</h6>
+                                    <p class="price">From: Rs 4,500.00</p>
+                                </div>
+                            </div>
+                            <div class="footer-product">
+                                <img src="https://images.pexels.com/photos/3296277/pexels-photo-3296277.jpeg?auto=compress&cs=tinysrgb&w=800"
+                                    alt="Salmon Fillet">
+                                <div class="footer-product-info">
+                                    <h6>Salmon Fillet</h6>
+                                    <p class="price">From: Rs 2,250.00</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sidebar-widget p-0 border-0" style="box-shadow:none;">
+                            <img src="{{ asset('build/images/image.png') }}" class="img-fluid" alt="Promotional Banner">
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Products -->
@@ -419,7 +536,8 @@
                         <nav aria-label="Page navigation">
                             <ul class="pagination justify-content-center">
                                 <li class="page-item {{ $products->currentPage() == 1 ? 'disabled' : '' }}">
-                                    <a class="page-link" href="{{ $products->previousPageUrl() }}" aria-label="Previous">
+                                    <a class="page-link" href="{{ $products->previousPageUrl() }}"
+                                        aria-label="Previous">
                                         <span aria-hidden="true">&laquo;</span>
                                     </a>
                                 </li>

@@ -1,6 +1,6 @@
 <div class="row">
     @forelse ($products as $product)
-        <div class="col-md-3 col-sm-4 mb-4">
+        <div class="col-md-3 col-sm-4 col-4 mb-4">
             <a href="{{ route('single.index', ['product' => $product->id]) }}" class="text-decoration-none text-dark">
 
                 <div class="card product-card mb-0">
