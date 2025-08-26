@@ -147,6 +147,8 @@ Route::middleware([
     });
 
     Route::get('invoice/print/{id}', [OrderController::class, 'invoice'])->name('invoice.print');
+    Route::get('/order/view/{id}', [OrderController::class, 'view'])->name('order.view');
+
 
 
     Route::get('/force-tenant', function () {
@@ -190,6 +192,8 @@ Route::middleware([
     Auth::routes();
     Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
     Route::get('/cart/sidebar', [CartController::class, 'sidebar'])->name('cart.sidebar');
+    Route::delete('/cart/item/{id}', [CartController::class, 'removeItem'])->name('cart.remove');
+
     Route::get('/cart/page', [CartController::class, 'sidebar1'])->name('cart.sidebar1');
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::get('/weborder-view', [OrderController::class, 'web'])->name('orders.web');

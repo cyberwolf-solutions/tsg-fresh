@@ -195,7 +195,7 @@ class OrderController extends Controller
         return view('pos.order.print', compact('data'));
     }
 
-     public function printtax(string $id)
+    public function printtax(string $id)
     {
         $data = Order::find($id);
         return view('pos.order.printtax', compact('data'));
@@ -235,4 +235,14 @@ class OrderController extends Controller
     //     return BankDetail::first(); // adapt as per your structure
     // }
 
+    public function view(string $id)
+    {
+        $order = Order::findOrFail($id);
+        $webCustomer = Auth::guard('customer')->user();
+
+        $customer = Auth::guard('customer')->user();
+        $billingAddress = $customer->billingAddress;
+
+        return view('customer.orderDetails', compact('order', 'webCustomer', 'billingAddress'));
+    }
 }

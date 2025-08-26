@@ -126,6 +126,34 @@
                 prevScrollPos = currentScrollPos;
             });
     </script>
+    <script>
+        window.removeCartItem = function(itemId) {
+            if (!confirm("Remove this item from cart?")) return;
+
+            fetch(`/cart/item/${itemId}`, {
+                    method: "DELETE",
+                    headers: {
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                        "Accept": "application/json"
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById("sidebar-cart-items").innerHTML = data.html;
+
+                        let cartCount = document.getElementById("cart-count");
+                        if (cartCount) {
+                            cartCount.textContent = data.count;
+                        }
+                    } else {
+                        alert(data.message || "Something went wrong!");
+                    }
+                })
+                .catch(err => console.error(err));
+        }
+    </script>
+
 @endpush
 
 

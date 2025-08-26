@@ -441,10 +441,34 @@
             padding: 8px;
             margin-top: 5px;
         }
+
+        .toast-container {
+            z-index: 9999 !important;
+        }
+
+        .toast {
+            min-width: 300px;
+        }
     </style>
     <!-- Hero Banner -->
 
     <div class="container my-5" style="margin-top: 120px;">
+
+        <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 11000">
+            <!-- Toast Template -->
+            <div id="liveToast" class="toast align-items-center text-bg-warning border-0" role="alert" aria-live="assertive"
+                aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body" id="toastMessage">
+                        ⚠️ This is a sample toast message.
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+
+
         <div class="col-md-12 d-flex justify-content-center">
             <nav aria-label="breadcrumb" style="margin-top: 110px">
                 <ol class="breadcrumb-custom">
@@ -483,15 +507,15 @@
                                     <td class="align-middle">
                                         <div class="d-flex align-items-center">
                                             <span class="me-2"><i class="fas fa-times-circle text-danger"></i></span>
-                                            <img src="{{ asset('build/images/landing/l1.png') }}" alt="Product Image"
-                                                class="img-thumbnail me-2" style="width: 80px; height: 80px;">
-                                            <span class="text-dark small">CLEAN PRAWNS 1KG </span>
+                                            <img src="#" alt="Product Image" class="img-thumbnail me-2"
+                                                style="width: 80px; height: 80px;">
+                                            <span class="text-dark small"> </span>
                                         </div>
                                     </td>
 
                                     <!-- Price -->
                                     <td class="align-middle text-dark fw-semibold">
-                                        රු3,725.00
+
                                     </td>
 
                                     <!-- Quantity Controls -->
@@ -506,7 +530,7 @@
 
                                     <!-- Total -->
                                     <td class="align-middle text-dark fw-semibold">
-                                        රු3,725.00
+
                                     </td>
                                 </tr>
 
@@ -571,9 +595,9 @@
                         </span>
 
 
-                        <span class="text-secondary change-address"
+                        {{-- <span class="text-secondary change-address"
                             style="margin-left: 10px; margin-right: 10px; font-size: 12px; cursor: pointer;">Change
-                            Address</span>
+                            Address</span> --}}
 
                         <div class="address-form"
                             style="display: none; margin-top: 10px; height: 0; overflow: hidden; transition: height 0.3s ease-in-out;">
@@ -642,65 +666,64 @@
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
-        flatpickr("#deliveryDate", {
-            dateFormat: "d/m/Y"
-        });
-    </script>
-    <script>
-        let deliveryCharge = {{ $deliveryCharge }};
-        // document.addEventListener('DOMContentLoaded', function() {
-        //     loadCartPageItems();
-        // });
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the toast
+            var toastEl = document.getElementById('liveToast');
+            var toast = new bootstrap.Toast(toastEl, {
+                autohide: true,
+                delay: 3000
+            });
+
+            // Store the toast instance for global access
+            window.appToast = toast;
+
+            // Initialize cart items and shipping options
             fetch("{{ route('cart.sidebar1') }}")
                 .then(res => res.text())
                 .then(html => {
                     document.querySelector('tbody').innerHTML = html;
-                    updateOrderSummary();
+                    updateShippingOptions(); // Initialize shipping options
+                    updateOrderSummary(); // Update summary after loading cart
                 });
+
+            // Handle address form toggle
+            document.querySelector('.change-address').addEventListener('click', function() {
+                const form = document.querySelector('.address-form');
+                if (form.style.height === '0px' || form.style.display === 'none') {
+                    form.style.display = 'block';
+                    setTimeout(() => {
+                        form.style.height = form.scrollHeight + 'px';
+                    }, 0);
+                } else {
+                    form.style.height = '0';
+                    setTimeout(() => {
+                        form.style.display = 'none';
+                    }, 300);
+                }
+            });
         });
 
-        function loadCartPageItems() {
-            fetch("{{ route('cart.sidebar') }}")
-                .then(res => res.text())
-                .then(html => {
-                    // Inject cart table rows
-                    document.querySelector('tbody').innerHTML = html;
+        function showToast(message, type = "warning") {
+            let toastEl = document.getElementById("liveToast");
+            let toastMessage = document.getElementById("toastMessage");
 
-                    // Update subtotal
-                    let subtotal = 0;
-                    document.querySelectorAll('tbody .cart-item').forEach(el => {
-                        let qty = parseInt(el.dataset.qty) || 0;
-                        let price = parseFloat(el.querySelector('td:nth-child(2)').innerText.replace(/[^0-9.]/g,
-                            '')) || 0;
-                        subtotal += qty * price;
-                    });
-                    document.querySelector('.card-body .d-flex .small:last-child').innerText = 'රු ' + subtotal.toFixed(
-                        2);
+            toastMessage.innerHTML = message;
+            toastEl.classList.remove("text-bg-success", "text-bg-danger", "text-bg-warning");
+            if (type === "success") toastEl.classList.add("text-bg-success");
+            else if (type === "error") toastEl.classList.add("text-bg-danger");
+            else toastEl.classList.add("text-bg-warning");
 
-                    // Update total (you can add shipping, discounts, etc.)
-                    let total = subtotal;
-                    document.querySelector('.card-body .mt-3 .d-flex .small:last-child').innerText = 'රු ' + total
-                        .toFixed(2);
-                })
-                .catch(err => console.error(err));
+            if (window.appToast) {
+                window.appToast.show();
+            } else {
+                let toast = new bootstrap.Toast(toastEl, {
+                    delay: 3000
+                });
+                toast.show();
+            }
         }
 
-        document.querySelector('.change-address').addEventListener('click', function() {
-            const form = document.querySelector('.address-form');
-            if (form.style.height === '0px' || form.style.display === 'none') {
-                form.style.display = 'block';
-                // Set height to auto after a brief delay to calculate the full height
-                setTimeout(() => {
-                    form.style.height = form.scrollHeight + 'px';
-                }, 0);
-            } else {
-                form.style.height = '0';
-                setTimeout(() => {
-                    form.style.display = 'none';
-                }, 300); // Match the transition duration
-            }
-        });
+        const deliveryCharge = {{ $deliveryCharge }};
 
         function updateQuantity(itemId, change = 0, manualValue = null) {
             let row = document.querySelector(`.cart-item[data-id='${itemId}']`);
@@ -713,19 +736,17 @@
             let newQty = manualValue !== null ? parseInt(manualValue) : currentQty + change;
             if (newQty < 1) newQty = 1;
             if (newQty > stock) {
-                alert(`⚠️ Only ${stock} items available in stock`);
+                showToast(`⚠️ Only ${stock} items available in stock`, 'error');
                 newQty = stock;
             }
             input.value = newQty;
 
-            // Update subtotal for row immediately for UI
             let price = parseFloat(row.querySelector('td:nth-child(2)').innerText.replace(/[^0-9.]/g, '')) || 0;
             let rowSubtotal = price * newQty;
             row.querySelector('.subtotal').innerText = 'රු ' + rowSubtotal.toFixed(2);
 
             updateOrderSummary();
 
-            // Sync with DB
             fetch(`/cart/update/${itemId}`, {
                     method: 'POST',
                     headers: {
@@ -739,14 +760,14 @@
                 .then(res => res.json())
                 .then(data => {
                     if (!data.success) {
-                        alert(data.message || 'Failed to update cart');
-                        input.value = currentQty; // revert if failed
+                        showToast(data.message || 'Failed to update cart', 'error');
+                        input.value = currentQty;
                         updateOrderSummary();
                     }
                 })
                 .catch(err => {
                     console.error(err);
-                    input.value = currentQty; // revert if error
+                    input.value = currentQty;
                     updateOrderSummary();
                 });
         }
@@ -762,83 +783,72 @@
             // Discount: 5% off for orders above 12500
             let discount = subtotal > 12500 ? subtotal * 0.05 : 0;
 
-            // Shipping cost: Rs. 750 if subtotal < 10000, else free
-            let shippingCost = subtotal >= 10000 ? 0 : deliveryCharge;
-
+            // Shipping cost: Depends on selected delivery option
+            let shippingCost = 0;
+            const deliveryRadio = document.querySelector('input[name="deliveryOption"]:checked');
+            if (deliveryRadio && deliveryRadio.id === 'delivery1' && subtotal < 10000) {
+                shippingCost = deliveryCharge;
+            }
 
             // Calculate total
             let total = subtotal - discount + shippingCost;
 
             // Update summary in DOM
-            document.querySelector('.cart-subtotal').innerText = 'රු' + subtotal.toFixed(2); // Subtotal
-            document.getElementById('discountValue').innerText = 'රු' + discount.toFixed(2); // Discount
-            document.getElementById('orderTotal').innerText = 'රු' + total.toFixed(2); // Total
+            document.querySelector('.cart-subtotal').innerText = 'රු' + subtotal.toFixed(2);
+            document.getElementById('discountValue').innerText = 'රු' + discount.toFixed(2);
+            document.getElementById('orderTotal').innerText = 'රු' + total.toFixed(2);
 
-            // Update VAT (assuming 18% VAT on total)
+            // Update VAT (18% on total)
             let vat = total * 0.18;
             document.querySelector('.text-end .text-muted').innerText = `(includes රු${vat.toFixed(2)} VAT 18%)`;
-
-            // Update shipping options
-            updateShippingOptions();
         }
-
-        function updateDiscount() {
-            // Get subtotal text and remove non-numeric chars
-            let subtotalText = document.querySelector('.cart-subtotal').innerText;
-            let subtotal = parseFloat(subtotalText.replace(/[^\d.]/g, ''));
-
-            // Get total text and remove non-numeric chars
-            let totalText = document.getElementById('orderTotal').innerText;
-            let total = parseFloat(totalText.replace(/[^\d.]/g, ''));
-
-            // Calculate discount
-            let discount = subtotal - total;
-
-            // Update discount field
-            document.getElementById('discountValue').innerText = 'රු' + discount.toFixed(2);
-        }
-
-        // Call this whenever subtotal or total changes
 
         function updateShippingOptions() {
-            // Get subtotal from the DOM
             let subtotalText = document.querySelector('.cart-subtotal').innerText;
             let subtotal = parseFloat(subtotalText.replace(/[^\d.]/g, '')) || 0;
-
             let shippingContainer = document.getElementById('shippingOptions');
             shippingContainer.innerHTML = '';
 
             let storePickupOption = `
-        <div class="form-check mb-3">
-            <input class="form-check-input" type="radio" name="deliveryOption" id="delivery2">
-            <label class="form-check-label" for="delivery2" style="font-size:12px;">
-                Store Pickup - #38, Charles Dr, Kollupitiya, Colombo 3
-            </label>
-        </div>
-    `;
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="radio" name="deliveryOption" id="delivery2" checked>
+                <label class="form-check-label" for="delivery2" style="font-size:12px;">
+                    Store Pickup - #38, Charles Dr, Kollupitiya, Colombo 3
+                </label>
+            </div>
+        `;
 
             let shippingOption = '';
             if (subtotal >= 10000) {
                 shippingOption = `
-            <div class="form-check mb-3">
-                <input class="form-check-input" type="radio" name="deliveryOption" id="delivery1" checked>
-                <label class="form-check-label" for="delivery1" style="font-size:12px;">
-                    Free Delivery in Limited Area (above Rs. 10000 order) (Free)
-                </label>
-            </div>
-        `;
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="radio" name="deliveryOption" id="delivery1">
+                    <label class="form-check-label" for="delivery1" style="font-size:12px;">
+                        Free Delivery in Limited Area (above Rs. 10000 order) (Free)
+                    </label>
+                </div>
+            `;
             } else {
                 shippingOption = `
-            <div class="form-check mb-3">
-                <input class="form-check-input" type="radio" name="deliveryOption" id="delivery1" checked>
-                <label class="form-check-label" for="delivery1" style="font-size:12px;">
-                    Delivery in Limited Areas: රු${deliveryCharge.toFixed(2)}
-                </label>
-            </div>
-        `;
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="radio" name="deliveryOption" id="delivery1">
+                    <label class="form-check-label" for="delivery1" style="font-size:12px;">
+                        Delivery in Limited Areas: රු${deliveryCharge.toFixed(2)}
+                    </label>
+                </div>
+            `;
             }
 
             shippingContainer.innerHTML = shippingOption + storePickupOption;
+
+            // Add event listeners to delivery options
+            document.querySelectorAll('input[name="deliveryOption"]').forEach(radio => {
+                radio.addEventListener('change', updateOrderSummary);
+            });
         }
+
+        flatpickr("#deliveryDate", {
+            dateFormat: "d/m/Y"
+        });
     </script>
 @endsection

@@ -552,10 +552,33 @@
         .carousel-btn:hover {
             background: #ffffff;
         }
+
+        .toast-container {
+            z-index: 9999 !important;
+        }
+
+        .toast {
+            min-width: 300px;
+        }
     </style>
 
 
     <div class="centered-wrapper  col-12">
+
+        <!-- Toast Container (Top Right) -->
+        <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 11000">
+            <!-- Toast Template -->
+            <div id="liveToast" class="toast align-items-center text-bg-warning border-0" role="alert" aria-live="assertive"
+                aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body" id="toastMessage">
+                        ⚠️ This is a sample toast message.
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
         <!-- Main Content -->
         <div class="container mb-5 " style="margin-top: 170px;">
 
@@ -640,7 +663,7 @@
 
 
                             <!-- Quantity Selector -->
-                            <div class="d-flex align-items-center gap-2 mt-3 mb-4">
+                            <div class="d-flex align-items-center gap-2 mt-3 mb-4" data-stock="{{ $product->stock }}">
                                 <button type="button" onclick="changeQty(-1)"
                                     style="width: 30px; height: 30px; border: 1px solid #ccc; background: #fff; cursor: pointer; border-radius: 0;">-</button>
 
@@ -654,9 +677,7 @@
                                     style="background-color: #007bff; color: white; border: none; padding: 5px 15px; font-size: 14px; cursor: pointer; border-radius: 5px; white-space: nowrap;">
                                     ADD TO CART
                                 </button>
-
                             </div>
-
 
                             <!-- Add to Cart Button -->
 
@@ -687,8 +708,8 @@
                         <ul class="nav nav-tabs" id="productTab" role="tablist" style="border-bottom: 1px solid #ddd;">
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link active" id="additional-tab" data-bs-toggle="tab"
-                                    data-bs-target="#additional" type="button" role="tab" aria-controls="additional"
-                                    aria-selected="true" style="border: none;">
+                                    data-bs-target="#additional" type="button" role="tab"
+                                    aria-controls="additional" aria-selected="true" style="border: none;">
                                     ADDITIONAL INFORMATION
                                 </button>
                             </li>
@@ -801,13 +822,114 @@
         @include('landing-page.partials.cart')
 
         <!-- Footer -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
         <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Initialize the toast
+                var toastEl = document.getElementById('liveToast');
+                var toast = new bootstrap.Toast(toastEl, {
+                    autohide: true,
+                    delay: 3000
+                });
+
+                // Store the toast instance for global access
+                window.appToast = toast;
+            });
+
+            function showToast(message, type = "warning") {
+                let toastEl = document.getElementById("liveToast");
+                let toastMessage = document.getElementById("toastMessage");
+
+                // Change text
+                toastMessage.innerHTML = message;
+
+                // Change color based on type
+                toastEl.classList.remove("text-bg-success", "text-bg-danger", "text-bg-warning");
+                if (type === "success") toastEl.classList.add("text-bg-success");
+                else if (type === "error") toastEl.classList.add("text-bg-danger");
+                else toastEl.classList.add("text-bg-warning");
+
+                // Show toast using the stored instance or create a new one
+                if (window.appToast) {
+                    window.appToast.show();
+                } else {
+                    let toast = new bootstrap.Toast(toastEl, {
+                        delay: 3000
+                    });
+                    toast.show();
+                }
+            }
+
             function changeQty(amount) {
                 let qtyInput = document.getElementById("quantity");
-                let qty = parseInt(qtyInput.value) + amount;
-                if (qty < 1) qty = 1;
-                qtyInput.value = qty;
+                let parentDiv = qtyInput.closest('.d-flex');
+                let stock = parseInt(parentDiv.dataset.stock) || 0;
+                let currentQty = parseInt(qtyInput.value) || 1;
+
+                let newQty = currentQty + amount;
+
+                if (newQty < 1) {
+                    newQty = 1;
+                } else if (newQty > stock) {
+                    newQty = stock;
+                    showToast(`⚠️ Only ${stock} items available in stock`, "warning");
+                }
+
+                qtyInput.value = newQty;
+            }
+
+
+
+
+
+            function updateQuantity(itemId, change = 0, manualValue = null) {
+                let row = document.querySelector(`.cart-item[data-id='${itemId}']`);
+                if (!row) return;
+
+                let input = row.querySelector('.qty-input');
+                let stock = parseInt(row.dataset.stock) || 0;
+                let currentQty = parseInt(input.value) || 0;
+
+                let newQty = manualValue !== null ? parseInt(manualValue) : currentQty + change;
+                if (newQty < 1) newQty = 1;
+                if (newQty > stock) {
+                    showToast(`⚠️ Only ${stock} items available in stock`, "warning");
+                    newQty = stock;
+                }
+                input.value = newQty;
+
+                // Update subtotal for row immediately for UI
+                let price = parseFloat(row.querySelector('td:nth-child(2)').innerText.replace(/[^0-9.]/g, '')) || 0;
+                let rowSubtotal = price * newQty;
+                row.querySelector('.subtotal').innerText = 'රු ' + rowSubtotal.toFixed(2);
+
+                updateOrderSummary();
+
+                // Sync with DB
+                fetch(`/cart/update/${itemId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            quantity: newQty
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (!data.success) {
+                            showToast(data.message || "Failed to update cart", "error");
+                            input.value = currentQty;
+                            updateOrderSummary();
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        input.value = currentQty; // revert if error
+                        updateOrderSummary();
+                    });
             }
 
             function addToCart(productId) {
@@ -839,7 +961,7 @@
                             var bsOffcanvas = new bootstrap.Offcanvas(offcanvasEl);
                             bsOffcanvas.show();
                         } else {
-                            alert("⚠️ " + data.message);
+                            showToast("⚠️ " + data.message, "error");
                         }
                     })
                     .catch(err => console.error(err));

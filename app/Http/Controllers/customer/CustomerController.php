@@ -12,4 +12,9 @@ class CustomerController extends Controller
     {
         return view('customer.dashboard');
     }
+
+    public function download()
+    {
+        return view('customer.download');
+    }
 }

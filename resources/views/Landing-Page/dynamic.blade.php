@@ -315,7 +315,28 @@
             background-color: #fff;
             border-color: #ddd;
         }
+
+        .toast-container {
+            z-index: 9999 !important;
+        }
+
+        .toast {
+            min-width: 300px;
+        }
     </style>
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 11000">
+        <!-- Toast Template -->
+        <div id="liveToast" class="toast align-items-center text-bg-warning border-0" role="alert" aria-live="assertive"
+            aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" id="toastMessage">
+                    ⚠️ This is a sample toast message.
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
 
     <!-- Hero Banner -->
     <div class="hero-banner">
@@ -570,6 +591,44 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the toast
+            var toastEl = document.getElementById('liveToast');
+            var toast = new bootstrap.Toast(toastEl, {
+                autohide: true,
+                delay: 3000
+            });
+
+            // Store the toast instance for global access
+            window.appToast = toast;
+        });
+
+        function showToast(message, type = "warning") {
+            let toastEl = document.getElementById("liveToast");
+            let toastMessage = document.getElementById("toastMessage");
+
+            // Change text
+            toastMessage.innerHTML = message;
+
+            // Change color based on type
+            toastEl.classList.remove("text-bg-success", "text-bg-danger", "text-bg-warning");
+            if (type === "success") toastEl.classList.add("text-bg-success");
+            else if (type === "error") toastEl.classList.add("text-bg-danger");
+            else toastEl.classList.add("text-bg-warning");
+
+            // Show toast using the stored instance or create a new one
+            if (window.appToast) {
+                window.appToast.show();
+            } else {
+                let toast = new bootstrap.Toast(toastEl, {
+                    delay: 3000
+                });
+                toast.show();
+            }
+        }
+
+
+
+        document.addEventListener('DOMContentLoaded', function() {
             // Handle category clicks
             document.querySelectorAll('#category-list a').forEach(link => {
                 link.addEventListener('click', function(e) {
@@ -646,7 +705,8 @@
                     })
                     .catch(error => {
                         console.error('Error loading products:', error);
-                        alert('Failed to load products. Please try again.');
+
+                        showToast('Failed to load products. Please try again.');
                     });
             }
 
