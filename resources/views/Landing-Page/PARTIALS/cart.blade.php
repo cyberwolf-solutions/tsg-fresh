@@ -22,7 +22,8 @@
                 style="background-color: #1261a0; color: white; font-weight: 600; margin-bottom: 10px;">
                 VIEW CART
             </a>
-            <button class="btn w-100" style="background-color: #4ea7f8; color: white; font-weight: 600;">
+            <button class="btn w-100" style="background-color: #4ea7f8; color: white; font-weight: 600;"
+                onclick="window.location='{{ route('checkout.index') }}'">
                 CHECKOUT
             </button>
         </div>
