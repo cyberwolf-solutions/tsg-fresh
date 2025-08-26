@@ -425,6 +425,80 @@
         .coupon-link:hover {
             color: #666 !important;
         }
+
+        .toast-container {
+            z-index: 9999 !important;
+        }
+
+        .toast {
+            min-width: 300px;
+        }
+
+        /* WooCommerce-style form */
+        .woocommerce-form-login {
+            border: 1px solid #e0e0e0;
+            padding: 20px;
+            background: #f9f9f9;
+            margin-top: 15px;
+        }
+
+        .woocommerce-form-login label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .woocommerce-form-login .input-text {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            background: #fefefe;
+            border-radius: 2px;
+        }
+
+        .woocommerce-form-login .form-row {
+            margin-bottom: 15px;
+        }
+
+        .woocommerce-form-login .form-row-first,
+        .woocommerce-form-login .form-row-last {
+            width: 48%;
+            float: left;
+        }
+
+        .woocommerce-form-login .form-row-last {
+            float: right;
+        }
+
+        .woocommerce-form-login .clear {
+            clear: both;
+        }
+
+        /* Button style */
+        .woocommerce-button.button {
+            background-color: #0071a1;
+            color: #fff;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 2px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .woocommerce-button.button:hover {
+            background-color: #005f8d;
+        }
+
+        /* Checkbox + Lost Password */
+        .woocommerce-form-login__rememberme {
+            display: inline-block;
+            margin-right: 15px;
+            font-size: 14px;
+        }
+
+        .woocommerce-LostPassword {
+            margin-top: 10px;
+        }
     </style>
     <!-- Hero Banner -->
 
@@ -433,6 +507,19 @@
 
 
     <div class="container my-5" style="margin-top: 120px;">
+        <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 11000">
+            <!-- Toast Template -->
+            <div id="liveToast" class="toast align-items-center text-bg-warning border-0" role="alert" aria-live="assertive"
+                aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body" id="toastMessage">
+                        ⚠️ This is a sample toast message.
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
         <!-- Breadcrumb -->
         <div class="col-md-12 d-flex justify-content-center">
             <nav aria-label="breadcrumb" style="margin-top: 110px">
@@ -460,9 +547,50 @@
             @if (!Auth::guard('customer')->check())
                 <p class="small text-secondary mb-1">
                     Returning customer?
-                    <a href="#" class="text-dark text-decoration-none"> Click here to login</a>
+                    <a href="#" class="text-dark text-decoration-none" id="loginToggle">Click here to login</a>
                 </p>
+
+                <!-- Hidden Login Form -->
+                <div id="loginFormContainer" style="display:none; margin-top:15px;">
+                    <form action="{{ route('customer.login.post') }}" method="POST"
+                        class="woocommerce-form woocommerce-form-login login">
+                        @csrf
+
+                        <p class="small">If you have shopped with us before, please enter your details below.
+                            If you are a new customer, please proceed to the Billing section.</p>
+
+                        <p class="form-row form-row-first">
+                            <label for="username" class="small">Username or email&nbsp;<span
+                                    class="required">*</span></label>
+                            <input type="text" class="input-text" name="email" id="username" autocomplete="username"
+                                required>
+                        </p>
+                        <p class="form-row form-row-last">
+                            <label for="password" class="small">Password&nbsp;<span class="required">*</span></label>
+                            <input class="input-text" type="password" name="password" id="password"
+                                autocomplete="current-password" required>
+                        </p>
+                        <div class="clear"></div>
+
+                        <p class="form-row">
+                            <label
+                                class="woocommerce-form__label woocommerce-form__label-for-checkbox woocommerce-form-login__rememberme">
+                                <input class="woocommerce-form__input woocommerce-form__input-checkbox" name="remember"
+                                    type="checkbox" id="rememberme">
+                                <span>Remember me</span>
+                            </label>
+                            <button type="submit"
+                                class="woocommerce-button button woocommerce-form-login__submit">LOGIN</button>
+                        </p>
+
+                        <p class="woocommerce-LostPassword lost_password">
+                            <a href="{{ route('password.request') }}" class="small">Lost your password?</a>
+                        </p>
+                    </form>
+                </div>
             @endif
+
+
             <p class="small text-secondary mb-0">
                 Have a coupon?
                 <a href="#" class="text-dark text-decoration-none coupon-link" id="couponToggle">Click here to enter
@@ -515,8 +643,9 @@
                             <input type="text" class="form-control mb-2" placeholder="House number and street name"
                                 name="address1"
                                 value="{{ old('address1', $customer->billingAddress->street_address ?? '') }}" required>
-                            <input type="text" class="form-control" placeholder="Apartment, suite, unit, etc. (optional)"
-                                name="address2" value="{{ old('address2', $customer->billingAddress->address2 ?? '') }}">
+                            <input type="text" class="form-control"
+                                placeholder="Apartment, suite, unit, etc. (optional)" name="address2"
+                                value="{{ old('address2', $customer->billingAddress->address2 ?? '') }}">
                         </div>
 
                         <!-- City -->
@@ -809,6 +938,43 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the toast
+            var toastEl = document.getElementById('liveToast');
+            var toast = new bootstrap.Toast(toastEl, {
+                autohide: true,
+                delay: 3000
+            });
+
+            // Store the toast instance for global access
+            window.appToast = toast;
+        });
+
+        function showToast(message, type = "warning") {
+            let toastEl = document.getElementById("liveToast");
+            let toastMessage = document.getElementById("toastMessage");
+
+            // Change text
+            toastMessage.innerHTML = message;
+
+            // Change color based on type
+            toastEl.classList.remove("text-bg-success", "text-bg-danger", "text-bg-warning");
+            if (type === "success") toastEl.classList.add("text-bg-success");
+            else if (type === "error") toastEl.classList.add("text-bg-danger");
+            else toastEl.classList.add("text-bg-warning");
+
+            // Show toast using the stored instance or create a new one
+            if (window.appToast) {
+                window.appToast.show();
+            } else {
+                let toast = new bootstrap.Toast(toastEl, {
+                    delay: 3000
+                });
+                toast.show();
+            }
+        }
+
+
         flatpickr("#deliveryDate", {
             dateFormat: "d/m/Y"
         });
@@ -829,19 +995,22 @@
                 },
                 success: function(res) {
                     if (res.success) {
-                        alert(res.message);
+                        // alert(res.message);
+                        showToast(res.message, "success");
                         // Store coupon discount in a variable
                         window.couponDiscount = res.discount || 0;
                         updateTotal();
 
                         // Recalculate total
                     } else {
-                        alert(res.message);
+                        // alert(res.message);
+                        showToast(res.message, "error");
                     }
                 },
                 error: function(xhr) {
                     console.error(xhr.responseText);
-                    alert("Something went wrong applying coupon.");
+                    // alert("Something went wrong applying coupon.");
+                    showToast("Something went wrong applying coupon.", "error");
                 }
             });
         });
@@ -952,5 +1121,20 @@
         // Trigger initial selection
         document.querySelector('input[name="delivery_method"]:checked').dispatchEvent(new Event('change'));
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginToggle = document.getElementById('loginToggle');
+            const loginFormContainer = document.getElementById('loginFormContainer');
+
+            if (loginToggle) {
+                loginToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    loginFormContainer.style.display =
+                        loginFormContainer.style.display === 'none' ? 'block' : 'none';
+                });
+            }
+        });
+    </script>
+
 
 @endsection

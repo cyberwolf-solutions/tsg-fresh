@@ -145,8 +145,8 @@
                 </div>
                 <nav>
                     <a href="{{ route('customer.dashboard') }}">Dashboard</a>
-                    <a href="{{ route('customer.order.index') }}" class="active">Orders</a>
-                    <a href="#">Downloads</a>
+                    <a href="{{ route('customer.order.index') }}" class="">Orders</a>
+                    <a href="{{ route('customer.download') }}">Downloads</a>
                     <a href="{{ route('customer.address') }}" class="active">Addresses</a>
                     <a href="{{ route('customer.account') }}">Account details</a>
                     <a href="#" class="text-danger"

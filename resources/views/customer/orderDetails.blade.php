@@ -202,7 +202,7 @@
     </style>
 
     <div class="container account-container">
-        <div class="row">
+        <div class="row mb-2">
             <!-- Sidebar -->
             <div class="col-md-3 account-sidebar">
                 <img src="#" alt="Profile Image">
@@ -226,59 +226,102 @@
             <!-- Main Content -->
             <!-- Main Content -->
             <div class="col-lg-9 col-md-8 account-content">
-                <h3 class="mb-4">My Orders</h3>
+                <div class="container my-4">
 
-                <div class="table-responsive">
-                    <table class="order-table">
+                    <p>
+                        Order <a href="#" class="text-primary">#{{ $order->id }}</a> was placed on
+                        <span class="fw-bold">{{ \Carbon\Carbon::parse($order->created_at)->format('F d, Y') }}</span>
+                        and is currently
+                        <span class="fw-bold text-warning">{{ ucfirst($order->status) }}</span>.
+                    </p>
+
+                    <h4 class="mb-3">Order details</h4>
+
+                    <table class="table table-borderless">
                         <thead>
                             <tr>
-                                <th>ORDER</th>
-                                <th>DATE</th>
-                                <th>STATUS</th>
-                                <th>TOTAL</th>
-                                <th>ACTIONS</th>
+                                <th class="text-dark">PRODUCT</th>
+                                <th class="text-end text-dark">TOTAL</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($orders as $order)
-                                <tr>
-                                    <td class="order-number">#{{ $order->id }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($order->order_date)->format('F d, Y') }}</td>
+                            <tr>
+                                @foreach ($order->items as $item)
                                     <td>
-                                        @php
-                                            $statusColor = match (strtolower($order->status)) {
-                                                'completed' => 'background-color: #d4edda; color: #155724;',
-                                                'processing' => 'background-color: #d1ecf1; color: #0c5460;',
-                                                'on hold' => 'background-color: #fff3cd; color: #856404;',
-                                                default => 'background-color: #f8d7da; color: #721c24;',
-                                            };
-                                        @endphp
-                                        <span class="order-status" style="{{ $statusColor }}">
-                                            {{ ucfirst($order->status) }}
-                                        </span>
+                                        <a href="#" class="text-primary text-decoration-none">
+                                            {{ $item->product->name }}
+                                        </a> × {{ $item->quantity }}
                                     </td>
-                                    <td>
-                                        <span
-                                            class="order-total">රු{{ number_format($order->total + ($order->delivery_fee ?? 0), 2) }}</span>
-                                        <div class="order-items">
-                                            for {{ $order->items->count() }}
-                                            {{ Str::plural('item', $order->items->count()) }}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <a href="{{ route('order.view', ['id' => $order->id]) }}" class="btn-view">VIEW</a>
-                                        <a href="{{ route('invoice.print', ['id' => $order->id]) }}"
-                                            class="btn-invoice">TAX INVOICE</a>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="text-muted text-center">You have no orders yet.</td>
-                                </tr>
-                            @endforelse
+                                @endforeach
+
+                                <td class="text-end">රු{{ number_format($order->subtotal, 2) }}</td>
+                            </tr>
                         </tbody>
+                        <tfoot class="border-top">
+                            <tr>
+                                <td><strong>Subtotal:</strong></td>
+                                <td class="text-end">රු{{ number_format($order->subtotal, 2) }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Shipping:</strong></td>
+                                <td class="text-end">
+                                    {{ $order->shipping_method ?? 'Store Pickup - Below Rs. 2000 Orders' }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Payment method:</strong></td>
+                                <td class="text-end">{{ ucfirst($order->payment_method) }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total:</strong></td>
+                                <td class="text-end fw-bold">
+                                    රු{{ number_format($order->total, 2) }}
+                                    <span class="text-muted small">
+                                        (includes රු{{ number_format($order->vat, 2) }} VAT 18%)
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Note:</strong></td>
+                                <td class="text-end">{{ $order->note ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Actions:</strong></td>
+                                <td class="text-end">
+                                    <a href="{{ route('invoice.print', ['id' => $order->id]) }}" class="btn btn-primary"
+                                        style="background-color: #0d6efd !important; border-color: #0d6efd !important; color: #fff !important;">
+                                        TAX INVOICE
+                                    </a>
+
+                                </td>
+                            </tr>
+                        </tfoot>
                     </table>
+
+                    <p class="fw-bold">
+                        Delivery Date: <span
+                            class="fw-normal">{{ \Carbon\Carbon::parse($order->delivery_date)->format('d F, Y') }}</span>
+                    </p>
+
                 </div>
+
+                <div class="col-md-9 account-content text-start">
+
+
+                    <h3 class="text-secondary ">Billing address</h3>
+
+                    @if ($billingAddress)
+                        <p>{{ $billingAddress->first_name }} {{ $billingAddress->last_name }}</p>
+                        <p>{{ $billingAddress->street_address }}</p>
+                        <p>{{ $billingAddress->town }}</p>
+                        <p>{{ $billingAddress->phone }}</p>
+                        <p>{{ $billingAddress->email }}</p>
+                    @else
+                        <p><a href="{{ route('customer.address.create') }}">Add Billing address</a></p>
+                        <p class="text-muted">You have not set up this type of address yet.</p>
+                    @endif
+                </div>
+
             </div>
 
         </div>

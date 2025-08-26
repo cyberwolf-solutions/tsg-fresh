@@ -76,7 +76,16 @@ Route::group(['middleware' => ['web']], function () {
 
     Route::get('/webcustomer/orders', [CustomerOrderController::class, 'index'])
         ->name('customer.order.index');
+
+    Route::get('webcustomer/download', [\App\Http\Controllers\customer\CustomerController::class, 'download'])
+        ->name('customer.download');
 });
+
+Route::get('/customer/forgot-password', [WebCustomerAuthController::class, 'showForgotPasswordForm'])->name('customer.forgot-password.form');
+Route::post('/customer/forgot-password', [WebCustomerAuthController::class, 'sendResetLink'])->name('customer.forgot-password.send');
+
+Route::get('/customer/reset-password/{token}', [WebCustomerAuthController::class, 'showResetForm'])->name('customer.reset-password.form');
+Route::post('/customer/reset-password', [WebCustomerAuthController::class, 'resetPassword'])->name('customer.reset-password.update');
 
 foreach (config('tenancy.central_domains') as $domain) {
     Route::domain($domain)->group(function () {

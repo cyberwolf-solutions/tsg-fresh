@@ -220,4 +220,49 @@ class CartController extends Controller
             'total' => $item->total
         ]);
     }
+
+    public function removeItem($id)
+    {
+        $customerId = Auth::guard('customer')->check()
+            ? Auth::guard('customer')->id()
+            : null;
+        $sessionId  = session()->getId();
+
+        // Find the cart
+        $cart = Cart::where(function ($q) use ($customerId, $sessionId) {
+            if ($customerId) {
+                $q->where('customer_id', $customerId);
+            } else {
+                $q->where('session_id', $sessionId);
+            }
+        })->first();
+
+        if (!$cart) {
+            return response()->json(['success' => false, 'message' => 'Cart not found']);
+        }
+
+        // Remove the specific item
+        $item = $cart->items()->where('id', $id)->first();
+        if ($item) {
+            $item->delete();
+        }
+
+        // Recalculate subtotal & reload sidebar
+        $subtotal = 0;
+        foreach ($cart->items as $cartItem) {
+            $price = $cartItem->variant ? $cartItem->variant->final_price : $cartItem->product->final_price;
+            $subtotal += $price * $cartItem->quantity;
+        }
+        $count = $cart->items->sum('quantity');
+
+        // Return the updated sidebar HTML
+        $html = view('landing-page.partials.cart-items', compact('cart', 'subtotal', 'count'))->render();
+
+        return response()->json([
+            'success' => true,
+            'html' => $html,
+            'count' => $count,
+            'subtotal' => $subtotal
+        ]);
+    }
 }

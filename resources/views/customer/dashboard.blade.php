@@ -129,8 +129,8 @@
                 </div>
                 <nav>
                     <a href="{{ route('customer.dashboard') }}" class="active">Dashboard</a>
-                    <a href="{{ route('customer.order.index') }}" class="active">Orders</a>
-                    <a href="#">Downloads</a>
+                    <a href="{{ route('customer.order.index') }}" class="">Orders</a>
+                    <a href="{{ route('customer.download') }}">Downloads</a>
                     <a href="{{ route('customer.address') }}">Addresses</a>
                     <a href="{{ route('customer.account') }}">Account details</a>
                     <a href="#" class="text-danger"
@@ -163,10 +163,10 @@
                 <!-- Buttons -->
                 <div class="row account-buttons g-3">
                     <div class="col-md-4 col-6">
-                        <a href="#">Orders</a>
+                        <a href="{{ route('customer.order.index') }}">Orders</a>
                     </div>
                     <div class="col-md-4 col-6">
-                        <a href="#">Downloads</a>
+                        <a href="{{ route('customer.download') }}">Downloads</a>
                     </div>
                     <div class="col-md-4 col-6">
                         <a href="{{ route('customer.address') }}">Addresses</a>
@@ -180,5 +180,5 @@
 
 
 
-       @include('Landing-Page.partials.products')
+        @include('Landing-Page.partials.products')
     @endsection

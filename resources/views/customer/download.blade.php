@@ -160,9 +160,9 @@
                 <nav>
                     <a href="{{ route('customer.dashboard') }}">Dashboard</a>
                     <a href="{{ route('customer.order.index') }}" class="">Orders</a>
-                    <a href="{{ route('customer.download') }}">Downloads</a>
+                    <a href="{{ route('customer.download') }}" class="active">Downloads</a>
                     <a href="{{ route('customer.address') }}">Addresses</a>
-                    <a href="{{ route('customer.account') }}" class="active">Account details</a>
+                    <a href="{{ route('customer.account') }}">Account details</a>
                     <a href="#" class="text-danger"
                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
                     <form id="logout-form" action="{{ route('customer.logout') }}" method="POST" style="display:none;">
@@ -173,69 +173,8 @@
 
             <!-- Main Content -->
             <div class="col-md-9 account-content">
-                <form method="POST" action="{{ route('customer.account.update') }}">
-                    @csrf
-                    @method('PUT')
 
-                    <div class="row mb-3">
-                        <div class="col-md-6 form-group">
-                            <label for="first_name" class="form-label small">First name *</label>
-                            <input type="text" name="first_name" class="form-control" id="first_name"
-                                value="{{ old('first_name', $customer->first_name) }}">
-                            @error('first_name')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-6 form-group">
-                            <label for="last_name" class="form-label small">Last name *</label>
-                            <input type="text" name="last_name" class="form-control" id="last_name"
-                                value="{{ old('last_name', $customer->last_name) }}">
-                            @error('last_name')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="display_name" class="form-label small">Display name *</label>
-                        <input type="text" name="display_name" class="form-control" id="display_name"
-                            value="{{ old('display_name', $customer->first_name . '.' . $customer->last_name) }}">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="email" class="form-label small">Email address *</label>
-                        <input type="email" class="form-control" id="email" value="{{ $customer->email }}" readonly>
-                    </div>
-
-                    <h5 class="mb-3 text-secondary">PASSWORD CHANGE</h5>
-                    <div class="mb-3">
-                        <label for="current_password" class="form-label small">Current password</label>
-                        <input type="password" name="current_password" class="form-control" id="current_password">
-                        @error('current_password')
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="new_password" class="form-label small">New password</label>
-                        <input type="password" name="new_password" class="form-control" id="new_password">
-                        @error('new_password')
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="new_password_confirmation" class="form-label small">Confirm new password</label>
-                        <input type="password" name="new_password_confirmation" class="form-control"
-                            id="new_password_confirmation">
-                        @error('new_password_confirmation')
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">SAVE CHANGES</button>
-                </form>
+                <h4 class="text-secondary small">No downloads available yet.</h4>
 
                 @if (session('success'))
                     <div class="alert alert-success mt-2">{{ session('success') }}</div>

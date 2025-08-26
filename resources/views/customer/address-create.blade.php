@@ -116,10 +116,10 @@
 
         .account-buttons a:hover,
         /* .btn-primary:hover {
-                                                                        color: #ffffff;
-                                                                        background-color: rgb(44, 43, 43);
-                                                                        text-decoration: none;
-                                                                    } */
+                                                                                    color: #ffffff;
+                                                                                    background-color: rgb(44, 43, 43);
+                                                                                    text-decoration: none;
+                                                                                } */
 
         /* --- Form controls --- */
         .form-group label,
@@ -158,8 +158,8 @@
                 </div>
                 <nav>
                     <a href="{{ route('customer.dashboard') }}">Dashboard</a>
-                    <a href="{{ route('customer.order.index') }}" class="active">Orders</a>
-                    <a href="{{ route('customer.dashboard') }}">Downloads</a>
+                    <a href="{{ route('customer.order.index') }}" class="">Orders</a>
+                    <a href="{{ route('customer.download') }}">Downloads</a>
                     <a href="{{ route('customer.address') }}" class="active">Addresses</a>
                     <a href="{{ route('customer.account') }}">Account details</a>
                     <a href="#" class="text-danger"

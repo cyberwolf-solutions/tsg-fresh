@@ -41,7 +41,8 @@
                     LOG IN
                 </button>
                 <br>
-                <a href="#" class="mt-2" style="color: #0073aa; text-decoration: none;">Lost your password?</a>
+                <a href="{{ route('customer.forgot-password.form') }}" class="mt-2"
+                    style="color: #0073aa; text-decoration: none;">Lost your password?</a>
             </form>
         </div>
 
